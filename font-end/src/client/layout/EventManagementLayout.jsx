@@ -10,8 +10,8 @@ const EventManagement = () => {
             <div className="d-flex">
                 <SidebarEvent />
                 <div className="content w-100">
-                    <HeaderEvent />
                     <main>
+                        {/* <HeaderEvent /> */}
                         <Outlet />
                     </main>
                 </div>

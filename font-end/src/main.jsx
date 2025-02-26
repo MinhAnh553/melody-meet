@@ -9,11 +9,14 @@ import './assets/css/global.css';
 
 import router from './router/routes.jsx';
 import { AuthProvider } from './client/context/AuthContext.jsx';
+import { FormProvider } from './client/context/FormContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     // <React.StrictMode>
     <AuthProvider>
-        <RouterProvider router={router} />
+        <FormProvider>
+            <RouterProvider router={router} />
+        </FormProvider>
     </AuthProvider>,
     // </React.StrictMode>,
 );

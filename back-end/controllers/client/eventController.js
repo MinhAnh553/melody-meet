@@ -1,16 +1,5 @@
 import eventService from '../../services/client/eventService.js';
 
-// [GET] /event/create
-const showCreateForm = async (req, res) => {
-    try {
-        res.render('client/pages/event/create', {
-            pageTitle: 'Tạo sự kiện',
-        });
-    } catch (error) {
-        res.status(500).send('Server Error');
-    }
-};
-
 // [POST] /event/create
 const createEvent = async (req, res) => {
     try {
@@ -21,12 +10,13 @@ const createEvent = async (req, res) => {
             !req.files.eventBackground ||
             !req.files.organizerLogo
         ) {
-            return res
-                .status(400)
-                .json({ error: 'Vui lòng tải lên đầy đủ hình ảnh!' });
+            return res.status(400).json({
+                success: false,
+                message: 'Vui lòng tải lên đầy đủ hình ảnh!' || 'Server Error!',
+            });
         }
         const eventData = {
-            userId: req.session.user._id,
+            // userId: 'MINHANH',
             name: data.eventName,
             logo: req.files.eventLogo[0].path,
             background: req.files.eventBackground[0].path,
@@ -45,16 +35,19 @@ const createEvent = async (req, res) => {
             },
         };
         const newEvent = await eventService.createEvent(eventData);
-        res.json({
+
+        res.status(200).json({
+            success: true,
             message: 'Sự kiện đã được tạo thành công!',
-            event: newEvent,
         });
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
     }
 };
 
 export default {
-    showCreateForm,
     createEvent,
 };

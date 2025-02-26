@@ -1,5 +1,5 @@
 import React from 'react';
-import carousel from '../../assets/images/carousel.jpg';
+import carousel from '../../../assets/images/carousel.jpg';
 
 const HomePage = () => {
     return (

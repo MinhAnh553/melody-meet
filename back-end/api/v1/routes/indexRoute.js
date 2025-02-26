@@ -1,5 +1,6 @@
 import express from 'express';
 import { userRoute } from './userRoute.js';
+import { eventRoute } from './eventRoute.js';
 import authMiddleware from '../../../middlewares/client/authMiddleware.js';
 
 const Router = express.Router();
@@ -11,5 +12,7 @@ Router.use('/checkAPI', (req, res) => {
 });
 
 Router.use('/user', userRoute);
+
+Router.use('/event', eventRoute);
 
 export default Router;

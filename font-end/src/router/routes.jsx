@@ -2,10 +2,10 @@ import React from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 
 import ClientLayout from '../client/layout/ClientLayout.jsx';
-import HomePage from '../client/pages/HomePage.jsx';
+import HomePage from '../client/pages/home/HomePage.jsx';
 import EventManagementLayout from '../client/layout/EventManagementLayout.jsx';
-import SidebarEvent from '../client/components/SidebarEvent.jsx';
 import ProtectedRoute from '../client/components/ProtectedRoute';
+import EventCreateWizard from '../client/pages/event/EventCreateWizard.jsx';
 
 const router = createBrowserRouter([
     {
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
                 children: [
                     {
                         path: 'create',
-                        element: <div>Nội dung</div>,
+                        element: <EventCreateWizard />,
                     },
                 ],
             },

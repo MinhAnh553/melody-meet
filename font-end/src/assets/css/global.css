@@ -77,7 +77,6 @@ header {
 
 .form-control:focus {
     box-shadow: none;
-    background-color: transparent;
 }
 
 header .form-control {

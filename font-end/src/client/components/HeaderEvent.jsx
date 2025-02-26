@@ -4,27 +4,46 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import swalCustomize from '../../util/swalCustomize';
 
-const HeaderEvent = () => {
+const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
     const { logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
+    const steps = [
+        'Thông tin sự kiện',
+        'Thời gian & Loại vé',
+        'Cài đặt',
+        'Thông tin thanh toán',
+    ];
     return (
         <div className="header">
             <div className="w-100 step-container gap-2">
-                <div className="step active">1. Thông tin sự kiện</div>
-                <div className="step">2. Thời gian &amp; Loại vé</div>
-                <div className="step">3. Cài đặt</div>
-                <div className="step">4. Thông tin thanh toán</div>
+                {steps.map((label, index) => {
+                    const stepNumber = index + 1;
+                    return (
+                        <div
+                            key={stepNumber}
+                            className={`step ${
+                                currentStep === stepNumber ? 'active' : ''
+                            }`}
+                            // onClick={() => onStepClick(stepNumber)}
+                        >
+                            {stepNumber}. {label}
+                        </div>
+                    );
+                })}
                 <button
                     className="btn"
+                    type="submit"
+                    form="eventForm"
                     style={{
                         backgroundColor: 'rgb(45 194 117)',
                         color: '#fff',
                     }}
                     id="submitEvent"
+                    disabled={loading}
                 >
-                    Tiếp tục
+                    {loading ? 'Đang tải...' : 'Tiếp tục'}
                 </button>
                 <ul className="navbar-nav mb-2 mb-lg-0 ms-auto gap-2 flex-row align-items-center justify-content-end">
                     {location.pathname !== '/event/create' && (
