@@ -124,6 +124,7 @@ const login = async (email, password) => {
 
                 // JWT
                 const payload = {
+                    id: user._id,
                     email: user.email,
                     role: user.role,
                 };

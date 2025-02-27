@@ -4,19 +4,18 @@ import eventService from '../../services/client/eventService.js';
 const createEvent = async (req, res) => {
     try {
         const data = req.body;
-        if (
-            !req.files ||
-            !req.files.eventLogo ||
-            !req.files.eventBackground ||
-            !req.files.organizerLogo
-        ) {
-            return res.status(400).json({
-                success: false,
-                message: 'Vui lòng tải lên đầy đủ hình ảnh!' || 'Server Error!',
+        // Parse lại dữ liệu ticketTypes từ chuỗi JSON
+        let ticketTypes = JSON.parse(req.body.ticketTypes);
+
+        // Gán ảnh vào đúng vé của nó
+        if (req.files['ticketImages']) {
+            ticketTypes.forEach((ticket, index) => {
+                ticket.image = req.files['ticketImages'][index]?.path || '';
             });
         }
+
         const eventData = {
-            // userId: 'MINHANH',
+            userId: req.user.id,
             name: data.eventName,
             logo: req.files.eventLogo[0].path,
             background: req.files.eventBackground[0].path,
@@ -33,14 +32,19 @@ const createEvent = async (req, res) => {
                 name: data.organizerName,
                 info: data.organizerInfo,
             },
+            startTime: new Date(data.startTime),
+            endTime: new Date(data.endTime),
+            ticketTypes: ticketTypes,
         };
         const newEvent = await eventService.createEvent(eventData);
+        console.log('MinhAnh553: createEvent -> newEvent', newEvent);
 
         res.status(200).json({
             success: true,
             message: 'Sự kiện đã được tạo thành công!',
         });
     } catch (error) {
+        console.log(error);
         res.status(400).json({
             success: false,
             message: error.message || 'Server Error!',

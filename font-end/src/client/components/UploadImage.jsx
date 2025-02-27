@@ -1,16 +1,16 @@
-// src/components/UploadImage.jsx
 import React, { useRef, useState, useEffect } from 'react';
 import styles from '../styles/EventManagement.module.css';
 
 const UploadImage = ({
-    id, // id của container, ví dụ "uploadBackground" hoặc "uploadOrganizer"
-    iconClass, // class của icon, ví dụ "fas fa-upload fa-2x text-success"
-    defaultText, // văn bản mặc định hiển thị khi chưa chọn ảnh
-    inputName, // tên của file input, ví dụ "eventBackground" hoặc "organizerLogo"
-    onFileSelect, // callback nhận file được chọn
+    id,
+    iconClass,
+    defaultText,
+    inputName,
+    onFileSelect,
+    defaultPreview, // Nhận ảnh đã lưu trong formData để hiển thị lại
 }) => {
     const fileInputRef = useRef(null);
-    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewUrl, setPreviewUrl] = useState(defaultPreview || null); // Nếu có ảnh đã lưu, hiển thị luôn
 
     const handleBoxClick = () => {
         if (fileInputRef.current) {
@@ -29,29 +29,26 @@ const UploadImage = ({
         }
     };
 
-    // Cleanup để giải phóng bộ nhớ khi component unmount hoặc khi previewUrl thay đổi
-    useEffect(() => {
-        return () => {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-            }
-        };
-    }, [previewUrl]);
+    // Cleanup: giải phóng bộ nhớ khi component unmount hoặc previewUrl thay đổi
+    // useEffect(() => {
+    //     return () => {
+    //         if (previewUrl && previewUrl !== defaultPreview) {
+    //             URL.revokeObjectURL(previewUrl);
+    //         }
+    //     };
+    // }, [previewUrl, defaultPreview]);
 
     return (
         <div id={id} className="upload-box" onClick={handleBoxClick}>
             {previewUrl ? (
-                <img
-                    id={`preview-${id}`}
-                    src={previewUrl}
-                    alt="Preview"
-                    style={{
-                        display: 'block',
-                        maxWidth: '100%',
-                        height: 'auto',
-                        borderRadius: 5,
-                    }}
-                />
+                <div>
+                    <img
+                        id={`preview-${id}`}
+                        src={previewUrl}
+                        alt="Xem trước"
+                        style={{ width: 150, height: 150, objectFit: 'cover' }}
+                    />
+                </div>
             ) : (
                 <>
                     <i id={`icon-${id}`} className={iconClass} />

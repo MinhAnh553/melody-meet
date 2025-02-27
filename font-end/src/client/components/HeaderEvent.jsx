@@ -12,9 +12,12 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
     const steps = [
         'Thông tin sự kiện',
         'Thời gian & Loại vé',
-        'Cài đặt',
-        'Thông tin thanh toán',
+        // 'Cài đặt',
+        // 'Thông tin thanh toán',
     ];
+
+    const allowStepNavigation = currentStep > 1;
+
     return (
         <div className="header">
             <div className="w-100 step-container gap-2">
@@ -25,10 +28,58 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
                             key={stepNumber}
                             className={`step ${
                                 currentStep === stepNumber ? 'active' : ''
+                            } ${
+                                allowStepNavigation || stepNumber <= currentStep
+                                    ? 'clickable'
+                                    : 'disabled'
                             }`}
-                            // onClick={() => onStepClick(stepNumber)}
+                            onClick={
+                                allowStepNavigation || stepNumber <= currentStep
+                                    ? () => onStepClick(stepNumber)
+                                    : undefined
+                            }
                         >
-                            {stepNumber}. {label}
+                            {stepNumber < currentStep ? (
+                                <span
+                                    style={{
+                                        display: 'flex',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        backgroundColor: '#28a745',
+                                        color: '#fff',
+                                        textAlign: 'center',
+                                        marginRight: '8px',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '12px',
+                                    }}
+                                >
+                                    <i
+                                        className="bi bi-check"
+                                        style={{ fontSize: '12px' }}
+                                    ></i>
+                                </span>
+                            ) : (
+                                <span
+                                    style={{
+                                        display: 'flex',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        backgroundColor: '#ccc',
+                                        color: '#000',
+                                        textAlign: 'center',
+                                        marginRight: '8px',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '12px',
+                                    }}
+                                >
+                                    {stepNumber}
+                                </span>
+                            )}
+                            {label}
                         </div>
                     );
                 })}
@@ -43,7 +94,11 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
                     id="submitEvent"
                     disabled={loading}
                 >
-                    {loading ? 'Đang tải...' : 'Tiếp tục'}
+                    {loading
+                        ? 'Đang tải...'
+                        : currentStep === 2
+                        ? 'Hoàn thành'
+                        : 'Tiếp tục'}
                 </button>
                 <ul className="navbar-nav mb-2 mb-lg-0 ms-auto gap-2 flex-row align-items-center justify-content-end">
                     {location.pathname !== '/event/create' && (

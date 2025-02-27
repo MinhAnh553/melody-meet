@@ -2,24 +2,67 @@ import React, { useEffect, useState } from 'react';
 import provincesData from '../../util/provinces.json';
 import styles from '../styles/EventManagement.module.css';
 
-const AddressSelector = ({ onAddressChange }) => {
-    // State lưu danh sách các tỉnh, quận, phường
+const AddressSelector = ({ onAddressChange, initialAddress }) => {
     const [provinces, setProvinces] = useState([]);
 
-    const [venueName, setVenueName] = useState('');
-    // Lưu mã của các mục được chọn (để so sánh, nếu JSON dùng kiểu số)
-    const [selectedProvinceCode, setSelectedProvinceCode] = useState(null);
-    const [selectedDistrictCode, setSelectedDistrictCode] = useState(null);
-    const [selectedWardCode, setSelectedWardCode] = useState(null);
+    // Khởi tạo state với giá trị từ initialAddress (nếu có)
+    const [venueName, setVenueName] = useState(initialAddress?.venueName || '');
+    const [selectedProvinceCode, setSelectedProvinceCode] = useState(
+        initialAddress?.selectedProvinceCode || null,
+    );
+    const [selectedDistrictCode, setSelectedDistrictCode] = useState(
+        initialAddress?.selectedDistrictCode || null,
+    );
+    const [selectedWardCode, setSelectedWardCode] = useState(
+        initialAddress?.selectedWardCode || null,
+    );
+    const [address, setAddress] = useState(initialAddress?.address || '');
 
-    const [address, setAddress] = useState('');
-
-    // Khi component mount, gán data từ JSON cho state provinces
+    // Load provinces từ JSON khi component mount
     useEffect(() => {
         setProvinces(provincesData);
     }, []);
 
-    // Khi tỉnh được chọn, chuyển đổi giá trị thành số (nếu JSON dùng kiểu số)
+    // Nếu không có mã (code) trong initialAddress, chuyển đổi dựa trên tên
+    useEffect(() => {
+        if (initialAddress && provinces.length > 0) {
+            // Nếu không có mã, thử tìm theo tên (so sánh chữ thường)
+            if (
+                !initialAddress.selectedProvinceCode &&
+                initialAddress.province
+            ) {
+                const prov = provinces.find(
+                    (p) =>
+                        p.name.toLowerCase() ===
+                        initialAddress.province.toLowerCase(),
+                );
+                if (prov) {
+                    setSelectedProvinceCode(prov.code);
+                    if (initialAddress.district) {
+                        const district = prov.districts.find(
+                            (d) =>
+                                d.name.toLowerCase() ===
+                                initialAddress.district.toLowerCase(),
+                        );
+                        if (district) {
+                            setSelectedDistrictCode(district.code);
+                            if (initialAddress.ward) {
+                                const ward = district.wards.find(
+                                    (w) =>
+                                        w.name.toLowerCase() ===
+                                        initialAddress.ward.toLowerCase(),
+                                );
+                                if (ward) {
+                                    setSelectedWardCode(ward.code);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }, [initialAddress, provinces]);
+
     const handleProvinceChange = (e) => {
         const code = e.target.value ? Number(e.target.value) : null;
         setSelectedProvinceCode(code);
@@ -40,21 +83,19 @@ const AddressSelector = ({ onAddressChange }) => {
         setSelectedWardCode(code);
     };
 
-    const handleAddressChange = (data) => {
-        setAddress(data);
+    const handleVenueNameChange = (value) => {
+        setVenueName(value);
     };
 
-    const handleVenueNameChange = (data) => {
-        setVenueName(data);
+    const handleAddressChange = (value) => {
+        setAddress(value);
     };
 
-    // Lấy danh sách quận dựa trên tỉnh được chọn
     const getDistricts = () => {
         const province = provinces.find((p) => p.code === selectedProvinceCode);
         return province ? province.districts : [];
     };
 
-    // Lấy danh sách phường dựa trên quận được chọn
     const getWards = () => {
         const province = provinces.find((p) => p.code === selectedProvinceCode);
         if (province) {
@@ -66,7 +107,6 @@ const AddressSelector = ({ onAddressChange }) => {
         return [];
     };
 
-    // Khi có sự thay đổi ở bất kỳ giá trị nào, gọi callback onAddressChange (nếu có)
     useEffect(() => {
         if (onAddressChange) {
             const province = provinces.find(
@@ -80,13 +120,16 @@ const AddressSelector = ({ onAddressChange }) => {
             const ward = district
                 ? district.wards.find((w) => w.code === selectedWardCode)
                 : null;
-
             onAddressChange({
                 venueName: venueName || '',
                 province: province ? province.name : '',
                 district: district ? district.name : '',
                 ward: ward ? ward.name : '',
                 address: address || '',
+                // Ngoài ra, có thể truyền mã nếu cần:
+                selectedProvinceCode,
+                selectedDistrictCode,
+                selectedWardCode,
             });
         }
     }, [

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import ticketTypeModel from './ticketTypeModel.js';
 
 const eventSchema = new mongoose.Schema(
     {
@@ -19,6 +20,9 @@ const eventSchema = new mongoose.Schema(
             name: String,
             info: String,
         },
+        startTime: Date,
+        endTime: Date,
+        ticketTypes: [ticketTypeModel],
         createdAt: {
             type: Date,
             default: Date.now,

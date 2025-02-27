@@ -9,6 +9,7 @@ Router.route('/create').post(
         { name: 'eventLogo', maxCount: 1 },
         { name: 'eventBackground', maxCount: 1 },
         { name: 'organizerLogo', maxCount: 1 },
+        { name: 'ticketImages', maxCount: 10 },
     ]),
     eventController.createEvent,
 );
