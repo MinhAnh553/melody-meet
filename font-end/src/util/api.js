@@ -38,10 +38,16 @@ const createEvent = (data) => {
     return axios.post(URL_API, data);
 };
 
+const getEvents = (data) => {
+    const URL_API = '/api/v1/event';
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
     login,
     getAccount,
     createEvent,
+    getEvents,
 };

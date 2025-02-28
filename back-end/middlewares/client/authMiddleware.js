@@ -9,6 +9,7 @@ const isAuthorized = (req, res, next) => {
         '/user/send-otp',
         '/user/verify-otp',
         '/user/login',
+        '/event',
     ];
     if (white_lists.find((item) => '/api/v1' + item === req.originalUrl)) {
         return next();

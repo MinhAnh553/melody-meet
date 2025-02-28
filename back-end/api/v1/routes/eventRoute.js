@@ -14,4 +14,6 @@ Router.route('/create').post(
     eventController.createEvent,
 );
 
+Router.route('/').get(eventController.getEvents);
+
 export const eventRoute = Router;

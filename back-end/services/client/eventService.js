@@ -6,6 +6,12 @@ const createEvent = async (eventData) => {
     return event;
 };
 
+const getEvents = async () => {
+    const events = await eventModel.find();
+
+    return events;
+};
 export default {
     createEvent,
+    getEvents,
 };

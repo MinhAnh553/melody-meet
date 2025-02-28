@@ -52,6 +52,23 @@ const createEvent = async (req, res) => {
     }
 };
 
+const getEvents = async (req, res) => {
+    try {
+        const events = await eventService.getEvents();
+        res.status(200).json({
+            success: true,
+            events,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 export default {
     createEvent,
+    getEvents,
 };
