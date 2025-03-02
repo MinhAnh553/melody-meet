@@ -6,6 +6,7 @@ import HomePage from '../client/pages/home/HomePage.jsx';
 import EventManagementLayout from '../client/layout/EventManagementLayout.jsx';
 import ProtectedRoute from '../client/components/ProtectedRoute';
 import EventCreateWizard from '../client/pages/event/EventCreateWizard.jsx';
+import EventDetail from '../client/pages/EventDetail.jsx';
 
 const router = createBrowserRouter([
     {
@@ -30,6 +31,16 @@ const router = createBrowserRouter([
                         element: <EventCreateWizard />,
                     },
                 ],
+            },
+        ],
+    },
+    {
+        path: '/event/:eventId',
+        element: <ClientLayout />,
+        children: [
+            {
+                index: true,
+                element: <EventDetail />,
             },
         ],
     },

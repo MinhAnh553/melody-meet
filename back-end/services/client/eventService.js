@@ -11,7 +11,17 @@ const getEvents = async () => {
 
     return events;
 };
+
+const getEventById = async (id) => {
+    const event = await eventModel.findOne({
+        _id: id,
+    });
+
+    return event;
+};
+
 export default {
     createEvent,
     getEvents,
+    getEventById,
 };

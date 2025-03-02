@@ -549,3 +549,12 @@ header .form-control {
     max-height: 100%;
     object-fit: contain;
 }
+
+.event-description img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px auto;
+    border-radius: 8px;
+    object-fit: cover;
+}

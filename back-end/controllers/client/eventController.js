@@ -68,7 +68,32 @@ const getEvents = async (req, res) => {
     }
 };
 
+const getEventById = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const event = await eventService.getEventById(id);
+        if (event) {
+            return res.status(200).json({
+                success: true,
+                event,
+            });
+        }
+        return res.status(404).json({
+            success: false,
+            message: 'Không tìm thấy sự kiện!',
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 export default {
     createEvent,
     getEvents,
+    getEventById,
 };

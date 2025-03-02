@@ -4,17 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const isAuthorized = (req, res, next) => {
-    const white_lists = [
-        '/',
-        '/user/send-otp',
-        '/user/verify-otp',
-        '/user/login',
-        '/event',
-    ];
-    if (white_lists.find((item) => '/api/v1' + item === req.originalUrl)) {
-        return next();
-    }
-
     if (req.headers && req.headers.authorization) {
         const token = req.headers.authorization.split(' ')[1];
 
