@@ -45,7 +45,7 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
             });
         }
 
-        if (!data.eventLogo || !data.eventBackground || !data.organizerLogo) {
+        if (!data.eventBackground || !data.organizerLogo) {
             return swalCustomize.Toast.fire({
                 icon: 'error',
                 title: 'Vui lòng tải lên đầy đủ hình ảnh',
@@ -67,11 +67,8 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
             encType="multipart/form-data"
         >
             <div className="card-dark">
-                <h6 className={`${styles.formTitle} form-item-required`}>
-                    Upload hình ảnh
-                </h6>
-                <div className="row">
-                    <div className="col-md-3">
+                <div className="row align-items-center">
+                    {/* <div className="col-md-3">
                         <UploadImage
                             id="uploadLogo"
                             iconClass="fas fa-upload fa-2x text-success"
@@ -85,8 +82,28 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
                                 })
                             }
                         />
+                    </div> */}
+                    <div className="col-md-7 mb-3">
+                        <label
+                            className={`${styles.formTitle} form-label form-item-required`}
+                            htmlFor="eventName"
+                        >
+                            Tên sự kiện
+                        </label>
+                        <input
+                            className="form-control"
+                            type="text"
+                            id="eventName"
+                            name="eventName"
+                            placeholder="Tên sự kiện"
+                            maxLength={100}
+                            value={data.eventName}
+                            onChange={(e) =>
+                                updateData({ eventName: e.target.value })
+                            }
+                        />
                     </div>
-                    <div className="col-md-9">
+                    <div className="col-md-5">
                         <UploadImage
                             id="uploadBackground"
                             iconClass="fas fa-upload fa-2x text-success"
@@ -101,26 +118,6 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
                             }
                         />
                     </div>
-                </div>
-                <div className="mt-3 col-md-12 mb-3">
-                    <label
-                        className={`${styles.formTitle} form-label form-item-required`}
-                        htmlFor="eventName"
-                    >
-                        Tên sự kiện
-                    </label>
-                    <input
-                        className="form-control"
-                        type="text"
-                        id="eventName"
-                        name="eventName"
-                        placeholder="Tên sự kiện"
-                        maxLength={100}
-                        value={data.eventName}
-                        onChange={(e) =>
-                            updateData({ eventName: e.target.value })
-                        }
-                    />
                 </div>
             </div>
             <div className="card-dark mt-4">
@@ -151,7 +148,7 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
                 />
             </div>
             <div className="card-dark mt-4 mb-5">
-                <div className="row">
+                <div className="row align-items-center">
                     <div className="col-md-2">
                         <UploadImage
                             id="uploadOrganizer"

@@ -102,8 +102,6 @@ const EventForm = () => {
 
     const [formData, setFormData] = useState({
         eventName: '',
-        eventLogo: null,
-        eventLogoPreview: '',
         eventBackground: null,
         eventBackgroundPreview: null,
         addressData: '',

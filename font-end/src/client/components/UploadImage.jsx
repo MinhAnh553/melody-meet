@@ -46,7 +46,11 @@ const UploadImage = ({
                         id={`preview-${id}`}
                         src={previewUrl}
                         alt="Xem trước"
-                        style={{ width: 150, height: 150, objectFit: 'cover' }}
+                        style={{
+                            width: 'calc(100% - 10px)',
+                            maxHeight: '240px',
+                            objectFit: 'cover',
+                        }}
                     />
                 </div>
             ) : (

@@ -14,8 +14,8 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
         price: '',
         totalQuantity: '',
         maxPerUser: '',
-        startTime: '',
-        endTime: '',
+        // startTime: '',
+        // endTime: '',
         description: '',
         image: null,
         imagePreview: '',
@@ -80,51 +80,51 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
         }
 
         // Kiểm tra thời gian bắt đầu và kết thúc bán vé
-        if (!ticket.startTime) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Vui lòng nhập thời gian bắt đầu bán vé',
-            });
-            return false;
-        }
+        // if (!ticket.startTime) {
+        //     swalCustomize.Toast.fire({
+        //         icon: 'error',
+        //         title: 'Vui lòng nhập thời gian bắt đầu bán vé',
+        //     });
+        //     return false;
+        // }
 
-        if (!ticket.endTime) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Vui lòng nhập thời gian kết thúc bán vé',
-            });
-            return false;
-        }
+        // if (!ticket.endTime) {
+        //     swalCustomize.Toast.fire({
+        //         icon: 'error',
+        //         title: 'Vui lòng nhập thời gian kết thúc bán vé',
+        //     });
+        //     return false;
+        // }
 
-        if (new Date(ticket.startTime) <= new Date()) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Thời gian bắt đầu bán vé phải lớn hơn thời gian hiện tại',
-            });
-            return false;
-        }
+        // if (new Date(ticket.startTime) <= new Date()) {
+        //     swalCustomize.Toast.fire({
+        //         icon: 'error',
+        //         title: 'Thời gian bắt đầu bán vé phải lớn hơn thời gian hiện tại',
+        //     });
+        //     return false;
+        // }
 
-        if (
-            new Date(ticket.startTime) >=
-            new Date(
-                data.startTime ||
-                    new Date(ticket.endTime) >= new Date(data.startTime),
-            )
-        ) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Phải nhỏ thời gian bắt đầu sự kiện',
-            });
-            return false;
-        }
+        // if (
+        //     new Date(ticket.startTime) >=
+        //     new Date(
+        //         data.startTime ||
+        //             new Date(ticket.endTime) >= new Date(data.startTime),
+        //     )
+        // ) {
+        //     swalCustomize.Toast.fire({
+        //         icon: 'error',
+        //         title: 'Phải nhỏ thời gian bắt đầu sự kiện',
+        //     });
+        //     return false;
+        // }
 
-        if (new Date(ticket.endTime) <= new Date(ticket.startTime)) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Thời gian kết thúc bán vé phải lớn hơn thời gian bắt đầu bán vé',
-            });
-            return false;
-        }
+        // if (new Date(ticket.endTime) <= new Date(ticket.startTime)) {
+        //     swalCustomize.Toast.fire({
+        //         icon: 'error',
+        //         title: 'Thời gian kết thúc bán vé phải lớn hơn thời gian bắt đầu bán vé',
+        //     });
+        //     return false;
+        // }
         // Kiểm tra thông tin vé
         if (!ticket.description.trim()) {
             swalCustomize.Toast.fire({
@@ -218,8 +218,8 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
             price: '',
             totalQuantity: '',
             maxPerUser: '',
-            startTime: '',
-            endTime: '',
+            // startTime: '',
+            // endTime: '',
             description: '',
             image: null,
             imagePreview: '',
@@ -517,7 +517,7 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                 </Form.Group>
                             </div>
                         </div>
-                        <div className="row mt-3">
+                        {/* <div className="row mt-3">
                             <div className="col-md-6">
                                 <Form.Group className="mb-3">
                                     <Form.Label
@@ -552,8 +552,8 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                     />
                                 </Form.Group>
                             </div>
-                        </div>
-                        <div className="row mt-3">
+                        </div> */}
+                        <div className="row mt-3  align-items-center">
                             <div className="col-md-8">
                                 <Form.Group className="mb-3">
                                     <Form.Label style={{ color: '#fff' }}>
@@ -570,7 +570,10 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                     />
                                 </Form.Group>
                             </div>
-                            <div className="col-md-4 text-center">
+                            <div
+                                className="col-md-4 text-center"
+                                style={{ minHeight: '100px !important' }}
+                            >
                                 <UploadImage
                                     id="imageTicket"
                                     iconClass="fas fa-upload fa-2x text-success"

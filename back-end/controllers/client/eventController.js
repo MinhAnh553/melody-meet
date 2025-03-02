@@ -17,7 +17,7 @@ const createEvent = async (req, res) => {
         const eventData = {
             userId: req.user.id,
             name: data.eventName,
-            logo: req.files.eventLogo[0].path,
+            // logo: req.files.eventLogo[0].path,
             background: req.files.eventBackground[0].path,
             location: {
                 venueName: data.venueName,

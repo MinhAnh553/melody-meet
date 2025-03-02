@@ -8,7 +8,7 @@ const Router = express.Router();
 Router.route('/create').post(
     authMiddleware.isAuthorized,
     uploadCloudProvider.fields([
-        { name: 'eventLogo', maxCount: 1 },
+        // { name: 'eventLogo', maxCount: 1 },
         { name: 'eventBackground', maxCount: 1 },
         { name: 'organizerLogo', maxCount: 1 },
         { name: 'ticketImages', maxCount: 10 },

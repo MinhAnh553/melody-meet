@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import api from '../../util/api';
-import TimeText from '../components/providers/TimeText';
+import api from '../../../util/api';
+import TimeText from '../../components/providers/TimeText';
 import DOMPurify from 'dompurify';
+import TicketModal from './TicketModal';
 
 const EventDetail = () => {
     const { eventId } = useParams();
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showModal, setShowModal] = useState(false); // Quản lý hiển thị Modal
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -45,6 +47,11 @@ const EventDetail = () => {
         : 'Miễn phí';
 
     const sanitizedDescription = DOMPurify.sanitize(event.description);
+
+    // Hàm mở modal mua vé
+    const handleBuyNow = () => {
+        setShowModal(true);
+    };
     return (
         <>
             {/* Phần banner (đã có sẵn) */}
@@ -101,7 +108,10 @@ const EventDetail = () => {
                                 {lowestPrice}
                             </p>
 
-                            <button className="btn btn-success btn-lg mt-2">
+                            <button
+                                className="btn btn-success btn-lg mt-2"
+                                onClick={handleBuyNow}
+                            >
                                 Mua vé ngay
                             </button>
                         </div>
@@ -173,6 +183,13 @@ const EventDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal mua vé */}
+            <TicketModal
+                show={showModal}
+                onHide={() => setShowModal(false)}
+                event={event}
+            />
         </>
     );
 };
