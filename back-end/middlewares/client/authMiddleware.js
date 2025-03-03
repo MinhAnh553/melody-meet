@@ -13,8 +13,12 @@ const isAuthorized = (req, res, next) => {
             req.user = {
                 id: decoded.id,
                 email: decoded.email,
+                name: decoded.name,
+                phone: decoded.phone,
+                address: decoded.address,
                 role: decoded.role,
             };
+
             next();
         } catch (error) {
             return res.status(401).json({

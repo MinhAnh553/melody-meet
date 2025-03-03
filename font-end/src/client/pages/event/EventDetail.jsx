@@ -3,13 +3,12 @@ import { useParams } from 'react-router-dom';
 import api from '../../../util/api';
 import TimeText from '../../components/providers/TimeText';
 import DOMPurify from 'dompurify';
-import TicketModal from './TicketModal';
+import TicketModal from '../payment/TicketModal';
 
 const EventDetail = () => {
     const { eventId } = useParams();
     const [event, setEvent] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [showModal, setShowModal] = useState(false); // Quản lý hiển thị Modal
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -20,16 +19,12 @@ const EventDetail = () => {
                 }
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu sự kiện:', error);
-            } finally {
-                setLoading(false);
             }
         };
         fetchEvent();
     }, [eventId]);
 
-    if (loading) return <div className="container py-5">Đang tải...</div>;
-    if (!event)
-        return <div className="container py-5">Không tìm thấy sự kiện!</div>;
+    if (!event) return;
 
     // Sắp xếp vé từ thấp đến cao
     const sortedTickets = [...event.ticketTypes].sort(
@@ -59,7 +54,7 @@ const EventDetail = () => {
                 className="container-fluid py-4"
                 style={{
                     backgroundColor: '#121212',
-                    margin: '80px 0',
+                    margin: '80px 0 0',
                     borderRadius: '20px',
                 }}
             >
@@ -67,13 +62,19 @@ const EventDetail = () => {
                     <div className="row g-4 align-items-center">
                         {/* Cột trái */}
                         <div className="col-md-5 text-white">
-                            <h1 className="fw-bold mb-3">{event.name}</h1>
+                            <h1
+                                className="fw-bold mb-3"
+                                style={{ color: '#bdbdbd', fontSize: '1.5rem' }}
+                            >
+                                {event.name}
+                            </h1>
 
                             <p
                                 className="mb-2"
-                                style={{ color: '#bdbdbd', fontSize: '1.1rem' }}
+                                style={{ color: '#bdbdbd', fontSize: '1rem' }}
                             >
                                 <i className="bi bi-clock"></i>
+                                {'  '}
                                 <span style={{ color: 'rgb(45, 194, 117)' }}>
                                     <TimeText event={event} />
                                 </span>
@@ -83,7 +84,8 @@ const EventDetail = () => {
                                 className="mb-5"
                                 style={{ color: '#bdbdbd', fontSize: '1rem' }}
                             >
-                                <i className="bi bi-geo-alt-fill"></i>{' '}
+                                <i className="bi bi-geo-alt-fill"></i>
+                                {'   '}
                                 <span style={{ color: 'rgb(45, 194, 117)' }}>
                                     {event.location.venueName}
                                 </span>

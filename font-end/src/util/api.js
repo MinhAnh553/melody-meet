@@ -45,9 +45,14 @@ const getEventById = (id) => {
     return axios.get(URL_API);
 };
 
-const getEvents = (data) => {
+const getEvents = () => {
     const URL_API = `${API_URL}/event`;
     return axios.get(URL_API);
+};
+
+const updateUserInfo = (data) => {
+    const URL_API = `${API_URL}/user/update`;
+    return axios.patch(URL_API, data);
 };
 
 export default {
@@ -58,4 +63,5 @@ export default {
     createEvent,
     getEventById,
     getEvents,
+    updateUserInfo,
 };

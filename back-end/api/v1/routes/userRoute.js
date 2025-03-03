@@ -15,4 +15,9 @@ Router.route('/account').get(
     userController.getAccount,
 );
 
+Router.route('/update').patch(
+    authMiddleware.isAuthorized,
+    userController.updateInfoAccount,
+);
+
 export const userRoute = Router;

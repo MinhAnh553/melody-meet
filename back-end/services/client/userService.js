@@ -112,6 +112,7 @@ const login = async (email, password) => {
         });
 
         if (user) {
+            console.log(user);
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return {
@@ -126,6 +127,9 @@ const login = async (email, password) => {
                 const payload = {
                     id: user._id,
                     email: user.email,
+                    name: user.name,
+                    phone: user.phone,
+                    address: user.address,
                     role: user.role,
                 };
 
@@ -139,6 +143,9 @@ const login = async (email, password) => {
                     access_token,
                     user: {
                         email: user.email,
+                        name: user.name,
+                        phone: user.phone,
+                        address: user.address,
                         role: user.role,
                     },
                 };
@@ -157,8 +164,48 @@ const login = async (email, password) => {
     }
 };
 
+const getUserById = async (id) => {
+    const user = await userModel
+        .findOne({
+            _id: id,
+        })
+        .select('-password');
+
+    return user;
+};
+
+const updateById = async (id, data) => {
+    try {
+        console.log(id);
+        console.log(data);
+        const result = await userModel.updateOne(
+            { _id: id },
+            {
+                $set: {
+                    address: {
+                        ...data,
+                    },
+                },
+            },
+        );
+
+        return {
+            success: true,
+            message: 'Cập nhật thông tin thành công!',
+        };
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
+        };
+    }
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
     login,
+    getUserById,
+    updateById,
 };

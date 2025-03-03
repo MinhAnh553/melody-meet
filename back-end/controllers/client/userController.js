@@ -48,12 +48,34 @@ const loginUser = async (req, res) => {
     }
 };
 
-// [POST] /user/account
+// [GET] /user/account
 const getAccount = async (req, res) => {
     try {
+        const id = req.user.id;
+        const result = await userService.getUserById(id);
+
         res.status(200).json({
             success: true,
-            user: req.user,
+            user: result,
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
+// [PATCH] /user/update
+const updateInfoAccount = async (req, res) => {
+    try {
+        const id = req.user.id;
+        const data = req.body;
+        const result = await userService.updateById(id, data);
+
+        res.status(200).json({
+            success: true,
+            message: result.message,
         });
     } catch (error) {
         res.status(400).json({
@@ -68,4 +90,5 @@ export default {
     verifyOTPAndRegister,
     loginUser,
     getAccount,
+    updateInfoAccount,
 };

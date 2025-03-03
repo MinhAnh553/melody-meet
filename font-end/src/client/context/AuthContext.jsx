@@ -17,8 +17,11 @@ export const AuthProvider = ({ children }) => {
                     setAuth({
                         isAuthenticated: true,
                         user: {
+                            name: res.user.name,
+                            phone: res.user.phone,
                             email: res.user.email,
                             role: res.user.role,
+                            address: res.user.address,
                         },
                     });
                 } else {
@@ -36,7 +39,7 @@ export const AuthProvider = ({ children }) => {
             } finally {
                 setTimeout(() => {
                     setLoading(false);
-                }, 1000);
+                }, 300);
             }
         };
 
@@ -53,7 +56,10 @@ export const AuthProvider = ({ children }) => {
                 setAuth({
                     isAuthenticated: true,
                     user: {
+                        name: res.user.name,
+                        phone: res.user.phone,
                         email: res.user.email,
+                        address: res.user.address,
                         role: res.user.role,
                     },
                 });
