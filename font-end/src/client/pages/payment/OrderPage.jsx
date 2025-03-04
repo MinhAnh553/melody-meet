@@ -108,24 +108,31 @@ function OrderPage() {
     };
 
     const handleChoosePayOS = async () => {
-        // try {
-        //     const res = await api.selectPayment(orderId, 'payos');
-        //     if (res.success) {
-        //         // Redirect sang payUrl
-        //         window.location.href = res.payUrl;
-        //     } else if (res.reason === 'expired') {
-        //         swalCustomize.Toast.fire({
-        //             icon: 'error',
-        //             title: 'Đơn hàng đã hết hạn!',
-        //         });
-        //         navigate(`/event/${order?.eventId || ''}`);
-        //     } else {
-        //         setError(res.message || 'Chọn thanh toán thất bại!');
-        //     }
-        // } catch (err) {
-        //     console.error(err);
-        //     setError(err.message);
-        // }
+        try {
+            const res = await api.selectPayment(orderId, 'payos');
+            if (res.success) {
+                // Redirect sang payUrl
+                window.location.href = res.payUrl;
+            } else if (res.reason === 'expired') {
+                swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: 'Đơn hàng đã hết hạn!',
+                });
+                navigate(`/event/${order?.eventId || ''}`);
+            } else {
+                swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: res.message || 'Chọn thanh toán thất bại!',
+                });
+                navigate(`/event/${order?.eventId || ''}`);
+            }
+        } catch (err) {
+            console.error(err);
+            swalCustomize.Toast.fire({
+                icon: 'error',
+                title: err.message || 'Server Error!',
+            });
+        }
     };
 
     if (loading) {

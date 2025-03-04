@@ -70,6 +70,21 @@ const getOrder = (id) => {
     return axios.get(URL_API);
 };
 
+const selectPayment = (id, method) => {
+    const URL_API = `${API_URL}/order/${id}/select-payment?method=${method}`;
+    return axios.post(URL_API);
+};
+
+const checkOrder = (data) => {
+    const URL_API = `${API_URL}/order/check-order`;
+    return axios.post(URL_API, data);
+};
+
+const getOrderByOrderId = (orderId) => {
+    const URL_API = `${API_URL}/order/success/${orderId}`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -82,4 +97,7 @@ export default {
     createOrder,
     updateOrder,
     getOrder,
+    selectPayment,
+    checkOrder,
+    getOrderByOrderId,
 };

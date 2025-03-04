@@ -1,63 +1,127 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import QRCode from 'react-qr-code';
 import api from '../../../util/api';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function PaymentSuccess() {
     const [searchParams] = useSearchParams();
-    const [order, setOrder] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-    // Giả sử cổng thanh toán redirect về: /payment-success?orderId=xxx
-    const orderId = searchParams.get('orderId');
+    const orderCode = searchParams.get('orderCode'); // ?orderCode=xxx
+    const [order, setOrder] = useState(null);
 
     useEffect(() => {
         const fetchOrder = async () => {
             try {
-                if (!orderId) return;
-                const res = await api.getOrder(orderId);
+                if (!orderCode) return;
+                // 1. Gọi API checkOrder => xác nhận
+                await api.checkOrder({ orderCode });
+
+                // 2. Lấy chi tiết đơn hàng
+                const res = await api.getOrderByOrderId(orderCode);
                 if (res.success) {
                     setOrder(res.order);
                 }
             } catch (err) {
                 console.error(err);
-            } finally {
-                setLoading(false);
             }
         };
         fetchOrder();
-    }, [orderId]);
-
-    if (!orderId) {
-        return <div className="container py-5">Thiếu orderId!</div>;
-    }
-
-    if (loading) {
-        return <div className="container py-5">Đang tải...</div>;
-    }
+    }, [orderCode]);
 
     if (!order) {
-        return <div className="container py-5">Không tìm thấy đơn hàng!</div>;
+        return;
     }
 
+    // Tính tổng hiển thị
+    const total = order.totalPrice.toLocaleString('vi-VN') + 'đ';
+
+    // Tạo table hiển thị chi tiết vé
+    const renderTickets = () => {
+        if (!order.items || order.items.length === 0) {
+            return <p>Không có vé nào</p>;
+        }
+        return (
+            <table className="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Loại vé</th>
+                        <th className="text-center">Số lượng</th>
+                        <th className="text-end">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {order.items.map((item, i) => {
+                        const sub = item.price * item.quantity;
+                        return (
+                            <tr key={i}>
+                                <td>{item.name}</td>
+                                <td className="text-center">{item.quantity}</td>
+                                <td className="text-end">
+                                    {item.price === 0
+                                        ? 'Miễn phí'
+                                        : sub.toLocaleString('vi-VN') + 'đ'}
+                                </td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        );
+    };
+
+    // Tạo mã QR => Sử dụng orderCode (hoặc order._id)
+    // Cán bộ soát vé có thể quét QR => tra cứu
+    const qrValue = `EVENT_TICKET|${orderCode}|${order._id}`;
+
     return (
-        <div className="container py-5">
-            <h1>Thanh toán thành công!</h1>
-            <p>Mã đơn hàng: {order._id}</p>
-            <p>Trạng thái: {order.status}</p>
-            <p>Tổng tiền: {order.totalPrice.toLocaleString('vi-VN')}đ</p>
-            <h3>Chi tiết vé:</h3>
-            <ul>
-                {order.items.map((item, i) => (
-                    <li key={i}>
-                        {item.name} x {item.quantity} ={' '}
-                        {item.price === 0
-                            ? 'Miễn phí'
-                            : (item.price * item.quantity).toLocaleString(
-                                  'vi-VN',
-                              ) + 'đ'}
-                    </li>
-                ))}
-            </ul>
+        <div className="bg-dark text-white min-vh-100 d-flex flex-column">
+            <div className="container py-5 flex-grow-1 d-flex flex-column justify-content-center">
+                <div className="card mx-auto" style={{ maxWidth: '600px' }}>
+                    <div className="card-body text-center">
+                        {/* Biểu tượng check */}
+                        <i className="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+                        <h2 className="mb-4">Thanh toán thành công!</h2>
+
+                        <p>
+                            Mã đơn hàng:{' '}
+                            <span className="fw-bold">{order._id}</span>
+                        </p>
+                        <p>
+                            Trạng thái:{' '}
+                            <span className="fw-bold">{order.status}</span>
+                        </p>
+                        <p>
+                            Tổng tiền: <span className="fw-bold">{total}</span>
+                        </p>
+                        <hr />
+
+                        <h5 className="mb-3">Chi tiết vé:</h5>
+                        {renderTickets()}
+
+                        <hr />
+                        <h5 className="mb-3">Mã QR</h5>
+                        <div className="d-flex justify-content-center mb-4">
+                            <QRCode
+                                value={qrValue}
+                                size={150}
+                                bgColor="#ffffff"
+                                fgColor="#000000"
+                                level="H"
+                            />
+                        </div>
+                        <p>Quét mã QR để kiểm tra vé nhanh chóng!</p>
+
+                        <button
+                            className="btn btn-light mt-3"
+                            onClick={() => navigate('/')}
+                        >
+                            Về trang chủ
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

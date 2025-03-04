@@ -1,18 +1,10 @@
-import dotenv from 'dotenv';
-
 import orderModel from '../../models/orderModel.js';
-import PayOS from '@payos/node';
-dotenv.config();
-
-const payOS = new PayOS(
-    process.env.PAYOS_CLIENT_ID,
-    process.env.PAYOS_API_KEY,
-    process.env.PAYOS_CHECKSUM_KEY,
-);
 
 const createOrder = async (userId, eventId, items, totalPrice) => {
     try {
-        const orderId = Number(await orderModel.countDocuments()) + 1;
+        const orderId = `${
+            Number(await orderModel.countDocuments()) + 1
+        }${Number(String(Date.now()).slice(-6))}`;
         const expiredAt = new Date(Date.now() + 15 * 60 * 1000);
 
         const newOrder = new orderModel({
@@ -35,31 +27,6 @@ const createOrder = async (userId, eventId, items, totalPrice) => {
         console.error('create order error:', error);
         return { success: false, message: error.message };
     }
-    // const YOUR_DOMAIN = process.env.FONTEND_URL;
-    // const body = {
-    //     orderCode: orderId,
-    //     buyerName: userInfo.name,
-    //     buyerEmail: userInfo.email,
-    //     buyerPhone: userInfo.phone,
-    //     amount: totalPrice,
-    //     items,
-    //     description: 'Melody Meet',
-    //     expiredAt: Math.floor(Date.now() / 1000) + 900,
-    //     returnUrl: `${YOUR_DOMAIN}/order/payment-success`,
-    //     cancelUrl: `${YOUR_DOMAIN}/order/canceled`,
-    // };
-
-    // try {
-    //     const paymentLinkResponse = await payOS.createPaymentLink(body);
-    //     return {
-    //         success: true,
-    //         payUrl: paymentLinkResponse.checkoutUrl,
-    //         orderId: newOrder._id,
-    //     };
-    // } catch (error) {
-    //     console.error(error);
-    //     return { success: false, message: error.message };
-    // }
 };
 
 const getOrderById = async (id) => {
@@ -89,9 +56,16 @@ const getOrderById = async (id) => {
             };
         }
 
+        if (order.status !== 'PENDING') {
+            return {
+                success: false,
+                message: 'Đơn hàng không ở trạng thái CHỜ XỬ LÝ',
+            };
+        }
+
         return { success: true, order };
     } catch (error) {
-        console.error('get order error:', error);
+        // console.error('get order error:', error);
         return { success: false, message: error.message };
     }
 };
@@ -114,8 +88,28 @@ const updateOrderById = async (id, data) => {
     }
 };
 
+const getOrderByOrderId = async (id) => {
+    try {
+        const order = await orderModel.findOne({
+            orderId: id,
+        });
+        if (!order) {
+            return {
+                success: false,
+                message: 'Đơn hàng không tồn tại!',
+            };
+        }
+
+        return { success: true, order };
+    } catch (error) {
+        // console.error('get order error:', error);
+        return { success: false, message: error.message };
+    }
+};
+
 export default {
     createOrder,
     getOrderById,
     updateOrderById,
+    getOrderByOrderId,
 };
