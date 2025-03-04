@@ -7,6 +7,8 @@ import EventManagementLayout from '../client/layout/EventManagementLayout.jsx';
 import ProtectedRoute from '../client/components/ProtectedRoute';
 import EventCreateWizard from '../client/pages/event/EventCreateWizard.jsx';
 import EventDetail from '../client/pages/event/EventDetail.jsx';
+import PaymentSuccess from '../client/pages/payment/PaymentSuccess.jsx';
+import OrderPage from '../client/pages/payment/OrderPage.jsx';
 
 const router = createBrowserRouter([
     {
@@ -41,6 +43,19 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <EventDetail />,
+            },
+        ],
+    },
+    {
+        path: '/order',
+        children: [
+            {
+                path: 'payment-success',
+                element: <PaymentSuccess />,
+            },
+            {
+                path: ':orderId',
+                element: <OrderPage />,
             },
         ],
     },

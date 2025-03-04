@@ -55,6 +55,21 @@ const updateUserInfo = (data) => {
     return axios.patch(URL_API, data);
 };
 
+const createOrder = (data) => {
+    const URL_API = `${API_URL}/order/create`;
+    return axios.post(URL_API, data);
+};
+
+const updateOrder = (data) => {
+    const URL_API = `${API_URL}/order/update`;
+    return axios.patch(URL_API, data);
+};
+
+const getOrder = (id) => {
+    const URL_API = `${API_URL}/order/${id}`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -64,4 +79,7 @@ export default {
     getEventById,
     getEvents,
     updateUserInfo,
+    createOrder,
+    updateOrder,
+    getOrder,
 };

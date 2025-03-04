@@ -48,8 +48,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
                     },
                 }));
 
-                console.log(auth);
-                onConfirm({ name, phone, email });
+                onConfirm();
             } else {
                 return swalCustomize.Toast.fire({
                     icon: 'error',

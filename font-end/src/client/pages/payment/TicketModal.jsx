@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import CheckoutInfoModal from './CheckoutInfoModal';
+import api from '../../../util/api';
+import swalCustomize from '../../../util/swalCustomize';
 
 const TicketModal = ({ show, onHide, event }) => {
     const [quantities, setQuantities] = useState(() => {
@@ -14,8 +16,15 @@ const TicketModal = ({ show, onHide, event }) => {
     if (!event) return null;
 
     const handleQuantityChange = (index, newValue) => {
-        const max = event.ticketTypes[index].maxPerUser;
-        const validValue = Math.max(0, Math.min(newValue, max));
+        const ticket = event.ticketTypes[index];
+        const { maxPerUser, totalQuantity } = ticket;
+
+        // Giới hạn: 0 <= newValue <= min(maxPerUser, totalQuantity)
+        const validValue = Math.max(
+            0,
+            Math.min(newValue, maxPerUser, totalQuantity),
+        );
+
         setQuantities((prev) => {
             const newArr = [...prev];
             newArr[index] = validValue;
@@ -45,20 +54,6 @@ const TicketModal = ({ show, onHide, event }) => {
         displayPrice = hasFreeTicketSelected ? 'Miễn phí' : '0đ';
     }
 
-    // const handleCheckout = () => {
-    //     // Tạo payload
-    //     const orderDetails = event.ticketTypes.map((ticket, i) => ({
-    //         ticketId: ticket._id,
-    //         name: ticket.name,
-    //         quantity: quantities[i],
-    //         price: ticket.price,
-    //     }));
-    //     console.log('Order => ', orderDetails, 'Tổng tiền:', totalPrice);
-
-    //     // Gọi API hoặc navigate
-    //     onHide();
-    // };
-
     // Mở modal xác nhận thông tin
     const handleCheckout = () => {
         onHide();
@@ -66,20 +61,37 @@ const TicketModal = ({ show, onHide, event }) => {
     };
 
     // Khi user xác nhận info => proceed
-    const handleInfoConfirmed = (userInfo) => {
-        // userInfo = { name, phone, email }
-        console.log('Thông tin nhận vé:', userInfo);
-        console.log('Tổng tiền:', totalPrice);
+    const handleInfoConfirmed = async () => {
+        try {
+            const items = event.ticketTypes
+                .map((ticket, i) => ({
+                    ticketId: ticket._id,
+                    name: ticket.name,
+                    price: ticket.price,
+                    quantity: quantities[i],
+                }))
+                .filter((item) => item.quantity >= 1); // Lọc những ticket có quantity >= 1
 
-        // Ở đây => gọi PayOS
-        // Hoặc redirect sang trang /checkout
-        // Hoặc hiển thị link => ...
-        alert(
-            `User info updated!\nName: ${userInfo.name}\nPhone: ${userInfo.phone}\nEmail: ${userInfo.email}\n=> Tiếp tục PayOS...`,
-        );
-
-        // Đóng modal info
-        setShowInfoModal(false);
+            const res = await api.createOrder({
+                eventId: event._id,
+                items,
+                totalPrice,
+            });
+            if (res.success) {
+                window.location.href = `/order/${res.orderId}`;
+            } else {
+                // console.log('Thất bại');
+                return swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: res.message || 'Tạo đơn hàng thất bại!',
+                });
+            }
+        } catch (error) {
+            return swalCustomize.Toast.fire({
+                icon: 'error',
+                title: 'Server Error!',
+            });
+        }
     };
 
     // Hàm tăng/giảm

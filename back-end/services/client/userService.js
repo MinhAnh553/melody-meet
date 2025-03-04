@@ -176,8 +176,6 @@ const getUserById = async (id) => {
 
 const updateById = async (id, data) => {
     try {
-        console.log(id);
-        console.log(data);
         const result = await userModel.updateOne(
             { _id: id },
             {
