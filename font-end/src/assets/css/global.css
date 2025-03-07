@@ -593,3 +593,9 @@ header .form-control {
     outline: none;
     border-color: #666;
 }
+
+.nav-ticket-active,
+.nav-ticket-active:hover {
+    color: #2c44a7;
+    background: azure;
+}

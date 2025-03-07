@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import ticketTypeModel from './ticketTypeModel.js';
 
 const eventSchema = new mongoose.Schema(
     {
@@ -22,7 +21,15 @@ const eventSchema = new mongoose.Schema(
         },
         startTime: Date,
         endTime: Date,
-        ticketTypes: [ticketTypeModel],
+        ticketTypes: [
+            {
+                name: { type: String, required: true }, // Tên vé
+                price: { type: Number, required: true }, // Giá vé; nếu miễn phí, đặt là 0
+                totalQuantity: { type: Number, required: true }, // Tổng số lượng vé
+                maxPerUser: { type: Number, required: true }, // Số vé tối đa mà 1 người có thể mua
+                description: { type: String }, // Thông tin vé
+            },
+        ],
         createdAt: {
             type: Date,
             default: Date.now,

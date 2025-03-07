@@ -22,18 +22,35 @@ instance.interceptors.request.use(
 );
 
 // Add a response interceptor
+// instance.interceptors.response.use(
+//     function (response) {
+//         if (response && response.data) {
+//             return response.data;
+//         }
+//         return response;
+//     },
+//     function (error) {
+//         // Nếu có phản hồi từ server
+//         if (error?.response) {
+//             return Promise.reject(error);
+//         }
+//         return Promise.reject(new Error('Lỗi không xác định'));
+//     },
+// );
+
 instance.interceptors.response.use(
     function (response) {
-        // Any status code that lie within the range of 2xx cause this function to trigger
-        // Do something with response data
-        if (response && response.data) {
-            return response.data;
-        }
-        return response;
+        return response?.data ?? response;
     },
     function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
+        if (error.response && error.response.status === 401) {
+            const requestUrl = error.config.url;
+
+            if (!requestUrl.includes('/api/v1/user/account')) {
+                window.location.href = '/';
+            }
+        }
+
         if (error?.response?.data) return error?.response?.data;
         return Promise.reject(error);
     },

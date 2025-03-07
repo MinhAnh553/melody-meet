@@ -11,6 +11,7 @@ function OrderPage() {
     const navigate = useNavigate();
 
     const [order, setOrder] = useState(null);
+    const [tickets, setTickets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [timeLeft, setTimeLeft] = useState(0); // Thời gian còn lại (ms)
 
@@ -46,6 +47,22 @@ function OrderPage() {
         };
         fetchOrder();
     }, [orderId, navigate]);
+
+    // Lấy danh sách vé từ server
+    useEffect(() => {
+        const fetchTickets = async () => {
+            try {
+                const res = await api.getOrderTickets(orderId);
+                if (res.success) {
+                    setTickets(res.tickets);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchTickets();
+    }, [orderId]);
 
     // Đồng hồ đếm ngược
     useEffect(() => {
@@ -97,9 +114,8 @@ function OrderPage() {
                     const data = {
                         status: 'CANCELED',
                     };
-                    await api.updateOrder({
+                    await api.cancelOrder({
                         orderId,
-                        data,
                     });
 
                     navigate(`/event/${order?.eventId || ''}`);
@@ -141,25 +157,26 @@ function OrderPage() {
 
     // Tính chi tiết vé
     const renderTicketTable = () => {
-        if (!order.items || order.items.length === 0) {
+        if (tickets.length === 0) {
             return <p>Không có vé nào</p>;
         }
+
         return (
-            <table className="table table-hover ">
+            <table className="table table-hover">
                 <thead>
                     <tr>
-                        <th>Loại vé</th>
+                        <th className="text-start">Loại vé</th>
                         <th className="text-center">Số lượng</th>
                         <th className="text-end">Đơn giá</th>
                         <th className="text-end">Thành tiền</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {order.items.map((item, i) => {
+                    {tickets.map((item, i) => {
                         const subTotal = item.price * item.quantity;
                         return (
                             <tr key={i}>
-                                <td>{item.name}</td>
+                                <td className="text-start">{item.name}</td>
                                 <td className="text-center">{item.quantity}</td>
                                 <td className="text-end">
                                     {item.price === 0
@@ -204,7 +221,7 @@ function OrderPage() {
                 >
                     <div className="card-body">
                         <h2 className="card-title text-center mb-4">
-                            Đơn Hàng #{order._id}
+                            Đơn Hàng #{order.orderId}
                         </h2>
 
                         <div className="mb-3">

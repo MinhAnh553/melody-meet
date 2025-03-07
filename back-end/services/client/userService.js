@@ -112,7 +112,6 @@ const login = async (email, password) => {
         });
 
         if (user) {
-            console.log(user);
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return {
@@ -142,6 +141,7 @@ const login = async (email, password) => {
                     message: 'Đăng nhập thành công!',
                     access_token,
                     user: {
+                        id: user._id,
                         email: user.email,
                         name: user.name,
                         phone: user.phone,

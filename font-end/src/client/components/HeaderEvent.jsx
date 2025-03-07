@@ -199,13 +199,13 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
                             </div>
                             <ul className="infoAccountEvent dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1">
                                 <li>
-                                    <a
+                                    <Link
                                         className="dropdown-item py-2 d-flex align-items-center"
-                                        href="#"
+                                        to="/my-tickets"
                                     >
                                         <i className="bi bi-ticket-perforated me-2 text-primary fs-5" />
                                         <span>Vé Đã Mua</span>
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li>
                                     <a

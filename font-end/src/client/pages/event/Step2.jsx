@@ -17,8 +17,8 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
         // startTime: '',
         // endTime: '',
         description: '',
-        image: null,
-        imagePreview: '',
+        // image: null,
+        // imagePreview: '',
     });
     // Nếu không null thì đang ở chế độ chỉnh sửa (giá trị là chỉ số của vé cần chỉnh sửa)
     const [editingTicketIndex, setEditingTicketIndex] = useState(null);
@@ -134,13 +134,13 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
             return false;
         }
         // Kiểm tra hình ảnh vé (nếu bắt buộc)
-        if (!ticket.image) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Vui lòng tải lên hình ảnh vé',
-            });
-            return false;
-        }
+        // if (!ticket.image) {
+        //     swalCustomize.Toast.fire({
+        //         icon: 'error',
+        //         title: 'Vui lòng tải lên hình ảnh vé',
+        //     });
+        //     return false;
+        // }
         return true;
     };
 
@@ -221,8 +221,8 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
             // startTime: '',
             // endTime: '',
             description: '',
-            image: null,
-            imagePreview: '',
+            // image: null,
+            // imagePreview: '',
         });
         setShowTicketModal(false);
     };
@@ -398,11 +398,11 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                 price: '',
                                 totalQuantity: '',
                                 maxPerUser: '',
-                                startTime: '',
-                                endTime: '',
+                                // startTime: '',
+                                // endTime: '',
                                 description: '',
-                                image: null,
-                                imagePreview: '',
+                                // image: null,
+                                // imagePreview: '',
                             });
                             setShowTicketModal(true);
                         }}
@@ -570,7 +570,7 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                     />
                                 </Form.Group>
                             </div>
-                            <div
+                            {/* <div
                                 className="col-md-4 text-center"
                                 style={{ minHeight: '100px !important' }}
                             >
@@ -588,7 +588,7 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                         }))
                                     }
                                 />
-                            </div>
+                            </div> */}
                         </div>
                     </Form>
                 </Modal.Body>

@@ -8,7 +8,7 @@ const payOS = new PayOS(
     process.env.PAYOS_CHECKSUM_KEY,
 );
 
-const createPayOSOrder = async (userInfo, order) => {
+const createPayOSOrder = async (userInfo, order, tickets) => {
     const YOUR_DOMAIN = process.env.FONTEND_URL;
 
     const body = {
@@ -17,7 +17,7 @@ const createPayOSOrder = async (userInfo, order) => {
         buyerEmail: userInfo.email,
         buyerPhone: userInfo.phone,
         amount: order.totalPrice,
-        items: order.items,
+        items: tickets,
         description: 'Melody Meet',
         expiredAt: Math.floor(new Date(order.expiredAt).getTime() / 1000),
         returnUrl: `${YOUR_DOMAIN}/order/payment-success`,

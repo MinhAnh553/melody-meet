@@ -9,6 +9,7 @@ import EventCreateWizard from '../client/pages/event/EventCreateWizard.jsx';
 import EventDetail from '../client/pages/event/EventDetail.jsx';
 import PaymentSuccess from '../client/pages/payment/PaymentSuccess.jsx';
 import OrderPage from '../client/pages/payment/OrderPage.jsx';
+import PurchasedTickets from '../client/pages/PurchasedTickets.jsx';
 
 const router = createBrowserRouter([
     {
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
             {
                 index: true,
                 element: <HomePage />,
+            },
+            {
+                path: 'my-tickets',
+                element: <PurchasedTickets />,
             },
         ],
     },

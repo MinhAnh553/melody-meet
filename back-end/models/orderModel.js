@@ -5,14 +5,6 @@ const orderSchema = new mongoose.Schema(
         userId: mongoose.Schema.Types.ObjectId,
         eventId: mongoose.Schema.Types.ObjectId,
         orderId: Number,
-        items: [
-            {
-                ticketId: String,
-                name: String,
-                quantity: Number,
-                price: Number,
-            },
-        ],
         totalPrice: { type: Number },
         status: { type: String, default: 'PENDING' }, // 'PENDING', 'PAID', 'FAILED'
         expiredAt: Date,

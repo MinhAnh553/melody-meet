@@ -67,8 +67,8 @@ const TicketModal = ({ show, onHide, event }) => {
                 .map((ticket, i) => ({
                     ticketId: ticket._id,
                     name: ticket.name,
-                    price: ticket.price,
                     quantity: quantities[i],
+                    price: ticket.price,
                 }))
                 .filter((item) => item.quantity >= 1); // Lọc những ticket có quantity >= 1
 

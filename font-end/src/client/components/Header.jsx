@@ -50,13 +50,13 @@ const Header = () => {
                                 </Link>
                             </li>
                             <li className="nav-item">
-                                <a
+                                <Link
                                     className="nav-link custom-nav-link d-flex align-items-center"
-                                    href="#"
+                                    to="/my-tickets"
                                 >
                                     <i className="bi bi-ticket-perforated me-2" />
                                     Vé đã mua
-                                </a>
+                                </Link>
                             </li>
                             <li>
                                 {auth?.isAuthenticated ? (
@@ -85,13 +85,13 @@ const Header = () => {
                                         </div>
                                         <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1">
                                             <li>
-                                                <a
+                                                <Link
                                                     className="dropdown-item py-2 d-flex align-items-center"
-                                                    href="#"
+                                                    to="/my-tickets"
                                                 >
                                                     <i className="bi bi-ticket-perforated me-2 text-primary fs-5" />
                                                     <span>Vé Đã Mua</span>
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li>
                                                 <a

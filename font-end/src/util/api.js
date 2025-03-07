@@ -60,9 +60,9 @@ const createOrder = (data) => {
     return axios.post(URL_API, data);
 };
 
-const updateOrder = (data) => {
-    const URL_API = `${API_URL}/order/update`;
-    return axios.patch(URL_API, data);
+const cancelOrder = (id) => {
+    const URL_API = `${API_URL}/order/cancel`;
+    return axios.post(URL_API, id);
 };
 
 const getOrder = (id) => {
@@ -85,6 +85,16 @@ const getOrderByOrderId = (orderId) => {
     return axios.get(URL_API);
 };
 
+const getMyOrders = (page = 1, limit = 5) => {
+    const URL_API = `${API_URL}/order/my?page=${page}&limit=${limit}`;
+    return axios.get(URL_API);
+};
+
+const getOrderTickets = (id) => {
+    const URL_API = `${API_URL}/order/ticket/${id}`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -95,9 +105,11 @@ export default {
     getEvents,
     updateUserInfo,
     createOrder,
-    updateOrder,
+    cancelOrder,
     getOrder,
     selectPayment,
     checkOrder,
     getOrderByOrderId,
+    getMyOrders,
+    getOrderTickets,
 };

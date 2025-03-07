@@ -8,14 +8,18 @@ Router.use(authMiddleware.isAuthorized);
 
 Router.route('/create').post(orderController.createOrder);
 
-Router.route('/update').patch(orderController.updateOrder);
-
-Router.route('/:orderId').get(orderController.getOrder);
+Router.route('/cancel').post(orderController.cancelOrder);
 
 Router.route('/:orderId/select-payment').post(orderController.selectPayment);
 
 Router.route('/check-order').post(orderController.checkOrder);
 
 Router.route('/success/:orderId').get(orderController.getOrderSuccess);
+
+Router.route('/ticket/:orderId').get(orderController.getOrderTickets);
+
+Router.route('/my').get(orderController.getMyOrders);
+
+Router.route('/:orderId').get(orderController.getOrder);
 
 export const orderRoute = Router;

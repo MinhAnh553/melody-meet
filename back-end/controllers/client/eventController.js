@@ -37,7 +37,6 @@ const createEvent = async (req, res) => {
             ticketTypes: ticketTypes,
         };
         const newEvent = await eventService.createEvent(eventData);
-        console.log('MinhAnh553: createEvent -> newEvent', newEvent);
 
         res.status(200).json({
             success: true,
