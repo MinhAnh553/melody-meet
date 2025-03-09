@@ -125,22 +125,7 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
         //     });
         //     return false;
         // }
-        // Kiểm tra thông tin vé
-        if (!ticket.description.trim()) {
-            swalCustomize.Toast.fire({
-                icon: 'error',
-                title: 'Vui lòng nhập thông tin vé',
-            });
-            return false;
-        }
-        // Kiểm tra hình ảnh vé (nếu bắt buộc)
-        // if (!ticket.image) {
-        //     swalCustomize.Toast.fire({
-        //         icon: 'error',
-        //         title: 'Vui lòng tải lên hình ảnh vé',
-        //     });
-        //     return false;
-        // }
+
         return true;
     };
 

@@ -5,10 +5,8 @@ import QRCode from 'react-qr-code';
 import { Link, useNavigate } from 'react-router-dom';
 import noTicket from '../../assets/images/no-ticket.png';
 import api from '../../util/api';
-import { useAuth } from '../context/AuthContext';
 
 function PurchasedTickets() {
-    const { auth } = useAuth();
     const navigate = useNavigate();
 
     // State cho danh sách đơn hàng
@@ -60,6 +58,7 @@ function PurchasedTickets() {
     // Mỗi khi page, limit thay đổi => fetchOrders
     useEffect(() => {
         fetchOrders();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [page, limit]);
 
     // Render danh sách đơn

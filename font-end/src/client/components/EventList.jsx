@@ -70,9 +70,9 @@ const EventList = () => {
                             >
                                 <i className="bi bi-tag" /> {lowestPrice}
                             </p>
-                            <button className="btn btn-primary w-100">
+                            {/* <button className="btn btn-primary w-100">
                                 Book Now
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 );
