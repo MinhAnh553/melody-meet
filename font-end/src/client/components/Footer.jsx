@@ -20,33 +20,35 @@ const Footer = () => {
                         </p>
                     </div>
                     <div className="col-lg-4">
-                        <h4>Quick Links</h4>
+                        <h4 className="text-white">Về công ty chúng tôi</h4>
                         <ul className="list-unstyled">
                             <li>
-                                <a href="#">About Us</a>
+                                <a href="#">Quy chế hoạt động</a>
                             </li>
                             <li>
-                                <a href="#">Contact</a>
+                                <a href="#">Chính sách bảo mật thông tin</a>
                             </li>
                             <li>
-                                <a href="#">Terms &amp; Conditions</a>
+                                <a href="#">
+                                    Cơ chế giải quyết tranh chấp/ khiếu nại
+                                </a>
                             </li>
                             <li>
-                                <a href="#">Privacy Policy</a>
+                                <a href="#">Chính sách bảo mật thanh toán</a>
                             </li>
                         </ul>
                     </div>
                     <div className="col-lg-4">
-                        <h4>Newsletter</h4>
+                        <h4 className="text-white">Đăng ký nhận thông tin</h4>
                         <form className="newsletter-form">
                             <div className="input-group">
                                 <input
                                     className="form-control"
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder="Email của bạn"
                                 />
                                 <button className="btn btn-primary">
-                                    Subscribe
+                                    Đăng ký
                                 </button>
                             </div>
                         </form>

@@ -279,13 +279,10 @@ function PurchasedTickets() {
                             Tất cả
                         </Button>
                         <Button variant="secondary" className="me-2 shadow-sm">
-                            Thành công
-                        </Button>
-                        <Button variant="secondary" className="me-2 shadow-sm">
-                            Đang xử lý
+                            Chưa diễn ra
                         </Button>
                         <Button variant="secondary" className="shadow-sm">
-                            Đã hủy
+                            Đã diễn ra
                         </Button>
                     </div>
 
