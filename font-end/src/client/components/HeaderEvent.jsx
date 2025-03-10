@@ -21,85 +21,89 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
     return (
         <div className="header">
             <div className="w-100 step-container gap-2">
-                {steps.map((label, index) => {
-                    const stepNumber = index + 1;
-                    return (
-                        <div
-                            key={stepNumber}
-                            className={`step ${
-                                currentStep === stepNumber ? 'active' : ''
-                            } ${
-                                allowStepNavigation || stepNumber <= currentStep
-                                    ? 'clickable'
-                                    : 'disabled'
-                            }`}
-                            onClick={
-                                allowStepNavigation || stepNumber <= currentStep
-                                    ? () => onStepClick(stepNumber)
-                                    : undefined
-                            }
+                {location.pathname === '/event/create' && (
+                    <>
+                        {steps.map((label, index) => {
+                            const stepNumber = index + 1;
+                            const isCompleted = stepNumber < currentStep;
+                            const isClickable =
+                                allowStepNavigation ||
+                                stepNumber <= currentStep;
+
+                            return (
+                                <div
+                                    key={stepNumber}
+                                    className={`step ${
+                                        currentStep === stepNumber
+                                            ? 'active'
+                                            : ''
+                                    } ${
+                                        isClickable ? 'clickable' : 'disabled'
+                                    }`}
+                                    onClick={
+                                        isClickable
+                                            ? () => onStepClick(stepNumber)
+                                            : undefined
+                                    }
+                                >
+                                    <span
+                                        style={{
+                                            display: 'flex',
+                                            width: '20px',
+                                            height: '20px',
+                                            borderRadius: '50%',
+                                            backgroundColor: isCompleted
+                                                ? '#28a745'
+                                                : '#ccc',
+                                            color: isCompleted
+                                                ? '#fff'
+                                                : '#000',
+                                            textAlign: 'center',
+                                            marginRight: '8px',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '12px',
+                                        }}
+                                    >
+                                        {isCompleted ? (
+                                            <i
+                                                className="bi bi-check"
+                                                style={{ fontSize: '12px' }}
+                                            ></i>
+                                        ) : (
+                                            stepNumber
+                                        )}
+                                    </span>
+                                    {label}
+                                </div>
+                            );
+                        })}
+                        <button
+                            className="btn"
+                            type="submit"
+                            form="eventForm"
+                            style={{
+                                backgroundColor: 'rgb(45 194 117)',
+                                color: '#fff',
+                            }}
+                            id="submitEvent"
+                            disabled={loading}
                         >
-                            {stepNumber < currentStep ? (
-                                <span
-                                    style={{
-                                        display: 'flex',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#28a745',
-                                        color: '#fff',
-                                        textAlign: 'center',
-                                        marginRight: '8px',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '12px',
-                                    }}
-                                >
-                                    <i
-                                        className="bi bi-check"
-                                        style={{ fontSize: '12px' }}
-                                    ></i>
-                                </span>
-                            ) : (
-                                <span
-                                    style={{
-                                        display: 'flex',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#ccc',
-                                        color: '#000',
-                                        textAlign: 'center',
-                                        marginRight: '8px',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        fontSize: '12px',
-                                    }}
-                                >
-                                    {stepNumber}
-                                </span>
-                            )}
-                            {label}
-                        </div>
-                    );
-                })}
-                <button
-                    className="btn"
-                    type="submit"
-                    form="eventForm"
-                    style={{
-                        backgroundColor: 'rgb(45 194 117)',
-                        color: '#fff',
-                    }}
-                    id="submitEvent"
-                    disabled={loading}
-                >
-                    {loading
-                        ? 'Đang tải...'
-                        : currentStep === 2
-                        ? 'Hoàn thành'
-                        : 'Tiếp tục'}
-                </button>
+                            {loading
+                                ? 'Đang tải...'
+                                : currentStep === steps.length
+                                ? 'Hoàn thành'
+                                : 'Tiếp tục'}
+                        </button>
+                    </>
+                )}
+
+                {location.pathname === '/event' && (
+                    <div className="text-light d-flex align-items-center">
+                        <h3 className="mb-0">Sự kiện của tôi</h3>
+                    </div>
+                )}
+
                 <ul className="navbar-nav mb-2 mb-lg-0 ms-auto gap-2 flex-row align-items-center justify-content-end">
                     {location.pathname !== '/event/create' && (
                         <li className="nav-item">
@@ -208,13 +212,13 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
                                     </Link>
                                 </li>
                                 <li>
-                                    <a
+                                    <Link
                                         className="dropdown-item py-2 d-flex align-items-center"
-                                        href="#"
+                                        to="/event"
                                     >
                                         <i className="bi bi-calendar-event me-2 text-success fs-5" />
                                         <span>Sự Kiện Của Tôi</span>
-                                    </a>
+                                    </Link>
                                 </li>
                                 <li>
                                     <a

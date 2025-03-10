@@ -94,13 +94,13 @@ const Header = () => {
                                                 </Link>
                                             </li>
                                             <li>
-                                                <a
+                                                <Link
                                                     className="dropdown-item py-2 d-flex align-items-center"
-                                                    href="#"
+                                                    to="/event"
                                                 >
                                                     <i className="bi bi-calendar-event me-2 text-success fs-5" />
                                                     <span>Sự Kiện Của Tôi</span>
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li>
                                                 <a

@@ -242,6 +242,7 @@ const getMyOrders = async (userId, page, limit) => {
                     ...order.toObject(),
                     image: event.background,
                     tickets: tickets,
+                    name: event.name,
                 };
             }),
         );

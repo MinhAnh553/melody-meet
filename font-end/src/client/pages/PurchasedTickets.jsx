@@ -96,9 +96,19 @@ function PurchasedTickets() {
                                 onClick={() => handleToggleOrder(order._id)}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <div>
-                                    <h5 className="fw-bold mb-1">
-                                        Đơn hàng #{order.orderId}
+                                <div
+                                    className="text-truncate"
+                                    style={{ maxWidth: '95%' }}
+                                >
+                                    <h5
+                                        className="fw-bold mb-1 text-truncate"
+                                        style={{
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                    >
+                                        Đơn hàng #{order.orderId} | {order.name}
                                     </h5>
                                 </div>
                                 <i
@@ -163,7 +173,7 @@ function PurchasedTickets() {
                                                 </div>
                                                 <div className="d-flex justify-content-center ms-auto">
                                                     <QRCode
-                                                        value={`EVENT_TICKET|${order.orderCode}|${order._id}`}
+                                                        value={`${order.orderCode}`}
                                                         size={100}
                                                         bgColor="#ffffff"
                                                         fgColor="#000000"

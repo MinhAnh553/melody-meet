@@ -95,6 +95,16 @@ const getOrderTickets = (id) => {
     return axios.get(URL_API);
 };
 
+const getMyEvents = (
+    page = 1,
+    limit = 5,
+    status = 'approved',
+    isFinished = false,
+) => {
+    const URL_API = `${API_URL}/event/my?page=${page}&limit=${limit}&status=${status}&isFinished=${isFinished}`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -112,4 +122,5 @@ export default {
     getOrderByOrderId,
     getMyOrders,
     getOrderTickets,
+    getMyEvents,
 };

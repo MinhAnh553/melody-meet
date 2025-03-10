@@ -599,3 +599,8 @@ header .form-control {
     color: #2c44a7;
     background: azure;
 }
+
+.nav-link.active {
+    background-color: #495057; /* Màu xám đậm */
+    border-radius: 4px;
+}

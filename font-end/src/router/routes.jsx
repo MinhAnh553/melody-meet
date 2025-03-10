@@ -16,6 +16,7 @@ import EventDetail from '../client/pages/event/EventDetail.jsx';
 import PaymentSuccess from '../client/pages/payment/PaymentSuccess.jsx';
 import OrderPage from '../client/pages/payment/OrderPage.jsx';
 import PurchasedTickets from '../client/pages/PurchasedTickets.jsx';
+import EventManagement from '../client/pages/event/EventManagement.jsx';
 
 const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -61,6 +62,20 @@ const AnimatedRoutes = () => {
                 </Route>
                 <Route path="event" element={<ProtectedRoute />}>
                     <Route element={<EventManagementLayout />}>
+                        <Route
+                            index
+                            element={
+                                <motion.div
+                                    variants={pageVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <EventManagement />
+                                </motion.div>
+                            }
+                        />
                         <Route
                             path="create"
                             element={
