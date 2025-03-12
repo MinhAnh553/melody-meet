@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Container,
-    Row,
-    Col,
-    Form,
-    Button,
-    Alert,
-    Card,
-    InputGroup,
-} from 'react-bootstrap';
+import { Container, Row, Col, Button, Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+
 import {
     BsSearch,
     BsCalendarX,
@@ -19,6 +12,7 @@ import api from '../../../util/api';
 import TimeText from '../../components/providers/TimeText';
 
 const EventManagement = () => {
+    const navigate = useNavigate();
     const [events, setEvents] = useState([]);
 
     // Phân trang
@@ -266,6 +260,11 @@ const EventManagement = () => {
                                                 style={{
                                                     border: '1px solid #555',
                                                     borderRadius: '8px',
+                                                }}
+                                                onClick={() => {
+                                                    navigate(
+                                                        `/event/${event._id}/orders`,
+                                                    );
                                                 }}
                                             >
                                                 <BsBagCheckFill />

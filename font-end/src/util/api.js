@@ -105,6 +105,11 @@ const getMyEvents = (
     return axios.get(URL_API);
 };
 
+const getOrdersByEventId = (id) => {
+    const URL_API = `${API_URL}/event/${id}/orders`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -123,4 +128,5 @@ export default {
     getMyOrders,
     getOrderTickets,
     getMyEvents,
+    getOrdersByEventId,
 };

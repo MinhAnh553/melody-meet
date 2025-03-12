@@ -1,3 +1,5 @@
+import cron from 'node-cron';
+
 import eventModel from '../../models/eventModel.js';
 import orderModel from '../../models/orderModel.js';
 import ticketModel from '../../models/ticketModel.js';
@@ -221,6 +223,7 @@ const getMyOrders = async (userId, page, limit) => {
                 userId: userId,
                 status: 'PAID',
             })
+            .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit);
 
@@ -264,6 +267,24 @@ const getMyOrders = async (userId, page, limit) => {
         return { success: false, message: error.message };
     }
 };
+
+const cancelExpiredOrders = async () => {
+    try {
+        const now = new Date();
+        const result = await orderModel.updateMany(
+            { expiredAt: { $lte: now }, status: 'PENDING' },
+            { $set: { status: 'CANCELED', updatedAt: now } },
+        );
+
+        console.log(
+            `Updated ${result.modifiedCount} expired orders to CANCELED.`,
+        );
+    } catch (error) {
+        console.error('Error updating expired orders:', error);
+    }
+};
+
+cron.schedule('*/5 * * * *', cancelExpiredOrders);
 
 export default {
     createOrder,

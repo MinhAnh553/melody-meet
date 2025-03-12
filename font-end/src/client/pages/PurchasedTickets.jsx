@@ -173,7 +173,7 @@ function PurchasedTickets() {
                                                 </div>
                                                 <div className="d-flex justify-content-center ms-auto">
                                                     <QRCode
-                                                        value={`${order.orderCode}`}
+                                                        value={`${ticket.ticketId}`}
                                                         size={100}
                                                         bgColor="#ffffff"
                                                         fgColor="#000000"

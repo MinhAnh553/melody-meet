@@ -17,6 +17,7 @@ import PaymentSuccess from '../client/pages/payment/PaymentSuccess.jsx';
 import OrderPage from '../client/pages/payment/OrderPage.jsx';
 import PurchasedTickets from '../client/pages/PurchasedTickets.jsx';
 import EventManagement from '../client/pages/event/EventManagement.jsx';
+import OrderList from '../client/pages/event/OrderList.jsx';
 
 const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -87,6 +88,20 @@ const AnimatedRoutes = () => {
                                     transition={{ duration: 0.5 }}
                                 >
                                     <EventCreateWizard />
+                                </motion.div>
+                            }
+                        />
+                        <Route
+                            path=":eventId/orders"
+                            element={
+                                <motion.div
+                                    variants={pageVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <OrderList />
                                 </motion.div>
                             }
                         />

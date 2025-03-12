@@ -1,4 +1,5 @@
 import eventModel from '../../models/eventModel.js';
+import orderModel from '../../models/orderModel.js';
 
 const createEvent = async (eventData) => {
     const event = new eventModel(eventData);
@@ -7,10 +8,12 @@ const createEvent = async (eventData) => {
 };
 
 const getEvents = async () => {
-    const events = await eventModel.find({
-        status: 'approved',
-        isFinished: false,
-    });
+    const events = await eventModel
+        .find({
+            status: 'approved',
+            isFinished: false,
+        })
+        .sort({ createdAt: -1 });
 
     return events;
 };
@@ -31,6 +34,7 @@ const getMyEvents = async (userId, page, limit, status, isFinished) => {
                 status: status,
                 isFinished: isFinished,
             })
+            .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit);
 
@@ -58,9 +62,39 @@ const getMyEvents = async (userId, page, limit, status, isFinished) => {
     }
 };
 
+const getOrdersByEventId = async (eventId, userId) => {
+    try {
+        const event = await eventModel.findOne({
+            _id: eventId,
+            userId: userId,
+        });
+
+        if (!event) {
+            return {
+                success: false,
+                message: 'Không tìm thấy sự kiện!',
+            };
+        }
+
+        const orders = await orderModel
+            .find({
+                eventId: eventId,
+            })
+            .sort({ createdAt: -1 });
+
+        return {
+            success: true,
+            orders: orders,
+        };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+};
+
 export default {
     createEvent,
     getEvents,
     getEventById,
     getMyEvents,
+    getOrdersByEventId,
 };
