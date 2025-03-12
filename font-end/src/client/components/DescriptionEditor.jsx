@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 
 const DescriptionEditor = ({ initialValue, onEditorChange }) => {
@@ -15,6 +15,12 @@ const DescriptionEditor = ({ initialValue, onEditorChange }) => {
         },
         [onEditorChange],
     );
+
+    useEffect(() => {
+        if (initialValue) {
+            setContent(initialValue);
+        }
+    }, [initialValue]);
 
     return (
         <Editor

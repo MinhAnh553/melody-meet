@@ -23,6 +23,20 @@ const AddressSelector = ({ onAddressChange, initialAddress }) => {
         setProvinces(provincesData);
     }, []);
 
+    useEffect(() => {
+        if (initialAddress) {
+            setVenueName(initialAddress.venueName || '');
+            setSelectedProvinceCode(
+                initialAddress.selectedProvinceCode || null,
+            );
+            setSelectedDistrictCode(
+                initialAddress.selectedDistrictCode || null,
+            );
+            setSelectedWardCode(initialAddress.selectedWardCode || null);
+            setAddress(initialAddress.address || '');
+        }
+    }, [initialAddress]);
+
     // Nếu không có mã (code) trong initialAddress, chuyển đổi dựa trên tên
     useEffect(() => {
         if (initialAddress && provinces.length > 0) {

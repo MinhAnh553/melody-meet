@@ -92,6 +92,20 @@ const AnimatedRoutes = () => {
                             }
                         />
                         <Route
+                            path=":eventId/edit"
+                            element={
+                                <motion.div
+                                    variants={pageVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <EventCreateWizard />
+                                </motion.div>
+                            }
+                        />
+                        <Route
                             path=":eventId/orders"
                             element={
                                 <motion.div

@@ -1,27 +1,24 @@
 import React, { useContext } from 'react';
 import avatar from '../../assets/images/avatar.png';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import swalCustomize from '../../util/swalCustomize';
 
 const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
+    const { eventId } = useParams();
     const { logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
-    const steps = [
-        'Thông tin sự kiện',
-        'Thời gian & Loại vé',
-        // 'Cài đặt',
-        // 'Thông tin thanh toán',
-    ];
+    const steps = ['Thông tin sự kiện', 'Thời gian & Loại vé'];
 
     const allowStepNavigation = currentStep > 1;
 
     return (
         <div className="header">
             <div className="w-100 step-container gap-2">
-                {location.pathname === '/event/create' && (
+                {(location.pathname === '/event/create' ||
+                    location.pathname === `/event/${eventId}/edit`) && (
                     <>
                         {steps.map((label, index) => {
                             const stepNumber = index + 1;

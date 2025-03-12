@@ -152,7 +152,7 @@ const EventManagement = () => {
                 ) : (
                     events.map((event) => (
                         <Card
-                            key={event.id}
+                            key={event._id}
                             className="mb-3"
                             style={{
                                 backgroundColor: '#31353e',
@@ -276,6 +276,15 @@ const EventManagement = () => {
                                                 style={{
                                                     border: '1px solid #555',
                                                     borderRadius: '8px',
+                                                }}
+                                                onClick={() => {
+                                                    // window.open(
+                                                    //     `/event/${event._id}/edit`,
+                                                    //     '_blank',
+                                                    // );
+                                                    navigate(
+                                                        `/event/${event._id}/edit`,
+                                                    );
                                                 }}
                                             >
                                                 <BsPencilSquare />

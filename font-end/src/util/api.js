@@ -40,6 +40,11 @@ const createEvent = (data) => {
     return axios.post(URL_API, data);
 };
 
+const updateEvent = (eventId, data) => {
+    const URL_API = `${API_URL}/event/update/${eventId}`;
+    return axios.patch(URL_API, data);
+};
+
 const getEventById = (id) => {
     const URL_API = `${API_URL}/event/${id}`;
     return axios.get(URL_API);
@@ -116,6 +121,7 @@ export default {
     login,
     getAccount,
     createEvent,
+    updateEvent,
     getEventById,
     getEvents,
     updateUserInfo,

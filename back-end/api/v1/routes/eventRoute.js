@@ -5,17 +5,22 @@ import authMiddleware from '../../../middlewares/client/authMiddleware.js';
 
 const Router = express.Router();
 
-// Router.use(authMiddleware.isAuthorized);
-
 Router.route('/create').post(
     authMiddleware.isAuthorized,
     uploadCloudProvider.fields([
-        // { name: 'eventLogo', maxCount: 1 },
         { name: 'eventBackground', maxCount: 1 },
         { name: 'organizerLogo', maxCount: 1 },
-        { name: 'ticketImages', maxCount: 10 },
     ]),
     eventController.createEvent,
+);
+
+Router.route('/update/:id').patch(
+    authMiddleware.isAuthorized,
+    uploadCloudProvider.fields([
+        { name: 'eventBackground', maxCount: 1, minCount: 0 },
+        { name: 'organizerLogo', maxCount: 1, minCount: 0 },
+    ]),
+    eventController.updateEvent,
 );
 
 Router.route('/').get(eventController.getEvents);

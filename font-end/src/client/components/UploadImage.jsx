@@ -29,14 +29,11 @@ const UploadImage = ({
         }
     };
 
-    // Cleanup: giải phóng bộ nhớ khi component unmount hoặc previewUrl thay đổi
-    // useEffect(() => {
-    //     return () => {
-    //         if (previewUrl && previewUrl !== defaultPreview) {
-    //             URL.revokeObjectURL(previewUrl);
-    //         }
-    //     };
-    // }, [previewUrl, defaultPreview]);
+    useEffect(() => {
+        if (defaultPreview) {
+            setPreviewUrl(defaultPreview);
+        }
+    }, [defaultPreview]);
 
     return (
         <div id={id} className="upload-box" onClick={handleBoxClick}>

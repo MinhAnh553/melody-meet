@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import styles from '../../styles/EventManagement.module.css';
-import UploadImage from '../../components/UploadImage';
 import swalCustomize from '../../../util/swalCustomize';
 import api from '../../../util/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const Step2 = ({ onLoadingChange, data, updateData }) => {
+const Step2 = ({ onLoadingChange, data, updateData, isEditMode }) => {
+    const { eventId } = useParams();
     const navigate = useNavigate();
     // State cho ticket hiện tại (dùng cho tạo mới hoặc chỉnh sửa)
     const [ticket, setTicket] = useState({
@@ -24,6 +24,22 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
     const [editingTicketIndex, setEditingTicketIndex] = useState(null);
     // State điều khiển hiển thị modal
     const [showTicketModal, setShowTicketModal] = useState(false);
+
+    const formatDateTimeLocal = (isoString) => {
+        if (!isoString) return ''; // Nếu dữ liệu rỗng, trả về ""
+        const date = new Date(isoString);
+        return (
+            date.getFullYear() +
+            '-' +
+            String(date.getMonth() + 1).padStart(2, '0') +
+            '-' +
+            String(date.getDate()).padStart(2, '0') +
+            'T' +
+            String(date.getHours()).padStart(2, '0') +
+            ':' +
+            String(date.getMinutes()).padStart(2, '0')
+        );
+    };
 
     const handleTicketChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -237,30 +253,33 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
 
         const formData = new FormData();
         formData.append('eventName', data.eventName);
-        formData.append('eventLogo', data.eventLogo);
-        formData.append('eventBackground', data.eventBackground);
+        if (data.eventBackground !== null) {
+            formData.append('eventBackground', data.eventBackground);
+        }
         formData.append('description', data.description);
         formData.append('venueName', data.addressData.venueName);
         formData.append('province', data.addressData.province);
         formData.append('district', data.addressData.district);
         formData.append('ward', data.addressData.ward);
         formData.append('address', data.addressData.address);
-        formData.append('organizerLogo', data.organizerLogo);
+        if (data.organizerLogo !== null) {
+            formData.append('organizerLogo', data.organizerLogo);
+        }
         formData.append('organizerName', data.organizerName);
         formData.append('organizerInfo', data.organizerInfo);
         formData.append('startTime', data.startTime);
         formData.append('endTime', data.endTime);
         formData.append('ticketTypes', JSON.stringify(data.ticketTypes));
 
-        data.ticketTypes.forEach((ticket, index) => {
-            if (ticket.image) {
-                formData.append(`ticketImages`, ticket.image);
-            }
-        });
-
         try {
             onLoadingChange(true);
-            const res = await api.createEvent(formData);
+            let res;
+            if (isEditMode) {
+                res = await api.updateEvent(eventId, formData);
+            } else {
+                res = await api.createEvent(formData);
+            }
+
             if (res.success) {
                 swalCustomize.Toast.fire({
                     icon: 'success',
@@ -302,9 +321,11 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                 type="datetime-local"
                                 className="form-control text-black"
                                 name="startTime"
-                                value={data.startTime}
+                                value={formatDateTimeLocal(data.startTime)}
                                 onChange={(e) =>
-                                    updateData({ startTime: e.target.value })
+                                    updateData({
+                                        startTime: e.target.value,
+                                    })
                                 }
                             />
                         </div>
@@ -316,9 +337,11 @@ const Step2 = ({ onLoadingChange, data, updateData }) => {
                                 type="datetime-local"
                                 className="form-control text-black"
                                 name="endTime"
-                                value={data.endTime}
+                                value={formatDateTimeLocal(data.endTime)}
                                 onChange={(e) =>
-                                    updateData({ endTime: e.target.value })
+                                    updateData({
+                                        endTime: e.target.value,
+                                    })
                                 }
                             />
                         </div>

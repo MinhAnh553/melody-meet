@@ -7,17 +7,16 @@ const createEvent = async (req, res) => {
         // Parse lại dữ liệu ticketTypes từ chuỗi JSON
         let ticketTypes = JSON.parse(req.body.ticketTypes);
 
-        // Gán ảnh vào đúng vé của nó
-        if (req.files['ticketImages']) {
-            ticketTypes.forEach((ticket, index) => {
-                ticket.image = req.files['ticketImages'][index]?.path || '';
-            });
-        }
+        // // Gán ảnh vào đúng vé của nó
+        // if (req.files['ticketImages']) {
+        //     ticketTypes.forEach((ticket, index) => {
+        //         ticket.image = req.files['ticketImages'][index]?.path || '';
+        //     });
+        // }
 
         const eventData = {
             userId: req.user.id,
             name: data.eventName,
-            // logo: req.files.eventLogo[0].path,
             background: req.files.eventBackground[0].path,
             location: {
                 venueName: data.venueName,
@@ -42,6 +41,62 @@ const createEvent = async (req, res) => {
             success: true,
             message: 'Sự kiện đã được tạo thành công!',
         });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
+const updateEvent = async (req, res) => {
+    try {
+        const data = req.body;
+        const id = req.params.id;
+
+        // Parse lại dữ liệu ticketTypes từ chuỗi JSON
+        let ticketTypes = JSON.parse(req.body.ticketTypes);
+        data.ticketTypes = ticketTypes;
+
+        const dataUpdate = {
+            name: data.eventName,
+            location: {
+                venueName: data.venueName,
+                province: data.province,
+                district: data.district,
+                ward: data.ward,
+                address: data.address,
+            },
+            description: data.description,
+            organizer: {
+                logo: data.organizerLogo || '',
+                name: data.organizerName,
+                info: data.organizerInfo,
+            },
+            startTime: new Date(data.startTime),
+            endTime: new Date(data.endTime),
+            ticketTypes: data.ticketTypes,
+        };
+
+        if (req.files.eventBackground && req.files.eventBackground.length > 0) {
+            dataUpdate.background = req.files.eventBackground[0].path;
+        }
+        if (req.files.organizerLogo && req.files.organizerLogo.length > 0) {
+            console.log('ua');
+            dataUpdate.organizer.logo = req.files.organizerLogo[0].path;
+        }
+
+        const result = await eventService.updateEvent(
+            id,
+            dataUpdate,
+            req.user.id,
+        );
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+
+        res.status(200).json(result);
     } catch (error) {
         console.log(error);
         res.status(400).json({
@@ -143,6 +198,7 @@ const getOrdersByEventId = async (req, res) => {
 
 export default {
     createEvent,
+    updateEvent,
     getEvents,
     getEventById,
     getMyEvents,

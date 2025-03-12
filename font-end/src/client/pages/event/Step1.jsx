@@ -1,13 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/EventManagement.module.css';
 import DescriptionEditor from '../../components/DescriptionEditor';
 import AddressSelector from '../../components/AddressSelector';
 import UploadImage from '../../components/UploadImage';
 import swalCustomize from '../../../util/swalCustomize';
-import api from '../../../util/api';
+import { useParams } from 'react-router-dom';
 
-const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
+const Step1 = ({
+    onSuccess,
+    onLoadingChange,
+    data,
+    updateData,
+    isEditMode,
+}) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -45,7 +51,7 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
             });
         }
 
-        if (!data.eventBackground || !data.organizerLogo) {
+        if (!isEditMode && (!data.eventBackground || !data.organizerLogo)) {
             return swalCustomize.Toast.fire({
                 icon: 'error',
                 title: 'Vui lòng tải lên đầy đủ hình ảnh',
@@ -68,21 +74,6 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
         >
             <div className="card-dark">
                 <div className="row align-items-center">
-                    {/* <div className="col-md-3">
-                        <UploadImage
-                            id="uploadLogo"
-                            iconClass="fas fa-upload fa-2x text-success"
-                            defaultText="Tải lên logo sự kiện"
-                            inputName="eventLogo"
-                            defaultPreview={data.eventLogoPreview}
-                            onFileSelect={(file, previewUrl) =>
-                                updateData({
-                                    eventLogo: file,
-                                    eventLogoPreview: previewUrl,
-                                })
-                            }
-                        />
-                    </div> */}
                     <div className="col-md-7 mb-3">
                         <label
                             className={`${styles.formTitle} form-label form-item-required`}
@@ -138,10 +129,7 @@ const Step1 = ({ onSuccess, onLoadingChange, data, updateData }) => {
                     Thông tin sự kiện
                 </label>
                 <DescriptionEditor
-                    initialValue={
-                        data.description ||
-                        '<p><strong>Giới thiệu sự kiện:</strong></p><p>[T&oacute;m tắt ngắn gọn về sự kiện: Nội dung ch&iacute;nh của sự kiện, điểm đặc sắc nhất v&agrave; l&yacute; do khiến người tham gia kh&ocirc;ng n&ecirc;n bỏ lỡ]</p><p><strong>Chi tiết sự kiện:</strong></p><ul><li><strong>Chương tr&igrave;nh ch&iacute;nh:</strong>[Liệt k&ecirc; những hoạt động nổi bật trong sự kiện: c&aacute;c phần tr&igrave;nh diễn, kh&aacute;ch mời đặc biệt, lịch tr&igrave;nh c&aacute;c tiết mục cụ thể nếu c&oacute;.]</li><li><strong>Kh&aacute;ch mời:</strong>[Th&ocirc;ng tin về c&aacute;c kh&aacute;ch mời đặc biệt, nghệ sĩ, diễn giả sẽ tham gia sự kiện. C&oacute; thể bao gồm phần m&ocirc; tả ngắn gọn về họ v&agrave; những g&igrave; họ sẽ mang lại cho sự kiện.]</li><li><strong>Trải nghiệm đặc biệt:</strong>[Nếu c&oacute; c&aacute;c hoạt động đặc biệt kh&aacute;c như workshop, khu trải nghiệm, photo booth, khu vực check-in hay c&aacute;c phần qu&agrave;/ưu đ&atilde;i d&agrave;nh ri&ecirc;ng cho người tham dự.]</li></ul><p><strong>Điều khoản v&agrave; điều kiện:</strong></p><p>[TnC] sự kiện</p><p>Lưu &yacute; về điều khoản trẻ em</p><p>Lưu &yacute; về điều khoản VAT</p>'
-                    }
+                    initialValue={data.description}
                     onEditorChange={(newContent) =>
                         updateData({ description: newContent })
                     }

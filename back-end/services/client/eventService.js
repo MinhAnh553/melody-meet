@@ -7,6 +7,31 @@ const createEvent = async (eventData) => {
     return event;
 };
 
+const updateEvent = async (id, data, userId) => {
+    const event = await eventModel.findOne({
+        _id: id,
+        userId: userId,
+    });
+
+    if (!event) {
+        return {
+            success: false,
+            message: 'Không tìm thấy sự kiện!',
+        };
+    }
+
+    if (data.organizer.logo === '') {
+        data.organizer.logo = event.organizer.logo;
+    }
+
+    await eventModel.updateOne({ _id: id, userId: userId }, { ...data });
+
+    return {
+        success: true,
+        message: 'Cập nhật sự kiện thành công!',
+    };
+};
+
 const getEvents = async () => {
     const events = await eventModel
         .find({
@@ -93,6 +118,7 @@ const getOrdersByEventId = async (eventId, userId) => {
 
 export default {
     createEvent,
+    updateEvent,
     getEvents,
     getEventById,
     getMyEvents,
