@@ -81,6 +81,7 @@ const getMyEvents = async (userId, page, limit, status, isFinished) => {
             events: events,
             totalEvents: totalEvents,
             totalPages: Math.ceil(totalEvents / limit),
+            currentPage: page,
         };
     } catch (error) {
         return { success: false, message: error.message };

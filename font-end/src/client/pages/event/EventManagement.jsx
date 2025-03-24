@@ -30,7 +30,9 @@ const EventManagement = () => {
 
     useEffect(() => {
         fetchEvents('approved', false);
-    }, []);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [page]);
 
     const handleSearch = () => {
         console.log('Tìm kiếm:', searchKey);
@@ -40,16 +42,19 @@ const EventManagement = () => {
 
     const handleUpcoming = () => {
         setActiveTab('upcoming');
+        setPage(1);
         fetchEvents('approved', false);
     };
 
     const handlePast = () => {
         setActiveTab('past');
+        setPage(1);
         fetchEvents('approved', true);
     };
 
     const handlePending = () => {
         setActiveTab('pending');
+        setPage(1);
         fetchEvents('pending', false);
     };
 
@@ -60,6 +65,9 @@ const EventManagement = () => {
                 setEvents(res.events);
                 setTotal(res.totalEvents);
                 setTotalPages(res.totalPages);
+
+                // setPage(res.currentPage);
+                setLimit(res.limit);
             } else {
                 setEvents([]);
                 setTotal(0);
@@ -79,6 +87,7 @@ const EventManagement = () => {
                 minHeight: '100vh',
                 color: '#fff',
                 paddingTop: '20px',
+                paddingBottom: '20px',
             }}
         >
             {/* Thanh Tìm kiếm */}
@@ -316,28 +325,28 @@ const EventManagement = () => {
                 )}
             </Row>
 
-            {/* TODO: Phân trang nếu muốn hiển thị */}
-            {/* 
-            <Row className="mx-3">
-                <Col className="d-flex justify-content-end">
-                    <Button
-                        variant="dark"
-                        disabled={page <= 1}
-                        onClick={() => setPage(page - 1)}
-                        className="me-2"
-                    >
-                        Trang trước
-                    </Button>
-                    <Button
-                        variant="dark"
-                        disabled={page >= totalPages}
-                        onClick={() => setPage(page + 1)}
-                    >
-                        Trang sau
-                    </Button>
-                </Col>
-            </Row> 
-            */}
+            {/* Phân trang */}
+            <div className="d-flex justify-content-center align-items-center">
+                <Button
+                    variant="secondary"
+                    className="me-2"
+                    disabled={page <= 1}
+                    onClick={() => setPage((prev) => prev - 1)}
+                >
+                    Trang trước
+                </Button>
+                <span>
+                    Trang {page} / {totalPages}
+                </span>
+                <Button
+                    variant="secondary"
+                    className="ms-2"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((prev) => prev + 1)}
+                >
+                    Trang sau
+                </Button>
+            </div>
         </Container>
     );
 };

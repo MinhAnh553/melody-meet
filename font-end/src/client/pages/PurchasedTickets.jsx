@@ -43,7 +43,7 @@ function PurchasedTickets() {
             const res = await api.getMyOrders(page, limit);
             if (res.success) {
                 setOrders(res.orders);
-                setPage(res.currentPage);
+                // setPage(res.currentPage);
                 setLimit(res.limit);
                 setTotal(res.totalTickets);
                 setTotalPages(res.totalPages);
