@@ -1,4 +1,5 @@
 import eventService from '../../services/client/eventService.js';
+import orderService from '../../services/client/orderService.js';
 
 // [POST] /event/create
 const createEvent = async (req, res) => {
@@ -196,6 +197,95 @@ const getOrdersByEventId = async (req, res) => {
     }
 };
 
+const getEventSummary = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await orderService.getOrdersByEventId(id, req.user.id);
+
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+
+        // Lấy thông tin vé từ order và đảm bảo chờ các promise hoàn thành
+        await Promise.all(
+            result.orders.map(async (order) => {
+                let ticket = await orderService.getOrderTickets(order._id);
+                order.tickets = ticket.tickets;
+            }),
+        );
+
+        // Tính toán doanh thu và số vé đã bán
+        let totalRevenue = 0;
+        let totalSold = 0;
+        let ticketDetails = [];
+        let revenueByDate = [];
+
+        const event = await eventService.getEventById(id);
+
+        result.orders.forEach((order) => {
+            totalRevenue += order.totalPrice;
+            totalSold += order.tickets.reduce(
+                (total, ticket) => total + ticket.quantity,
+                0,
+            );
+
+            order.tickets.forEach((ticket) => {
+                // cùng name và price thì gom lại thành 1
+                let index = ticketDetails.findIndex(
+                    (item) =>
+                        item.name === ticket.name &&
+                        item.price === ticket.price,
+                );
+                if (index !== -1) {
+                    ticketDetails[index].quantity += ticket.quantity;
+                    ticketDetails[index].total +=
+                        ticket.price * ticket.quantity;
+                    return;
+                }
+
+                // lấy tổng vé dựa vào name và price từ event
+                let eventTicket = event.ticketTypes.find(
+                    (item) => item.name === ticket.name,
+                );
+                if (!eventTicket) return;
+
+                ticketDetails.push({
+                    name: ticket.name,
+                    totalQuantity: eventTicket.totalQuantity,
+                    quantity: ticket.quantity,
+                    price: ticket.price,
+                    total: ticket.price * ticket.quantity,
+                });
+            });
+
+            let date = new Date(order.createdAt).toLocaleDateString();
+            let revenue = order.totalPrice;
+
+            let index = revenueByDate.findIndex((item) => item.date === date);
+            if (index !== -1) {
+                revenueByDate[index].revenue += revenue;
+            } else {
+                revenueByDate.push({ date, revenue });
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            totalRevenue,
+            totalSold,
+            ticketDetails,
+            revenueByDate,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 export default {
     createEvent,
     updateEvent,
@@ -203,4 +293,5 @@ export default {
     getEventById,
     getMyEvents,
     getOrdersByEventId,
+    getEventSummary,
 };

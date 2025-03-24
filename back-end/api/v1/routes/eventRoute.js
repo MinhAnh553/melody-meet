@@ -35,6 +35,11 @@ Router.route('/:id/orders').get(
     eventController.getOrdersByEventId,
 );
 
+Router.route('/:id/summary').get(
+    authMiddleware.isAuthorized,
+    eventController.getEventSummary,
+);
+
 Router.route('/:id').get(eventController.getEventById);
 
 export const eventRoute = Router;

@@ -115,6 +115,11 @@ const getOrdersByEventId = (id) => {
     return axios.get(URL_API);
 };
 
+const getEventSummary = (id) => {
+    const URL_API = `${API_URL}/event/${id}/summary`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -135,4 +140,5 @@ export default {
     getOrderTickets,
     getMyEvents,
     getOrdersByEventId,
+    getEventSummary,
 };

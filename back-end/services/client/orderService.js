@@ -276,15 +276,46 @@ const cancelExpiredOrders = async () => {
             { $set: { status: 'CANCELED', updatedAt: now } },
         );
 
-        console.log(
-            `Updated ${result.modifiedCount} expired orders to CANCELED.`,
-        );
+        // console.log(
+        //     `Updated ${result.modifiedCount} expired orders to CANCELED.`,
+        // );
     } catch (error) {
         console.error('Error updating expired orders:', error);
     }
 };
 
 cron.schedule('*/5 * * * *', cancelExpiredOrders);
+
+const getOrdersByEventId = async (eventId, userId) => {
+    try {
+        const event = await eventModel.findOne({
+            _id: eventId,
+            userId: userId,
+        });
+
+        if (!event) {
+            return {
+                success: false,
+                message: 'Không tìm thấy sự kiện!',
+            };
+        }
+
+        const orders = await orderModel
+            .find({
+                eventId: eventId,
+                status: 'PAID',
+            })
+            .sort({ createdAt: -1 });
+
+        return {
+            success: true,
+            orders: orders,
+        };
+    } catch (error) {
+        console.error('get order error:', error);
+        return { success: false, message: error.message };
+    }
+};
 
 export default {
     createOrder,
@@ -294,4 +325,5 @@ export default {
     getMyOrders,
     getOrderTickets,
     orderSuccess,
+    getOrdersByEventId,
 };

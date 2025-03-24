@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import swalCustomize from '../../util/swalCustomize';
 
-const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
+const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
     const { eventId } = useParams();
     const { logout } = useAuth();
     const location = useLocation();
@@ -98,6 +98,17 @@ const HeaderEvent = ({ loading, currentStep, onStepClick }) => {
                 {location.pathname === '/event' && (
                     <div className="text-light d-flex align-items-center">
                         <h3 className="mb-0">Sự kiện của tôi</h3>
+                    </div>
+                )}
+
+                {name != '' && (
+                    <div className="text-light d-flex align-items-center">
+                        <h3
+                            className="mb-0 text-truncate d-inline-block"
+                            style={{ maxWidth: '700px' }}
+                        >
+                            {name}
+                        </h3>
                     </div>
                 )}
 
