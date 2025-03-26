@@ -155,16 +155,24 @@ const Register = () => {
             aria-hidden="true"
         >
             <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content glass-effect">
+                <div
+                    className="modal-content glass-effect"
+                    style={{
+                        background: '#fff',
+                    }}
+                >
                     <div className="modal-header border-0">
                         <h4
-                            className="modal-title fw-bold"
+                            className="modal-title fw-bold text-dark"
                             id="registerModalLabel"
                         >
                             Đăng ký tài khoản
                         </h4>
                         <button
                             className="btn-close"
+                            style={{
+                                filter: 'invert(0)',
+                            }}
                             type="button"
                             data-bs-dismiss="modal"
                             aria-label="Close"
@@ -179,7 +187,7 @@ const Register = () => {
                                     </div>
                                 </div>
                                 <form
-                                    className="custom-form"
+                                    className="custom-form text-dark"
                                     id="registerForm"
                                     onSubmit={handleRegisterSubmit}
                                 >

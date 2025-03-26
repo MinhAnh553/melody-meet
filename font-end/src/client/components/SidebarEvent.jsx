@@ -13,9 +13,16 @@ const SidebarEvent = () => {
 
     return (
         <div className="sidebar p-3 bg-dark text-light">
-            <h4 className="text-success mb-4 d-flex align-items-center">
+            <h4
+                className="text-success mb-4 d-flex align-items-center"
+                style={{ cursor: 'pointer' }}
+                onClick={(e) => {
+                    navigate('/');
+                }}
+            >
                 <i className="bi bi-gear-fill me-2"></i>Quản Lý Sự Kiện
             </h4>
+
             <ul className="nav flex-column">
                 {/* Sự kiện của tôi */}
                 <li className="nav-item mb-2">
@@ -35,7 +42,7 @@ const SidebarEvent = () => {
                 </li>
 
                 {/* Quản lý báo cáo */}
-                <li className="nav-item mb-2">
+                {/* <li className="nav-item mb-2">
                     <a
                         href="#"
                         className={`nav-link text-light d-flex align-items-center ${
@@ -49,10 +56,10 @@ const SidebarEvent = () => {
                         <i className="bi bi-bar-chart-line me-2"></i>
                         <span>Quản lý báo cáo</span>
                     </a>
-                </li>
+                </li> */}
 
                 {/* Điều khoản cho Ban tổ chức */}
-                <li className="nav-item mb-2">
+                {/* <li className="nav-item mb-2">
                     <a
                         href="#"
                         className={`nav-link text-light d-flex align-items-center ${
@@ -66,7 +73,7 @@ const SidebarEvent = () => {
                         <i className="bi bi-file-earmark-text me-2"></i>
                         <span>Điều khoản cho Ban tổ chức</span>
                     </a>
-                </li>
+                </li> */}
             </ul>
         </div>
     );

@@ -32,16 +32,24 @@ const Login = () => {
             aria-hidden="true"
         >
             <div className="modal-dialog modal-dialog-centered">
-                <div className="modal-content glass-effect">
+                <div
+                    className="modal-content glass-effect"
+                    style={{
+                        background: '#fff',
+                    }}
+                >
                     <div className="modal-header border-0">
                         <h4
-                            className="modal-title fw-bold"
+                            className="modal-title fw-bold text-dark"
                             id="loginModalLabel"
                         >
                             Đăng nhập
                         </h4>
                         <button
                             className="btn-close form-login"
+                            style={{
+                                filter: 'invert(0)',
+                            }}
                             type="button"
                             data-bs-dismiss="modal"
                             aria-label="Close"
@@ -60,7 +68,7 @@ const Login = () => {
                         >
                             <div className="form-floating mb-3">
                                 <input
-                                    className="form-control custom-input"
+                                    className="form-control custom-input text-dark"
                                     id="emailLogin"
                                     type="email"
                                     placeholder="name@example.com"
@@ -68,14 +76,17 @@ const Login = () => {
                                     value={formData.emailLogin}
                                     onChange={handleInputChange}
                                 />
-                                <label htmlFor="emailLogin">
+                                <label
+                                    htmlFor="emailLogin"
+                                    className="text-dark"
+                                >
                                     <i className="bi bi-envelope me-2" />
                                     Email
                                 </label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input
-                                    className="form-control custom-input"
+                                    className="form-control custom-input text-dark"
                                     id="passwordLogin"
                                     type="password"
                                     placeholder="Mật khẩu"
@@ -83,7 +94,10 @@ const Login = () => {
                                     value={formData.passwordLogin}
                                     onChange={handleInputChange}
                                 />
-                                <label htmlFor="passwordLogin">
+                                <label
+                                    htmlFor="passwordLogin"
+                                    className="text-dark"
+                                >
                                     <i className="bi bi-lock me-2" />
                                     Mật khẩu
                                 </label>

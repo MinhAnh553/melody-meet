@@ -51,7 +51,7 @@ const Layout = () => {
                 }`}
             >
                 <div className={styles.logo}>
-                    <Link to="/admin/dashboard">
+                    <Link to="/">
                         <div
                             className={`${styles.logoText} ${
                                 collapsed ? styles.logoTextHidden : ''

@@ -270,9 +270,7 @@ function PurchasedTickets() {
                                     ? 'nav-ticket-active'
                                     : ''
                             }`}
-                            onClick={() =>
-                                handleNavigation('events', '/my-events')
-                            }
+                            onClick={() => handleNavigation('events', '/event')}
                         >
                             <BsCalendar className="me-2" /> Sự kiện của tôi
                         </Nav.Link>
