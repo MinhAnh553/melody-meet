@@ -106,12 +106,11 @@ const Layout = () => {
             >
                 <header className={styles.header}>
                     <h3>
-                        {
-                            navItems.find(
-                                (item) => item.path === location.pathname,
-                            ).text
-                        }
+                        {navItems.find(
+                            (item) => item.path === location.pathname,
+                        )?.text || ''}
                     </h3>
+
                     <div
                         className="nav-item dropdown position-relative"
                         style={{ marginLeft: 'auto' }}
