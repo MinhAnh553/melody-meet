@@ -85,10 +85,46 @@ const updateInfoAccount = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = req.body;
+        const result = await userService.updateUser(id, data);
+
+        res.status(200).json({
+            success: true,
+            message: result.message,
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const result = await userService.getAllUsers();
+        if (result.success) {
+            return res.status(200).json(result);
+        }
+        return res.status(404).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
     loginUser,
     getAccount,
     updateInfoAccount,
+    getAllUsers,
+    updateUser,
 };

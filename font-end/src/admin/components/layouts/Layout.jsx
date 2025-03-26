@@ -105,6 +105,13 @@ const Layout = () => {
                 }`}
             >
                 <header className={styles.header}>
+                    <h3>
+                        {
+                            navItems.find(
+                                (item) => item.path === location.pathname,
+                            ).text
+                        }
+                    </h3>
                     <div
                         className="nav-item dropdown position-relative"
                         style={{ marginLeft: 'auto' }}
@@ -161,7 +168,7 @@ const Layout = () => {
                     </div>
                 </header>
 
-                <Container fluid className="py-4">
+                <Container fluid className="py-2">
                     <Outlet />
                 </Container>
             </div>

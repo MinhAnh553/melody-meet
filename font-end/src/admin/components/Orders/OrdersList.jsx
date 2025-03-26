@@ -11,16 +11,15 @@ import {
 import { FaSearch, FaEye, FaPrint, FaTimes, FaCheck } from 'react-icons/fa';
 import styles from './Orders.module.css';
 
-// Các hàm format tùy bạn muốn tái sử dụng
 import {
     formatDate,
     formatCurrency,
     truncateText,
 } from '../../utils/formatters';
 
-import OrderDetails from './OrderDetails'; // Nếu bạn có màn hình chi tiết
-import api from '../../../util/api'; // Gọi API
-import swalCustomize from '../../../util/swalCustomize'; // Nếu bạn dùng SweetAlert2
+import OrderDetails from './OrderDetails';
+import api from '../../../util/api';
+import swalCustomize from '../../../util/swalCustomize';
 
 const OrdersList = () => {
     const [orders, setOrders] = useState([]);
@@ -192,8 +191,6 @@ const OrdersList = () => {
 
     return (
         <div className={styles.ordersContainer}>
-            <h1 className={styles.pageTitle}>Quản lý đơn hàng</h1>
-
             {/* Table Header */}
             <div className={styles.tableHeader}>
                 <div className={styles.searchFilter}>

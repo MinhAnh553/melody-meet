@@ -193,8 +193,6 @@ const EventsList = () => {
 
     return (
         <div className={styles.eventsContainer}>
-            <h1 className={styles.pageTitle}>Quản lý sự kiện</h1>
-
             {/* Table Header */}
             <div className={styles.tableHeader}>
                 {/* Ví dụ nút thêm sự kiện */}

@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
                     setAuth({
                         isAuthenticated: true,
                         user: {
+                            id: res.user._id,
                             name: res.user.name,
                             phone: res.user.phone,
                             email: res.user.email,
@@ -56,6 +57,7 @@ export const AuthProvider = ({ children }) => {
                 setAuth({
                     isAuthenticated: true,
                     user: {
+                        id: res.user.id,
                         name: res.user.name,
                         phone: res.user.phone,
                         email: res.user.email,

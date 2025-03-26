@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Table,
     Button,
@@ -10,39 +10,49 @@ import {
 } from 'react-bootstrap';
 import { FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
 import styles from './Users.module.css';
-import { users } from '../../data/mockData';
 import { formatDate, formatUserRole } from '../../utils/formatters';
 import UserForm from './UserForm';
+import api from '../../../util/api';
+import swalCustomize from '../../../util/swalCustomize';
 
 const UsersList = () => {
+    const [users, setUsers] = useState([]);
+
     const [searchTerm, setSearchTerm] = useState('');
-    const [roleFilter, setRoleFilter] = useState('all');
     const [sortBy, setSortBy] = useState('name');
     const [sortOrder, setSortOrder] = useState('asc');
     const [currentPage, setCurrentPage] = useState(1);
     const [showUserForm, setShowUserForm] = useState(false);
     const [editingUser, setEditingUser] = useState(null);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
 
     const itemsPerPage = 5;
 
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const fetchUsers = async () => {
+        try {
+            const res = await api.getAllUsers();
+            if (res.success) {
+                setUsers(res.users);
+            }
+        } catch (error) {
+            console.log('Lỗi khi gọi API getAllUsers:', error);
+        }
+    };
+
     // Filter users
     const filteredUsers = users.filter((user) => {
-        const matchesSearch =
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-        return matchesSearch && matchesRole;
+        const matchesSearch = user.email
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        return matchesSearch;
     });
 
     // Sort users
     const sortedUsers = [...filteredUsers].sort((a, b) => {
         switch (sortBy) {
-            case 'name':
-                return sortOrder === 'asc'
-                    ? a.name.localeCompare(b.name)
-                    : b.name.localeCompare(a.name);
             case 'email':
                 return sortOrder === 'asc'
                     ? a.email.localeCompare(b.email)
@@ -77,76 +87,39 @@ const UsersList = () => {
         setCurrentPage(pageNumber);
     };
 
-    // User role badge
-    const getRoleBadge = (role) => {
-        switch (role) {
-            case 'admin':
-                return (
-                    <Badge
-                        className={`${styles.userRoleBadge} ${styles.userRoleAdmin}`}
-                    >
-                        Quản trị viên
-                    </Badge>
-                );
-            case 'organizer':
-                return (
-                    <Badge
-                        className={`${styles.userRoleBadge} ${styles.userRoleOrganizer}`}
-                    >
-                        Nhà tổ chức
-                    </Badge>
-                );
-            case 'user':
-                return (
-                    <Badge
-                        className={`${styles.userRoleBadge} ${styles.userRoleUser}`}
-                    >
-                        Người dùng
-                    </Badge>
-                );
-            default:
-                return <Badge className={styles.userRoleBadge}>{role}</Badge>;
-        }
-    };
-
-    // Handle add/edit user
-    const handleAddUser = () => {
-        setEditingUser(null);
-        setShowUserForm(true);
-    };
-
     const handleEditUser = (user) => {
         setEditingUser(user);
         setShowUserForm(true);
     };
 
-    const handleFormSubmit = (userData) => {
-        // In a real app, this would save to a backend API
-        console.log('Save user:', userData);
-        setShowUserForm(false);
-    };
-
-    // Handle delete user
-    const handleDeleteClick = (user) => {
-        setUserToDelete(user);
-        setShowDeleteModal(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        // In a real app, this would delete from a backend API
-        console.log('Delete user:', userToDelete);
-        setShowDeleteModal(false);
+    const handleFormSubmit = async (userId, userData) => {
+        try {
+            const res = await api.updateUser(userId, userData);
+            if (res.success) {
+                fetchUsers();
+                swalCustomize.Toast.fire({
+                    icon: 'success',
+                    title: 'Cập nhật thành công!',
+                });
+                setShowUserForm(false);
+            } else {
+                swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: res.message,
+                });
+            }
+        } catch (error) {
+            console.log('Lỗi khi gọi API:', error);
+        }
     };
 
     return (
         <div className={styles.usersContainer}>
-            <h1 className={styles.pageTitle}>Quản lý người dùng</h1>
-
             {/* Table Header */}
             <div className={styles.tableHeader}>
-                <Button variant="primary" onClick={handleAddUser}>
+                {/* <Button variant="primary" onClick={handleAddUser}>
                     Thêm người dùng mới
-                </Button>
+                </Button> */}
 
                 <div className={styles.searchFilter}>
                     <InputGroup className={styles.searchInput}>
@@ -154,13 +127,14 @@ const UsersList = () => {
                             <FaSearch />
                         </InputGroup.Text>
                         <Form.Control
+                            className="text-dark"
                             placeholder="Tìm kiếm người dùng..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </InputGroup>
 
-                    <Form.Select
+                    {/* <Form.Select
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
                     >
@@ -168,7 +142,7 @@ const UsersList = () => {
                         <option value="admin">Quản trị viên</option>
                         <option value="organizer">Nhà tổ chức</option>
                         <option value="user">Người dùng</option>
-                    </Form.Select>
+                    </Form.Select> */}
                 </div>
             </div>
 
@@ -177,15 +151,7 @@ const UsersList = () => {
                 <Table responsive hover className={styles.userTable}>
                     <thead>
                         <tr>
-                            <th></th>
-                            <th
-                                onClick={() => handleSortChange('name')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Tên người dùng{' '}
-                                {sortBy === 'name' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
+                            <th>STT</th>
                             <th
                                 onClick={() => handleSortChange('email')}
                                 style={{ cursor: 'pointer' }}
@@ -194,7 +160,7 @@ const UsersList = () => {
                                 {sortBy === 'email' &&
                                     (sortOrder === 'asc' ? '↑' : '↓')}
                             </th>
-                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
                             <th
                                 onClick={() => handleSortChange('createdAt')}
                                 style={{ cursor: 'pointer' }}
@@ -207,26 +173,22 @@ const UsersList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentUsers.map((user) => (
-                            <tr key={user.id}>
-                                <td>
-                                    <div className={styles.userAvatar}>
-                                        {user.avatar}
-                                    </div>
-                                </td>
-                                <td>{user.name}</td>
+                        {currentUsers.map((user, index) => (
+                            <tr key={user._id}>
+                                <td>{index + 1}</td>
                                 <td>{user.email}</td>
-                                <td>{getRoleBadge(user.role)}</td>
-                                <td>{formatDate(user.createdAt)}</td>
+                                <td>
+                                    {user.status === 'active'
+                                        ? 'Hoạt động'
+                                        : 'Không hoạt động'}
+                                </td>
+                                <td>
+                                    {new Date(
+                                        user.createdAt,
+                                    ).toLocaleDateString()}
+                                </td>
                                 <td>
                                     <div className={styles.tableActions}>
-                                        <Button
-                                            variant="link"
-                                            className={`${styles.actionButton} ${styles.viewButton}`}
-                                            title="Xem chi tiết"
-                                        >
-                                            <FaEye />
-                                        </Button>
                                         <Button
                                             variant="link"
                                             className={`${styles.actionButton} ${styles.editButton}`}
@@ -234,16 +196,6 @@ const UsersList = () => {
                                             onClick={() => handleEditUser(user)}
                                         >
                                             <FaEdit />
-                                        </Button>
-                                        <Button
-                                            variant="link"
-                                            className={`${styles.actionButton} ${styles.deleteButton}`}
-                                            title="Xóa"
-                                            onClick={() =>
-                                                handleDeleteClick(user)
-                                            }
-                                        >
-                                            <FaTrash />
                                         </Button>
                                     </div>
                                 </td>
@@ -309,34 +261,6 @@ const UsersList = () => {
                         onCancel={() => setShowUserForm(false)}
                     />
                 </Modal.Body>
-            </Modal>
-
-            {/* Delete Confirmation Modal */}
-            <Modal
-                show={showDeleteModal}
-                onHide={() => setShowDeleteModal(false)}
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title className={styles.modalTitle}>
-                        Xác nhận xóa
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Bạn có chắc chắn muốn xóa người dùng "{userToDelete?.name}"?
-                    Hành động này không thể hoàn tác.
-                </Modal.Body>
-                <Modal.Footer className={styles.modalFooter}>
-                    <Button
-                        variant="secondary"
-                        onClick={() => setShowDeleteModal(false)}
-                    >
-                        Hủy
-                    </Button>
-                    <Button variant="danger" onClick={handleDeleteConfirm}>
-                        Xóa
-                    </Button>
-                </Modal.Footer>
             </Modal>
         </div>
     );

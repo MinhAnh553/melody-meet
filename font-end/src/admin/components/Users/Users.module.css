@@ -15,12 +15,17 @@
 
 .searchFilter {
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
 }
 
 .searchInput {
-    min-width: 250px;
+    min-width: 350px;
+    flex: 1;
+}
+
+.searchFilter select {
+    width: auto;
 }
 
 .tableActions {
@@ -46,6 +51,10 @@
     color: var(--warning-color);
 }
 
+.editButton:hover {
+    background: rgba(243, 156, 18, 0.2);
+}
+
 .deleteButton {
     color: var(--danger-color);
 }
@@ -55,23 +64,61 @@
 }
 
 .userTable {
-    min-width: 800px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.userTable thead {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+.userTable th,
+.userTable td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.userTable tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.userTable th {
+    cursor: pointer;
+    position: relative;
+}
+
+.userTable th:hover {
+    background-color: #ececec;
+}
+
+.userTable th::after {
+    content: ' ▼';
+    font-size: 12px;
+    color: #666;
+    margin-left: 5px;
+    visibility: hidden;
+}
+
+.userTable th:hover::after {
+    visibility: visible;
+}
+
+.userTable td {
+    color: #555;
 }
 
 .tableWrapper {
     overflow-x: auto;
-}
-
-.userAvatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .userRoleBadge {
@@ -125,6 +172,16 @@
     justify-content: flex-end;
     gap: 1rem;
     margin-top: 2rem;
+}
+
+.formControl {
+    height: 45px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    width: 100%;
 }
 
 .modalTitle {

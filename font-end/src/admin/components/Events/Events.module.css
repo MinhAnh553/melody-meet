@@ -155,11 +155,61 @@
 }
 
 .eventTable {
-    min-width: 800px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.eventTable thead {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+.eventTable th,
+.eventTable td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.eventTable tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.eventTable th {
+    cursor: pointer;
+    position: relative;
+}
+
+.eventTable th:hover {
+    background-color: #ececec;
+}
+
+.eventTable th::after {
+    content: ' ▼';
+    font-size: 12px;
+    color: #666;
+    margin-left: 5px;
+    visibility: hidden;
+}
+
+.eventTable th:hover::after {
+    visibility: visible;
+}
+
+.eventTable td {
+    color: #555;
 }
 
 .tableWrapper {
     overflow-x: auto;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .paginationContainer {

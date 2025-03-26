@@ -85,7 +85,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
                     <input
                         type="text"
                         className="form-control text-dark"
-                        maxLength="11"
+                        maxLength="10"
                         placeholder="Nhập số điện thoại"
                         value={phone}
                         onInput={(e) =>

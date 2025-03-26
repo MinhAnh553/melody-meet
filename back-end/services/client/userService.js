@@ -200,10 +200,89 @@ const updateById = async (id, data) => {
     }
 };
 
+const updateUser = async (id, data) => {
+    try {
+        if (!id) {
+            return {
+                success: false,
+                message: 'ID không hợp lệ!',
+            };
+        }
+
+        if (data.password) {
+            data.password = await bcrypt.hash(data.password, 10);
+        }
+
+        // Lọc bỏ `email`, các giá trị rỗng ('') hoặc null
+        const newData = Object.fromEntries(
+            Object.entries(data).filter(
+                ([key, value]) =>
+                    key !== 'email' && value !== '' && value !== null,
+            ),
+        );
+
+        if (Object.keys(newData).length === 0) {
+            return {
+                success: false,
+                message: 'Không có thông tin nào để cập nhật!',
+            };
+        }
+
+        const result = await userModel.updateOne(
+            { _id: id },
+            { $set: newData },
+        );
+
+        if (result.modifiedCount === 0) {
+            return {
+                success: false,
+                message: 'Không có thay đổi nào được thực hiện!',
+            };
+        }
+
+        return {
+            success: true,
+            message: 'Cập nhật thông tin thành công!',
+        };
+    } catch (error) {
+        console.error('Lỗi khi cập nhật:', error);
+        return {
+            success: false,
+            message: 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
+        };
+    }
+};
+
+const getAllUsers = async () => {
+    try {
+        const users = await userModel
+            .find()
+            .select('-password')
+            .sort({ createdAt: -1 });
+
+        if (!users || users.length === 0) {
+            return {
+                success: false,
+                message: 'Không có người dùng nào!',
+            };
+        }
+
+        return {
+            success: true,
+            users,
+        };
+    } catch (error) {
+        // console.error('get order error:', error);
+        return { success: false, message: error.message };
+    }
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
     login,
     getUserById,
     updateById,
+    getAllUsers,
+    updateUser,
 };

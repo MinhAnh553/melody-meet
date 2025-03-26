@@ -1,32 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import styles from './Users.module.css';
-import { getInitials } from '../../utils/formatters';
 
 const UserForm = ({ user, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         role: 'user',
+        status: 'active',
         phone: '',
-        address: '',
         password: '',
-        confirmPassword: '',
     });
 
     const [errors, setErrors] = useState({});
 
-    // If editing an existing user, populate the form
     useEffect(() => {
         if (user) {
             setFormData({
                 name: user.name || '',
                 email: user.email || '',
+                status: user.status || 'active',
                 role: user.role || 'user',
                 phone: user.phone || '',
-                address: user.address || '',
                 password: '',
-                confirmPassword: '',
             });
         }
     }, [user]);
@@ -50,28 +46,10 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
     const validateForm = () => {
         const newErrors = {};
 
-        // Validate required fields
-        if (!formData.name.trim()) {
-            newErrors.name = 'Tên người dùng là bắt buộc';
-        }
-
         if (!formData.email.trim()) {
             newErrors.email = 'Email là bắt buộc';
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Email không hợp lệ';
-        }
-
-        // If adding a new user or changing password, validate password
-        if (!user || formData.password) {
-            if (!user && !formData.password) {
-                newErrors.password = 'Mật khẩu là bắt buộc';
-            } else if (formData.password && formData.password.length < 6) {
-                newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-            }
-
-            if (formData.password !== formData.confirmPassword) {
-                newErrors.confirmPassword = 'Mật khẩu không khớp';
-            }
         }
 
         setErrors(newErrors);
@@ -89,15 +67,12 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
         // Prepare the data (omit confirmPassword)
         const { confirmPassword, ...userData } = formData;
 
-        // Add avatar initials
-        userData.avatar = getInitials(userData.name);
-
         // If editing and password is empty, don't send password
         if (user && !userData.password) {
             delete userData.password;
         }
 
-        onSubmit(userData);
+        onSubmit(user._id, userData);
     };
 
     return (
@@ -110,6 +85,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
                             Tên người dùng
                         </Form.Label>
                         <Form.Control
+                            className={`text-dark ${styles.formControl}`}
                             type="text"
                             name="name"
                             value={formData.name}
@@ -127,8 +103,10 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
                             Email
                         </Form.Label>
                         <Form.Control
+                            className={`text-dark ${styles.formControl}`}
                             type="email"
                             name="email"
+                            readOnly
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="Nhập email"
@@ -141,17 +119,23 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
 
                     <Form.Group className={styles.formGroup}>
                         <Form.Label className={styles.formLabel}>
-                            Vai trò
+                            Số điện thoại
                         </Form.Label>
-                        <Form.Select
-                            name="role"
-                            value={formData.role}
+                        <Form.Control
+                            className={`text-dark ${styles.formControl}`}
+                            type="text"
+                            name="phone"
+                            maxLength={10}
+                            value={formData.phone}
+                            onInput={(e) =>
+                                (e.target.value = e.target.value.replace(
+                                    /\D/g,
+                                    '',
+                                ))
+                            }
                             onChange={handleChange}
-                        >
-                            <option value="user">Người dùng</option>
-                            <option value="organizer">Nhà tổ chức</option>
-                            <option value="admin">Quản trị viên</option>
-                        </Form.Select>
+                            placeholder="Nhập số điện thoại"
+                        />
                     </Form.Group>
                 </div>
 
@@ -159,28 +143,32 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
                 <div>
                     <Form.Group className={styles.formGroup}>
                         <Form.Label className={styles.formLabel}>
-                            Số điện thoại
+                            Trạng thái
                         </Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="phone"
-                            value={formData.phone}
+                        <Form.Select
+                            className={styles.formControl} // Thêm class để đồng bộ style
+                            name="status"
+                            value={formData.status}
                             onChange={handleChange}
-                            placeholder="Nhập số điện thoại"
-                        />
+                        >
+                            <option value="active">Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                        </Form.Select>
                     </Form.Group>
 
                     <Form.Group className={styles.formGroup}>
                         <Form.Label className={styles.formLabel}>
-                            Địa chỉ
+                            Vai trò
                         </Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="address"
-                            value={formData.address}
+                        <Form.Select
+                            className={styles.formControl} // Đồng bộ style với input
+                            name="role"
+                            value={formData.role}
                             onChange={handleChange}
-                            placeholder="Nhập địa chỉ"
-                        />
+                        >
+                            <option value="user">Người dùng</option>
+                            <option value="admin">Quản trị viên</option>
+                        </Form.Select>
                     </Form.Group>
 
                     <Form.Group className={styles.formGroup}>
@@ -190,6 +178,7 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
                                 : 'Mật khẩu'}
                         </Form.Label>
                         <Form.Control
+                            className={`text-dark ${styles.formControl}`}
                             type="password"
                             name="password"
                             value={formData.password}
@@ -201,23 +190,6 @@ const UserForm = ({ user, onSubmit, onCancel }) => {
                         />
                         <Form.Control.Feedback type="invalid">
                             {errors.password}
-                        </Form.Control.Feedback>
-                    </Form.Group>
-
-                    <Form.Group className={styles.formGroup}>
-                        <Form.Label className={styles.formLabel}>
-                            Xác nhận mật khẩu
-                        </Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            placeholder="Nhập lại mật khẩu"
-                            isInvalid={!!errors.confirmPassword}
-                        />
-                        <Form.Control.Feedback type="invalid">
-                            {errors.confirmPassword}
                         </Form.Control.Feedback>
                     </Form.Group>
                 </div>

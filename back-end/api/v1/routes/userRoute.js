@@ -15,9 +15,21 @@ Router.route('/account').get(
     userController.getAccount,
 );
 
+Router.route('/update/:id').patch(
+    authMiddleware.isAuthorized,
+    authMiddleware.isAdmin,
+    userController.updateUser,
+);
+
 Router.route('/update').patch(
     authMiddleware.isAuthorized,
     userController.updateInfoAccount,
+);
+
+Router.route('/all-users').get(
+    authMiddleware.isAuthorized,
+    authMiddleware.isAdmin,
+    userController.getAllUsers,
 );
 
 export const userRoute = Router;

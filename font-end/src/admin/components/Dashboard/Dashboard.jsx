@@ -199,8 +199,6 @@ const Dashboard = () => {
 
     return (
         <div className={styles.dashboardContainer}>
-            <h1 className={styles.pageTitle}>Tổng quan</h1>
-
             {/* Stats Cards */}
             <div className={styles.statsGrid}>
                 <Card className={styles.statCard}>

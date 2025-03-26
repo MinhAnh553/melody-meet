@@ -65,6 +65,11 @@ const updateUserInfo = (data) => {
     return axios.patch(URL_API, data);
 };
 
+const updateUser = (userId, data) => {
+    const URL_API = `${API_URL}/user/update/${userId}`;
+    return axios.patch(URL_API, data);
+};
+
 const createOrder = (data) => {
     const URL_API = `${API_URL}/order/create`;
     return axios.post(URL_API, data);
@@ -135,6 +140,11 @@ const getEventSummary = (id) => {
     return axios.get(URL_API);
 };
 
+const getAllUsers = () => {
+    const URL_API = `${API_URL}/user/all-users`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -146,6 +156,7 @@ export default {
     getEventById,
     getEvents,
     updateUserInfo,
+    updateUser,
     createOrder,
     cancelOrder,
     getOrder,
@@ -159,4 +170,5 @@ export default {
     getOrdersByEventId,
     getEventSummary,
     getAllOrders,
+    getAllUsers,
 };
