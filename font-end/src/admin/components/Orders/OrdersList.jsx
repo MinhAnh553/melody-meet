@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Table,
     Button,
@@ -8,68 +8,92 @@ import {
     Pagination,
     Modal,
 } from 'react-bootstrap';
-import { FaSearch, FaEye, FaPrint, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaEye, FaPrint, FaTimes, FaCheck } from 'react-icons/fa';
 import styles from './Orders.module.css';
-import { orders } from '../../data/mockData';
+
+// Các hàm format tùy bạn muốn tái sử dụng
 import {
     formatDate,
     formatCurrency,
-    formatOrderStatus,
-    formatPaymentStatus,
+    truncateText,
 } from '../../utils/formatters';
-import OrderDetails from './OrderDetails';
+
+import OrderDetails from './OrderDetails'; // Nếu bạn có màn hình chi tiết
+import api from '../../../util/api'; // Gọi API
+import swalCustomize from '../../../util/swalCustomize'; // Nếu bạn dùng SweetAlert2
 
 const OrdersList = () => {
+    const [orders, setOrders] = useState([]);
+
+    // Các state cho tìm kiếm, lọc, sắp xếp, phân trang
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
-    const [sortBy, setSortBy] = useState('orderDate');
+    const [sortBy, setSortBy] = useState('createdAt'); // Mặc định sắp xếp theo ngày tạo
     const [sortOrder, setSortOrder] = useState('desc');
     const [currentPage, setCurrentPage] = useState(1);
+
+    // State cho Modal chi tiết
     const [showOrderDetails, setShowOrderDetails] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [showCancelModal, setShowCancelModal] = useState(false);
-    const [orderToCancel, setOrderToCancel] = useState(null);
 
-    const itemsPerPage = 5;
+    const itemsPerPage = 20;
 
-    // Filter orders
+    // Gọi API lấy danh sách orders khi component mount
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const fetchOrders = async () => {
+        try {
+            const res = await api.getAllOrders();
+            if (res.success) {
+                setOrders(res.orders);
+            }
+        } catch (error) {
+            console.log('Lỗi khi gọi API getAllOrders:', error);
+        }
+    };
+
+    // Lọc theo searchTerm & status
     const filteredOrders = orders.filter((order) => {
+        // 1. Kiểm tra searchTerm (tìm trong orderId, userId, eventId)
         const matchesSearch =
-            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.customer.name
-                .toLowerCase()
-                .includes(searchTerm.toLowerCase()) ||
-            order.event.title.toLowerCase().includes(searchTerm.toLowerCase());
+            order.orderId.toString().includes(searchTerm) ||
+            order.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            order.eventId.toLowerCase().includes(searchTerm.toLowerCase());
+
+        // 2. Kiểm tra statusFilter
+        // (status = 'PAID', 'CANCELED', 'PENDING'...)
         const matchesStatus =
-            statusFilter === 'all' || order.orderStatus === statusFilter;
+            statusFilter === 'all' || order.status === statusFilter;
+
         return matchesSearch && matchesStatus;
     });
 
-    // Sort orders
+    // Sắp xếp
     const sortedOrders = [...filteredOrders].sort((a, b) => {
         switch (sortBy) {
-            case 'id':
+            case 'orderId':
+                // Sắp xếp theo orderId (mã đơn hàng) - dạng số
                 return sortOrder === 'asc'
-                    ? a.id.localeCompare(b.id)
-                    : b.id.localeCompare(a.id);
-            case 'customer':
+                    ? a.orderId - b.orderId
+                    : b.orderId - a.orderId;
+            case 'totalPrice':
+                // Sắp xếp theo tổng tiền
                 return sortOrder === 'asc'
-                    ? a.customer.name.localeCompare(b.customer.name)
-                    : b.customer.name.localeCompare(a.customer.name);
-            case 'orderDate':
+                    ? a.totalPrice - b.totalPrice
+                    : b.totalPrice - a.totalPrice;
+            case 'createdAt':
+                // Sắp xếp theo ngày tạo
                 return sortOrder === 'asc'
-                    ? new Date(a.orderDate) - new Date(b.orderDate)
-                    : new Date(b.orderDate) - new Date(a.orderDate);
-            case 'amount':
-                return sortOrder === 'asc'
-                    ? a.totalAmount - b.totalAmount
-                    : b.totalAmount - a.totalAmount;
+                    ? new Date(a.createdAt) - new Date(b.createdAt)
+                    : new Date(b.createdAt) - new Date(a.createdAt);
             default:
                 return 0;
         }
     });
 
-    // Pagination
+    // Phân trang
     const totalPages = Math.ceil(sortedOrders.length / itemsPerPage);
     const indexOfLastOrder = currentPage * itemsPerPage;
     const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
@@ -78,7 +102,7 @@ const OrdersList = () => {
         indexOfLastOrder,
     );
 
-    // Handle sorting change
+    // Xử lý thay đổi cột sắp xếp
     const handleSortChange = (field) => {
         if (sortBy === field) {
             setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -88,104 +112,82 @@ const OrdersList = () => {
         }
     };
 
-    // Handle pagination
+    // Chuyển trang
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
-    // Order status badge
+    // Badge trạng thái
+    // status = 'PAID', 'CANCELED', 'PENDING', ...
     const getStatusBadge = (status) => {
         switch (status) {
-            case 'completed':
+            case 'PAID':
                 return (
                     <Badge
                         className={`${styles.statusBadge} ${styles.statusBadgeCompleted}`}
                     >
-                        {formatOrderStatus(status)}
+                        Đã thanh toán
                     </Badge>
                 );
-            case 'pending':
-                return (
-                    <Badge
-                        className={`${styles.statusBadge} ${styles.statusBadgePending}`}
-                    >
-                        {formatOrderStatus(status)}
-                    </Badge>
-                );
-            case 'cancelled':
+            case 'CANCELED':
                 return (
                     <Badge
                         className={`${styles.statusBadge} ${styles.statusBadgeCancelled}`}
                     >
-                        {formatOrderStatus(status)}
+                        Đã hủy
                     </Badge>
                 );
-            default:
-                return (
-                    <Badge className={styles.statusBadge}>
-                        {formatOrderStatus(status)}
-                    </Badge>
-                );
-        }
-    };
-
-    // Payment status badge
-    const getPaymentStatusBadge = (status) => {
-        switch (status) {
-            case 'completed':
-                return (
-                    <Badge
-                        className={`${styles.statusBadge} ${styles.statusBadgeCompleted}`}
-                    >
-                        {formatPaymentStatus(status)}
-                    </Badge>
-                );
-            case 'pending':
+            case 'PENDING':
                 return (
                     <Badge
                         className={`${styles.statusBadge} ${styles.statusBadgePending}`}
                     >
-                        {formatPaymentStatus(status)}
-                    </Badge>
-                );
-            case 'failed':
-                return (
-                    <Badge
-                        className={`${styles.statusBadge} ${styles.statusBadgeCancelled}`}
-                    >
-                        {formatPaymentStatus(status)}
+                        Đang chờ
                     </Badge>
                 );
             default:
-                return (
-                    <Badge className={styles.statusBadge}>
-                        {formatPaymentStatus(status)}
-                    </Badge>
-                );
+                return <Badge className={styles.statusBadge}>{status}</Badge>;
         }
     };
 
-    // Handle view order details
+    // Xem chi tiết đơn hàng
     const handleViewOrderDetails = (order) => {
         setSelectedOrder(order);
         setShowOrderDetails(true);
     };
 
-    // Handle cancel order
-    const handleCancelClick = (order) => {
-        setOrderToCancel(order);
-        setShowCancelModal(true);
+    const handleCancelClick = async (orderId) => {
+        try {
+            const res = await api.updateStatusOrder(orderId, 'CANCELED');
+            if (res.success) {
+                fetchOrders();
+                swalCustomize.Toast.fire({
+                    icon: 'success',
+                    title: 'Đổi trạng thái thành công!',
+                });
+            } else {
+                console.log(res.message);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const handleCancelConfirm = () => {
-        // In a real app, this would update to a backend API
-        console.log('Cancel order:', orderToCancel);
-        setShowCancelModal(false);
-    };
-
-    // Calculate the sum of tickets
-    const getTicketsCount = (tickets) => {
-        return tickets.reduce((sum, ticket) => sum + ticket.quantity, 0);
+    const handleCompleteClick = async (orderId) => {
+        try {
+            const res = await api.updateStatusOrder(orderId, 'PAID');
+            if (res.success) {
+                fetchOrders();
+                swalCustomize.Toast.fire({
+                    icon: 'success',
+                    title: 'Đổi trạng thái thành công!',
+                });
+            } else {
+                console.log(res.message);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -194,11 +196,8 @@ const OrdersList = () => {
 
             {/* Table Header */}
             <div className={styles.tableHeader}>
-                <Button variant="primary" disabled>
-                    Xuất báo cáo
-                </Button>
-
                 <div className={styles.searchFilter}>
+                    {/* Ô tìm kiếm */}
                     <InputGroup className={styles.searchInput}>
                         <InputGroup.Text id="search-addon">
                             <FaSearch />
@@ -210,14 +209,15 @@ const OrdersList = () => {
                         />
                     </InputGroup>
 
+                    {/* Dropdown lọc trạng thái */}
                     <Form.Select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
                         <option value="all">Tất cả trạng thái</option>
-                        <option value="completed">Hoàn thành</option>
-                        <option value="pending">Đang xử lý</option>
-                        <option value="cancelled">Đã hủy</option>
+                        <option value="PAID">Đã thanh toán</option>
+                        <option value="CANCELED">Đã hủy</option>
+                        <option value="PENDING">Đang chờ</option>
                     </Form.Select>
                 </div>
             </div>
@@ -228,39 +228,30 @@ const OrdersList = () => {
                     <thead>
                         <tr>
                             <th
-                                onClick={() => handleSortChange('id')}
+                                onClick={() => handleSortChange('orderId')}
                                 style={{ cursor: 'pointer' }}
                             >
-                                Mã đơn hàng{' '}
-                                {sortBy === 'id' &&
+                                Mã ĐH{' '}
+                                {sortBy === 'orderId' &&
                                     (sortOrder === 'asc' ? '↑' : '↓')}
                             </th>
-                            <th
-                                onClick={() => handleSortChange('customer')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Khách hàng{' '}
-                                {sortBy === 'customer' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
+                            <th>Người dùng</th>
                             <th>Sự kiện</th>
-                            <th>Số lượng vé</th>
                             <th
-                                onClick={() => handleSortChange('amount')}
+                                onClick={() => handleSortChange('totalPrice')}
                                 style={{ cursor: 'pointer' }}
                             >
                                 Tổng tiền{' '}
-                                {sortBy === 'amount' &&
+                                {sortBy === 'totalPrice' &&
                                     (sortOrder === 'asc' ? '↑' : '↓')}
                             </th>
                             <th>Trạng thái</th>
-                            <th>Thanh toán</th>
                             <th
-                                onClick={() => handleSortChange('orderDate')}
+                                onClick={() => handleSortChange('createdAt')}
                                 style={{ cursor: 'pointer' }}
                             >
                                 Ngày đặt{' '}
-                                {sortBy === 'orderDate' &&
+                                {sortBy === 'createdAt' &&
                                     (sortOrder === 'asc' ? '↑' : '↓')}
                             </th>
                             <th>Thao tác</th>
@@ -268,19 +259,19 @@ const OrdersList = () => {
                     </thead>
                     <tbody>
                         {currentOrders.map((order) => (
-                            <tr key={order.id}>
-                                <td>{order.id}</td>
-                                <td>{order.customer.name}</td>
-                                <td>{order.event.title}</td>
-                                <td>{getTicketsCount(order.tickets)}</td>
-                                <td>{formatCurrency(order.totalAmount)}</td>
-                                <td>{getStatusBadge(order.orderStatus)}</td>
+                            <tr key={order._id}>
+                                <td>{order.orderId}</td>
+                                <td>{order.infoUser.email}</td>
                                 <td>
-                                    {getPaymentStatusBadge(order.paymentStatus)}
+                                    {truncateText(order.eventName, 30)}
+                                    {}
                                 </td>
-                                <td>{formatDate(order.orderDate)}</td>
+                                <td>{formatCurrency(order.totalPrice)}</td>
+                                <td>{getStatusBadge(order.status)}</td>
+                                <td>{formatDate(order.createdAt)}</td>
                                 <td>
                                     <div className={styles.tableActions}>
+                                        {/* Xem chi tiết */}
                                         <Button
                                             variant="link"
                                             className={`${styles.actionButton} ${styles.viewButton}`}
@@ -291,29 +282,61 @@ const OrdersList = () => {
                                         >
                                             <FaEye />
                                         </Button>
-                                        <Button
+                                        {/* In đơn hàng */}
+                                        {/* <Button
                                             variant="link"
                                             className={`${styles.actionButton} ${styles.viewButton}`}
                                             title="In đơn hàng"
                                             onClick={() =>
                                                 console.log(
                                                     'Print order:',
-                                                    order.id,
+                                                    order.orderId,
                                                 )
                                             }
                                         >
                                             <FaPrint />
-                                        </Button>
-                                        {order.orderStatus === 'pending' && (
+                                        </Button> */}
+                                        {/* Nếu status = PENDING thì mới cho hủy */}
+                                        {order.status === 'PENDING' && (
+                                            <>
+                                                <Button
+                                                    variant="link"
+                                                    className={`${styles.actionButton} ${styles.completeButton}`}
+                                                    title="Hoàn thành đơn hàng"
+                                                    onClick={() =>
+                                                        handleCompleteClick(
+                                                            order._id,
+                                                        )
+                                                    }
+                                                >
+                                                    <FaCheck />
+                                                </Button>
+                                                <Button
+                                                    variant="link"
+                                                    className={`${styles.actionButton} ${styles.deleteButton}`}
+                                                    title="Hủy đơn hàng"
+                                                    onClick={() =>
+                                                        handleCancelClick(
+                                                            order._id,
+                                                        )
+                                                    }
+                                                >
+                                                    <FaTimes />
+                                                </Button>
+                                            </>
+                                        )}
+                                        {order.status === 'CANCELED' && (
                                             <Button
                                                 variant="link"
-                                                className={`${styles.actionButton} ${styles.deleteButton}`}
-                                                title="Hủy đơn hàng"
+                                                className={`${styles.actionButton} ${styles.completeButton}`}
+                                                title="Hoàn thành đơn hàng"
                                                 onClick={() =>
-                                                    handleCancelClick(order)
+                                                    handleCompleteClick(
+                                                        order._id,
+                                                    )
                                                 }
                                             >
-                                                <FaTimes />
+                                                <FaCheck />
                                             </Button>
                                         )}
                                     </div>
@@ -381,42 +404,14 @@ const OrdersList = () => {
                     >
                         Đóng
                     </Button>
-                    <Button
+                    {/* <Button
                         variant="primary"
                         onClick={() =>
-                            console.log('Print order:', selectedOrder?.id)
+                            console.log('Print order:', selectedOrder?.orderId)
                         }
                     >
                         In đơn hàng
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
-            {/* Cancel Order Confirmation Modal */}
-            <Modal
-                show={showCancelModal}
-                onHide={() => setShowCancelModal(false)}
-                centered
-            >
-                <Modal.Header closeButton>
-                    <Modal.Title className={styles.modalTitle}>
-                        Xác nhận hủy đơn hàng
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Bạn có chắc chắn muốn hủy đơn hàng {orderToCancel?.id}? Hành
-                    động này không thể hoàn tác.
-                </Modal.Body>
-                <Modal.Footer className={styles.modalFooter}>
-                    <Button
-                        variant="secondary"
-                        onClick={() => setShowCancelModal(false)}
-                    >
-                        Không
-                    </Button>
-                    <Button variant="danger" onClick={handleCancelConfirm}>
-                        Hủy đơn hàng
-                    </Button>
+                    </Button> */}
                 </Modal.Footer>
             </Modal>
         </div>

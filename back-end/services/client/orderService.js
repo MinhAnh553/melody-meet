@@ -4,6 +4,8 @@ import eventModel from '../../models/eventModel.js';
 import orderModel from '../../models/orderModel.js';
 import ticketModel from '../../models/ticketModel.js';
 import payosService from './payosService.js';
+import userService from './userService.js';
+import eventService from './eventService.js';
 
 const createOrder = async (userId, eventId, items, totalPrice) => {
     try {
@@ -101,9 +103,9 @@ const cancelOrder = async (id) => {
         );
 
         // delete ticket
-        await ticketModel.deleteMany({
-            orderId: id,
-        });
+        // await ticketModel.deleteMany({
+        //     orderId: id,
+        // });
 
         return { success: true, message: 'Hủy đơn hàng thành công!' };
     } catch (error) {
@@ -317,6 +319,63 @@ const getOrdersByEventId = async (eventId, userId) => {
     }
 };
 
+const getAllOrders = async () => {
+    try {
+        const orders = await orderModel.find().sort({ createdAt: -1 }).lean();
+
+        if (!orders || orders.length === 0) {
+            return {
+                success: false,
+                message: 'Không có đơn hàng nào!',
+            };
+        }
+
+        await Promise.all(
+            orders.map(async (order) => {
+                const user = await userService.getUserById(order.userId);
+                order.infoUser = user.address;
+
+                const event = await eventModel.findById(order.eventId);
+                order.eventName = event.name;
+
+                const tickets = await ticketModel.find({
+                    orderId: order._id,
+                });
+                order.tickets = tickets;
+            }),
+        );
+
+        return {
+            success: true,
+            orders,
+        };
+    } catch (error) {
+        // console.error('get order error:', error);
+        return { success: false, message: error.message };
+    }
+};
+
+const updateStatusOrder = async (orderId, status) => {
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+        { _id: orderId },
+        { status },
+        { new: true },
+    );
+
+    if (!updatedOrder) {
+        return {
+            success: false,
+            message: 'Không tìm thấy đơn hàng!',
+        };
+    }
+
+    return {
+        success: true,
+        message: 'Cập nhật trạng thái đơn hàng thành công!',
+        // event: updatedOrder,
+    };
+};
+
 export default {
     createOrder,
     getOrderById,
@@ -326,4 +385,6 @@ export default {
     getOrderTickets,
     orderSuccess,
     getOrdersByEventId,
+    getAllOrders,
+    updateStatusOrder,
 };

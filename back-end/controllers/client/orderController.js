@@ -194,6 +194,50 @@ const getOrderTickets = async (req, res) => {
     }
 };
 
+const getAllOrders = async (req, res) => {
+    try {
+        const result = await orderService.getAllOrders();
+        if (result.success) {
+            return res.status(200).json(result);
+        }
+        return res.status(404).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
+const updateStatusOrder = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const allowedStatuses = ['CANCELED', 'PAID', 'PENDING'];
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Trạng thái không hợp lệ!',
+            });
+        }
+
+        const result = await orderService.updateStatusOrder(id, status);
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 export default {
     createOrder,
     getOrder,
@@ -203,4 +247,6 @@ export default {
     getOrderSuccess,
     getMyOrders,
     getOrderTickets,
+    getAllOrders,
+    updateStatusOrder,
 };

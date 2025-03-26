@@ -15,12 +15,17 @@
 
 .searchFilter {
     display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
 }
 
 .searchInput {
-    min-width: 250px;
+    min-width: 350px;
+    flex: 1;
+}
+
+.searchFilter select {
+    width: auto;
 }
 
 .tableActions {

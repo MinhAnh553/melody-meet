@@ -38,7 +38,7 @@ const Layout = () => {
             icon: <FaShoppingCart />,
             text: 'Quản lý đơn hàng',
         },
-        { path: '/admin/tickets', icon: <FaTicketAlt />, text: 'Quản lý vé' },
+        // { path: '/admin/tickets', icon: <FaTicketAlt />, text: 'Quản lý vé' },
         { path: '/admin/users', icon: <FaUsers />, text: 'Quản lý người dùng' },
     ];
 
@@ -57,7 +57,7 @@ const Layout = () => {
                                 collapsed ? styles.logoTextHidden : ''
                             }`}
                         >
-                            Music Event Admin
+                            Melody Meet
                         </div>
                     </Link>
                     <button

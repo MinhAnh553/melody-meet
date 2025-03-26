@@ -1,86 +1,66 @@
 import React from 'react';
-import { Row, Col, Badge } from 'react-bootstrap';
-import { FaCreditCard, FaMoneyBillWave, FaUniversity } from 'react-icons/fa';
+import { Badge } from 'react-bootstrap';
 import styles from './Orders.module.css';
-import {
-    formatDate,
-    formatCurrency,
-    formatOrderStatus,
-    formatPaymentStatus,
-} from '../../utils/formatters';
+import { formatDate, formatCurrency } from '../../utils/formatters';
 
 const OrderDetails = ({ order }) => {
-    // Order status badge
+    if (!order) return null;
+
+    // Trả về Badge tùy theo trạng thái "PAID", "CANCELED", "PENDING"...
     const getStatusBadge = (status) => {
         switch (status) {
-            case 'completed':
+            case 'PAID':
                 return (
                     <Badge
                         className={`${styles.statusBadge} ${styles.statusBadgeCompleted}`}
                     >
-                        {formatOrderStatus(status)}
+                        Đã thanh toán
                     </Badge>
                 );
-            case 'pending':
-                return (
-                    <Badge
-                        className={`${styles.statusBadge} ${styles.statusBadgePending}`}
-                    >
-                        {formatOrderStatus(status)}
-                    </Badge>
-                );
-            case 'cancelled':
+            case 'CANCELED':
                 return (
                     <Badge
                         className={`${styles.statusBadge} ${styles.statusBadgeCancelled}`}
                     >
-                        {formatOrderStatus(status)}
+                        Đã hủy
                     </Badge>
                 );
-            default:
+            case 'PENDING':
                 return (
-                    <Badge className={styles.statusBadge}>
-                        {formatOrderStatus(status)}
+                    <Badge
+                        className={`${styles.statusBadge} ${styles.statusBadgePending}`}
+                    >
+                        Đang chờ
                     </Badge>
                 );
-        }
-    };
-
-    // Payment method icon
-    const getPaymentMethodIcon = (method) => {
-        switch (method) {
-            case 'Credit Card':
-                return <FaCreditCard className={styles.paymentIcon} />;
-            case 'Digital Wallet':
-                return <FaMoneyBillWave className={styles.paymentIcon} />;
-            case 'Bank Transfer':
-                return <FaUniversity className={styles.paymentIcon} />;
             default:
-                return <FaCreditCard className={styles.paymentIcon} />;
+                return <Badge className={styles.statusBadge}>{status}</Badge>;
         }
     };
 
     return (
         <div className={styles.orderDetailsCard}>
-            {/* Order Header */}
+            {/* Header */}
             <div className={styles.orderDetailsHeader}>
                 <div className={styles.orderInfo}>
                     <div className={styles.orderIDLabel}>Mã đơn hàng</div>
-                    <div className={styles.orderID}>{order.id}</div>
+                    <div className={styles.orderID}>{order.orderId}</div>
+
                     <div className={styles.orderDate}>
-                        Ngày đặt: {formatDate(order.orderDate)}
+                        Ngày đặt: {formatDate(order.createdAt)}
                     </div>
                 </div>
+
                 <div className={styles.orderStatusContainer}>
                     <div className={styles.orderTotalLabel}>Tổng tiền</div>
                     <div className={styles.orderTotal}>
-                        {formatCurrency(order.totalAmount)}
+                        {formatCurrency(order.totalPrice)}
                     </div>
-                    {getStatusBadge(order.orderStatus)}
+                    {getStatusBadge(order.status)}
                 </div>
             </div>
 
-            {/* Customer Information */}
+            {/* Thông tin khách hàng */}
             <div className={styles.orderDetailsSection}>
                 <h4 className={styles.orderDetailsSectionTitle}>
                     Thông tin khách hàng
@@ -90,13 +70,13 @@ const OrderDetails = ({ order }) => {
                         <div className={styles.infoItem}>
                             <span className={styles.infoLabel}>Họ tên</span>
                             <span className={styles.infoValue}>
-                                {order.customer.name}
+                                {order.infoUser?.name}
                             </span>
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.infoLabel}>Email</span>
                             <span className={styles.infoValue}>
-                                {order.customer.email}
+                                {order.infoUser?.email}
                             </span>
                         </div>
                     </div>
@@ -106,128 +86,50 @@ const OrderDetails = ({ order }) => {
                                 Số điện thoại
                             </span>
                             <span className={styles.infoValue}>
-                                {order.customer.phone}
+                                {order.infoUser?.phone}
                             </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Event Information */}
+            {/* Thông tin sự kiện */}
             <div className={styles.orderDetailsSection}>
                 <h4 className={styles.orderDetailsSectionTitle}>
                     Thông tin sự kiện
                 </h4>
                 <div className={styles.infoItem}>
                     <span className={styles.infoLabel}>Tên sự kiện</span>
-                    <span className={styles.infoValue}>
-                        {order.event.title}
-                    </span>
+                    <span className={styles.infoValue}>{order.eventName}</span>
                 </div>
             </div>
 
-            {/* Tickets */}
-            <div className={styles.orderDetailsSection}>
-                <h4 className={styles.orderDetailsSectionTitle}>Vé đã mua</h4>
-                {order.tickets.map((ticket, index) => (
-                    <div key={index} className={styles.ticketItem}>
-                        <div className={styles.ticketInfo}>
-                            <div className={styles.ticketTitle}>
-                                {ticket.type}
-                            </div>
-                            <div className={styles.ticketDetails}>
-                                {ticket.quantity} x{' '}
-                                {formatCurrency(ticket.price)}
-                            </div>
-                        </div>
-                        <div className={styles.ticketPrice}>
-                            {formatCurrency(ticket.price * ticket.quantity)}
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Payment Information */}
+            {/* Vé đã mua */}
             <div className={styles.orderDetailsSection}>
                 <h4 className={styles.orderDetailsSectionTitle}>
-                    Thông tin thanh toán
+                    Thông tin vé
                 </h4>
-                <div className={styles.paymentInfo}>
-                    <div className={styles.paymentMethod}>
-                        {getPaymentMethodIcon(order.paymentMethod)}
-                        <div>
-                            <div className={styles.paymentInfoTitle}>
-                                {order.paymentMethod}
-                            </div>
-                            <div>
-                                Trạng thái:{' '}
-                                {order.paymentStatus === 'completed' ? (
-                                    <Badge
-                                        className={`${styles.statusBadge} ${styles.statusBadgeCompleted}`}
-                                    >
-                                        {formatPaymentStatus(
-                                            order.paymentStatus,
-                                        )}
-                                    </Badge>
-                                ) : (
-                                    <Badge
-                                        className={`${styles.statusBadge} ${styles.statusBadgePending}`}
-                                    >
-                                        {formatPaymentStatus(
-                                            order.paymentStatus,
-                                        )}
-                                    </Badge>
-                                )}
-                            </div>
-                            {order.paymentDate && (
-                                <div>
-                                    Ngày thanh toán:{' '}
-                                    {formatDate(order.paymentDate)}
+                {order.tickets && order.tickets.length > 0 ? (
+                    order.tickets.map((ticket, index) => (
+                        <div key={index} className={styles.ticketItem}>
+                            <div className={styles.ticketInfo}>
+                                <div className={styles.ticketTitle}>
+                                    {ticket.name}
                                 </div>
-                            )}
+                                <div className={styles.ticketDetails}>
+                                    {ticket.quantity} x{' '}
+                                    {formatCurrency(ticket.price)}
+                                </div>
+                            </div>
+                            <div className={styles.ticketPrice}>
+                                {formatCurrency(ticket.price * ticket.quantity)}
+                            </div>
                         </div>
-                    </div>
-
-                    <div className={styles.orderSummary}>
-                        <div className={styles.summaryRow}>
-                            <span>Tổng tiền vé:</span>
-                            <span>{formatCurrency(order.totalAmount)}</span>
-                        </div>
-                        <div className={styles.summaryRow}>
-                            <span>Phí dịch vụ:</span>
-                            <span>{formatCurrency(0)}</span>
-                        </div>
-                        <div className={styles.summaryDivider}></div>
-                        <div
-                            className={`${styles.summaryRow} ${styles.summaryTotal}`}
-                        >
-                            <span>Tổng thanh toán:</span>
-                            <span>{formatCurrency(order.totalAmount)}</span>
-                        </div>
-                    </div>
-                </div>
+                    ))
+                ) : (
+                    <p>Chưa có vé nào.</p>
+                )}
             </div>
-
-            {/* Cancellation Info (if applicable) */}
-            {order.orderStatus === 'cancelled' && (
-                <div className={styles.orderDetailsSection}>
-                    <h4 className={styles.orderDetailsSectionTitle}>
-                        Thông tin hủy đơn
-                    </h4>
-                    <div className={styles.infoItem}>
-                        <span className={styles.infoLabel}>Ngày hủy</span>
-                        <span className={styles.infoValue}>
-                            {formatDate(order.cancellationDate)}
-                        </span>
-                    </div>
-                    <div className={styles.infoItem}>
-                        <span className={styles.infoLabel}>Lý do hủy</span>
-                        <span className={styles.infoValue}>
-                            {order.cancellationReason}
-                        </span>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

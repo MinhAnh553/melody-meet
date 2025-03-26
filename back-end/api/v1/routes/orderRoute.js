@@ -20,6 +20,16 @@ Router.route('/ticket/:orderId').get(orderController.getOrderTickets);
 
 Router.route('/my').get(orderController.getMyOrders);
 
+Router.route('/all-orders').get(
+    authMiddleware.isAdmin,
+    orderController.getAllOrders,
+);
+
+Router.route('/update/:id/status').patch(
+    authMiddleware.isAdmin,
+    orderController.updateStatusOrder,
+);
+
 Router.route('/:orderId').get(orderController.getOrder);
 
 export const orderRoute = Router;

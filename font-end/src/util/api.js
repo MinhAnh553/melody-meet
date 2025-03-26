@@ -80,6 +80,11 @@ const getOrder = (id) => {
     return axios.get(URL_API);
 };
 
+const updateStatusOrder = (orderId, data) => {
+    const URL_API = `${API_URL}/order/update/${orderId}/status`;
+    return axios.patch(URL_API, { status: data });
+};
+
 const selectPayment = (id, method) => {
     const URL_API = `${API_URL}/order/${id}/select-payment?method=${method}`;
     return axios.post(URL_API);
@@ -102,6 +107,11 @@ const getMyOrders = (page = 1, limit = 5) => {
 
 const getOrderTickets = (id) => {
     const URL_API = `${API_URL}/order/ticket/${id}`;
+    return axios.get(URL_API);
+};
+
+const getAllOrders = () => {
+    const URL_API = `${API_URL}/order/all-orders`;
     return axios.get(URL_API);
 };
 
@@ -141,10 +151,12 @@ export default {
     getOrder,
     selectPayment,
     checkOrder,
+    updateStatusOrder,
     getOrderByOrderId,
     getMyOrders,
     getOrderTickets,
     getMyEvents,
     getOrdersByEventId,
     getEventSummary,
+    getAllOrders,
 };
