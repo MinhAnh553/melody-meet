@@ -45,13 +45,18 @@ const updateEvent = (eventId, data) => {
     return axios.patch(URL_API, data);
 };
 
+const updateStatusEvent = (eventId, data) => {
+    const URL_API = `${API_URL}/event/update/${eventId}/status`;
+    return axios.patch(URL_API, { status: data });
+};
+
 const getEventById = (id) => {
     const URL_API = `${API_URL}/event/${id}`;
     return axios.get(URL_API);
 };
 
-const getEvents = () => {
-    const URL_API = `${API_URL}/event`;
+const getEvents = (status = 'approved', isFinished = false) => {
+    const URL_API = `${API_URL}/event?status=${status}&isFinished=${isFinished}`;
     return axios.get(URL_API);
 };
 
@@ -126,6 +131,7 @@ export default {
     login,
     getAccount,
     createEvent,
+    updateStatusEvent,
     updateEvent,
     getEventById,
     getEvents,

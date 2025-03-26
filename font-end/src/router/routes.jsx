@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-    createBrowserRouter,
-    useLocation,
-    Routes,
-    Route,
-} from 'react-router-dom';
+import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import ClientLayout from '../client/layout/ClientLayout.jsx';
@@ -19,6 +14,13 @@ import PurchasedTickets from '../client/pages/PurchasedTickets.jsx';
 import EventManagement from '../client/pages/event/EventManagement.jsx';
 import OrderList from '../client/pages/event/OrderList.jsx';
 import EventSummary from '../client/pages/event/EventSummary.jsx';
+import Layout from '../admin/components/layouts/Layout.jsx';
+import Dashboard from '../admin/components/Dashboard/Dashboard.jsx';
+import EventsList from '../admin/components/Events/EventsList.jsx';
+import OrdersList from '../admin/components/Orders/OrdersList.jsx';
+import TicketsList from '../admin/components/Tickets/TicketsList.jsx';
+import UsersList from '../admin/components/Users/UsersList.jsx';
+import ProtectedAdminRoute from '../admin/components/ProtectedAdminRoute.jsx';
 
 const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -181,6 +183,19 @@ const AnimatedRoutes = () => {
                             </motion.div>
                         }
                     />
+                </Route>
+                <Route path="/admin" element={<ProtectedAdminRoute />}>
+                    <Route element={<Layout />}>
+                        <Route
+                            index
+                            element={<Navigate to="dashboard" replace />}
+                        />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="events" element={<EventsList />} />
+                        <Route path="orders" element={<OrdersList />} />
+                        <Route path="tickets" element={<TicketsList />} />
+                        <Route path="users" element={<UsersList />} />
+                    </Route>
                 </Route>
             </Routes>
         </AnimatePresence>

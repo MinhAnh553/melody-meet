@@ -82,7 +82,7 @@ const Step1 = ({
                             Tên sự kiện
                         </label>
                         <input
-                            className="form-control"
+                            className="form-control text-dark"
                             type="text"
                             id="eventName"
                             name="eventName"
@@ -161,7 +161,7 @@ const Step1 = ({
                                 Tên ban tổ chức
                             </label>
                             <input
-                                className="form-control"
+                                className="form-control text-dark"
                                 type="text"
                                 name="organizerName"
                                 id="eventName"
@@ -183,7 +183,7 @@ const Step1 = ({
                                 Thông tin ban tổ chức
                             </label>
                             <input
-                                className="form-control"
+                                className="form-control text-dark"
                                 type="text"
                                 name="organizerInfo"
                                 id="eventName"

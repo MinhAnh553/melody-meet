@@ -107,9 +107,38 @@ const updateEvent = async (req, res) => {
     }
 };
 
+const updateStatusEvent = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        const allowedStatuses = ['approved', 'rejected', 'pending'];
+        if (!allowedStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Trạng thái không hợp lệ!',
+            });
+        }
+
+        const result = await eventService.updateStatusEvent(id, status);
+        if (!result.success) {
+            return res.status(404).json(result);
+        }
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 const getEvents = async (req, res) => {
     try {
-        const events = await eventService.getEvents();
+        const { status = 'approved', isFinished = false } = req.query;
+        const events = await eventService.getEvents(status, isFinished);
         res.status(200).json({
             success: true,
             events,
@@ -289,6 +318,7 @@ const getEventSummary = async (req, res) => {
 export default {
     createEvent,
     updateEvent,
+    updateStatusEvent,
     getEvents,
     getEventById,
     getMyEvents,

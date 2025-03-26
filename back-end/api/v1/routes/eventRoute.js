@@ -14,6 +14,12 @@ Router.route('/create').post(
     eventController.createEvent,
 );
 
+Router.route('/update/:id/status').patch(
+    authMiddleware.isAuthorized,
+    authMiddleware.isAdmin,
+    eventController.updateStatusEvent,
+);
+
 Router.route('/update/:id').patch(
     authMiddleware.isAuthorized,
     uploadCloudProvider.fields([

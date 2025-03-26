@@ -164,7 +164,7 @@ const AddressSelector = ({ onAddressChange, initialAddress }) => {
                     Tên địa điểm
                 </label>
                 <input
-                    className="form-control"
+                    className="form-control text-dark"
                     type="text"
                     name="venueName"
                     placeholder="Tên địa điểm"
@@ -249,7 +249,7 @@ const AddressSelector = ({ onAddressChange, initialAddress }) => {
                     Số nhà, đường
                 </label>
                 <input
-                    className="form-control"
+                    className="form-control text-dark"
                     type="text"
                     name="address"
                     placeholder="Số nhà, đường"

@@ -32,14 +32,38 @@ const updateEvent = async (id, data, userId) => {
     };
 };
 
-const getEvents = async () => {
-    const events = await eventModel
-        .find({
-            status: 'approved',
-            isFinished: false,
-        })
-        .sort({ createdAt: -1 });
+const updateStatusEvent = async (eventId, status) => {
+    const updatedEvent = await eventModel.findByIdAndUpdate(
+        { _id: eventId },
+        { status },
+        { new: true },
+    );
 
+    if (!updatedEvent) {
+        return {
+            success: false,
+            message: 'Không tìm thấy sự kiện!',
+        };
+    }
+
+    return {
+        success: true,
+        message: 'Cập nhật trạng thái sự kiện thành công!',
+        // event: updatedEvent,
+    };
+};
+
+const getEvents = async (status, isFinished) => {
+    if (status === 'all') {
+        const events = await eventModel
+            .find({ isFinished: isFinished })
+            .sort({ createdAt: -1 });
+        return events;
+    }
+
+    const events = await eventModel
+        .find({ status: status, isFinished: isFinished })
+        .sort({ createdAt: -1 });
     return events;
 };
 
@@ -120,6 +144,7 @@ const getOrdersByEventId = async (eventId, userId) => {
 export default {
     createEvent,
     updateEvent,
+    updateStatusEvent,
     getEvents,
     getEventById,
     getMyEvents,

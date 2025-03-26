@@ -6,7 +6,7 @@ import swalCustomize from '../../util/swalCustomize';
 
 const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
     const { eventId } = useParams();
-    const { logout } = useAuth();
+    const { auth, logout } = useAuth();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -210,6 +210,17 @@ const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
                                 </span>
                             </div>
                             <ul className="infoAccountEvent dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1">
+                                {auth.user?.role === 'admin' && (
+                                    <li>
+                                        <Link
+                                            className="dropdown-item py-2 d-flex align-items-center"
+                                            to="/admin"
+                                        >
+                                            <i className="bi bi-shield-lock me-2 text-danger fs-5" />
+                                            <span>Trang Quản Trị</span>
+                                        </Link>
+                                    </li>
+                                )}
                                 <li>
                                     <Link
                                         className="dropdown-item py-2 d-flex align-items-center"

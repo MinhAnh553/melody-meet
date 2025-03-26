@@ -34,6 +34,18 @@ const isAuthorized = (req, res, next) => {
     }
 };
 
+const isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        return res.status(403).json({
+            success: false,
+            message: 'Bạn không có quyền truy cập tài nguyên này!',
+        });
+    }
+};
+
 export default {
     isAuthorized,
+    isAdmin,
 };

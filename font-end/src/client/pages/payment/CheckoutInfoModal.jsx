@@ -73,7 +73,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
                     <label className="form-label">Tên người nhận</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control text-dark"
                         placeholder="Nhập tên người nhận"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -84,7 +84,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
                     <label className="form-label">Số điện thoại</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control text-dark"
                         maxLength="11"
                         placeholder="Nhập số điện thoại"
                         value={phone}
@@ -99,7 +99,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
                     <label className="form-label">Email</label>
                     <input
                         type="email"
-                        className="form-control"
+                        className="form-control text-dark"
                         placeholder="Nhập email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}

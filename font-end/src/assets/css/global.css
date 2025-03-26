@@ -7,15 +7,33 @@
     --foreground: #1e0a3c;
     --border: #dbdae3;
     --input: #eeedf2;
+
+    /* ADMIN */
+    --primary-color: #8e44ad;
+    --secondary-color: #3498db;
+    --dark-bg: #121212;
+    --dark-card-bg: #1e1e1e;
+    --text-light: #f8f9fa;
+    --text-secondary: #adb5bd;
+    --danger-color: #e74c3c;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --border-color: #2d2d2d;
 }
 
 body {
+    color: #fff;
     background-color: #27272a;
 }
 
 main {
     max-width: 1250px;
     margin: auto;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
 }
 
 header {
@@ -561,7 +579,12 @@ header .form-control {
 }
 
 .modal-content {
-    background-color: #fff;
+    background-color: #1e1e1e;
+}
+
+.btn-close {
+    filter: invert(1);
+    opacity: 1;
 }
 
 /* TicketModal */
