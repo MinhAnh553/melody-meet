@@ -134,11 +134,8 @@ function PurchasedTickets() {
                                     const subTotal =
                                         ticket.price * ticket.quantity;
                                     return (
-                                        <>
-                                            <div
-                                                key={idx}
-                                                className="d-flex align-items-center mb-2 p-2 rounded bg-white text-dark"
-                                            >
+                                        <React.Fragment key={ticket._id || idx}>
+                                            <div className="d-flex align-items-center mb-2 p-2 rounded bg-white text-dark">
                                                 <div
                                                     className="d-flex align-items-center justify-content-center text-white"
                                                     style={{
@@ -182,7 +179,7 @@ function PurchasedTickets() {
                                                 </div>
                                             </div>
                                             <hr></hr>
-                                        </>
+                                        </React.Fragment>
                                     );
                                 })}
                             </div>
