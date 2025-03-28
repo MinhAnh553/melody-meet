@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { FaImage } from 'react-icons/fa';
 import styles from './Tickets.module.css';
-import { events } from '../../data/mockData';
 
 const TicketForm = ({ ticket, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState({

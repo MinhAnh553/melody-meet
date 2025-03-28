@@ -145,6 +145,11 @@ const getAllUsers = () => {
     return axios.get(URL_API);
 };
 
+const getDashboard = () => {
+    const URL_API = `${API_URL}/admin/dashboard`;
+    return axios.get(URL_API);
+};
+
 export default {
     sendOTP,
     verifyOTPAndRegister,
@@ -171,4 +176,5 @@ export default {
     getEventSummary,
     getAllOrders,
     getAllUsers,
+    getDashboard,
 };

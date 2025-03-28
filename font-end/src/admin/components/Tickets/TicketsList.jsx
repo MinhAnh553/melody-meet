@@ -13,7 +13,6 @@ import {
 } from 'react-bootstrap';
 import { FaSearch, FaEdit, FaTrash, FaEye, FaTh, FaList } from 'react-icons/fa';
 import styles from './Tickets.module.css';
-import { tickets, events } from '../../data/mockData';
 import { formatCurrency, formatTicketStatus } from '../../utils/formatters';
 import TicketForm from './TicketForm';
 
