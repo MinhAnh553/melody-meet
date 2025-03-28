@@ -1,5 +1,7 @@
 import eventModel from '../../models/eventModel.js';
 import orderModel from '../../models/orderModel.js';
+import userService from './userService.js';
+import ticketModel from '../../models/ticketModel.js';
 
 const createEvent = async (eventData) => {
     const event = new eventModel(eventData);
@@ -130,11 +132,34 @@ const getOrdersByEventId = async (eventId, userId) => {
             .find({
                 eventId: eventId,
             })
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .lean();
+
+        if (!orders || orders.length === 0) {
+            return {
+                success: false,
+                message: 'Không có đơn hàng nào!',
+            };
+        }
+
+        await Promise.all(
+            orders.map(async (order) => {
+                const user = await userService.getUserById(order.userId);
+                order.infoUser = user.address;
+
+                const event = await eventModel.findById(order.eventId);
+                order.eventName = event.name;
+
+                const tickets = await ticketModel.find({
+                    orderId: order._id,
+                });
+                order.tickets = tickets;
+            }),
+        );
 
         return {
             success: true,
-            orders: orders,
+            orders,
         };
     } catch (error) {
         return { success: false, message: error.message };

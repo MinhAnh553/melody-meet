@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from 'react-bootstrap';
 import styles from './Orders.module.css';
-import { formatDate, formatCurrency } from '../../utils/formatters';
+import { formatCurrency, formatDateTime } from '../../utils/formatters';
 
 const OrderDetails = ({ order }) => {
     if (!order) return null;
@@ -47,7 +47,7 @@ const OrderDetails = ({ order }) => {
                     <div className={styles.orderID}>{order.orderId}</div>
 
                     <div className={styles.orderDate}>
-                        Ngày đặt: {formatDate(order.createdAt)}
+                        Ngày đặt: {formatDateTime(order.createdAt)}
                     </div>
                 </div>
 

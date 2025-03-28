@@ -1,22 +1,33 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import {
-    PieChart,
-    Pie,
-    Cell,
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-    Legend,
-} from 'recharts';
 import { Card, Table, Container, Row, Col, ProgressBar } from 'react-bootstrap';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
 
-const COLORS = ['#0088FE', '#FF8042'];
+import { Line, Doughnut } from 'react-chartjs-2';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+} from 'chart.js';
+
+// Đăng ký các thành phần của ChartJS
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    ArcElement,
+);
 
 const EventSummary = () => {
     const { eventId } = useParams();
@@ -33,18 +44,7 @@ const EventSummary = () => {
                         (a, b) => new Date(a.date) - new Date(b.date),
                     );
 
-                    // Chuyển đổi ngày từ MM/DD/YYYY -> DD/MM/YYYY
-                    const formattedData = sorted.map((item) => ({
-                        ...item,
-                        date: new Date(item.date).toLocaleDateString('vi-VN'), // Định dạng ngày tháng Việt Nam
-                    }));
-
-                    setEventData({
-                        ...res,
-                        revenueByDate: formattedData,
-                    });
-
-                    // setEventData(res);
+                    setEventData(res);
                 } else {
                     swalCustomize.Toast('error', res.message);
                 }
@@ -66,6 +66,55 @@ const EventSummary = () => {
         revenueByDate = [],
     } = eventData || {};
 
+    // ✅ Cấu hình biểu đồ doanh thu
+    const revenueChartData = {
+        labels: revenueByDate.map((item) => {
+            const [month, day, year] = item.date.split('/');
+            return `${day}/${month}`; // Định dạng DD/MM
+        }),
+        datasets: [
+            {
+                label: 'Doanh thu (VNĐ)',
+                data: revenueByDate.map((item) => item.revenue),
+                fill: false,
+                backgroundColor: 'rgba(142, 68, 173, 0.2)',
+                borderColor: 'rgba(142, 68, 173, 1)',
+                tension: 0.4,
+            },
+        ],
+    };
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+                labels: {
+                    color: '#f8f9fa',
+                },
+            },
+            title: {
+                display: false,
+            },
+        },
+        scales: {
+            y: {
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+            },
+            x: {
+                ticks: {
+                    color: '#adb5bd',
+                },
+                grid: {
+                    color: 'rgba(255, 255, 255, 0.1)',
+                },
+            },
+        },
+    };
+
     const totalTickets = useMemo(() => {
         return ticketDetails.reduce(
             (sum, ticket) => sum + ticket.quantity + ticket.totalQuantity,
@@ -73,12 +122,22 @@ const EventSummary = () => {
         );
     }, [ticketDetails]);
 
-    const pieData = useMemo(() => {
-        return [
-            { name: 'Đã bán', value: totalSold },
-            { name: 'Còn lại', value: totalTickets - totalSold },
-        ];
-    }, [totalSold, totalTickets]);
+    // ✅ Cấu hình biểu đồ vé bán theo loại
+    const ticketChartData = {
+        labels: ['Đã bán', 'Còn lại'],
+        datasets: [
+            {
+                label: 'Số lượng',
+                data: [totalSold, totalTickets - totalSold],
+                backgroundColor: [
+                    'rgba(46, 204, 113, 0.7)',
+                    'rgba(52, 152, 219, 0.7)',
+                ],
+                borderColor: ['rgba(46, 204, 113, 1)', 'rgba(52, 152, 219, 1)'],
+                borderWidth: 1,
+            },
+        ],
+    };
 
     if (loading) return <p className="text-center mt-4">Đang tải dữ liệu...</p>;
     if (!eventData)
@@ -124,26 +183,9 @@ const EventSummary = () => {
                     >
                         <h3 className="fs-5 fw-bold mb-3">Tỷ lệ vé đã bán</h3>
                         {totalTickets > 0 ? (
-                            <ResponsiveContainer width="100%" height={250}>
-                                <PieChart>
-                                    <Pie
-                                        data={pieData}
-                                        cx="50%"
-                                        cy="50%"
-                                        outerRadius={80}
-                                        dataKey="value"
-                                    >
-                                        {pieData.map((entry, index) => (
-                                            <Cell
-                                                key={index}
-                                                fill={COLORS[index]}
-                                            />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend />
-                                </PieChart>
-                            </ResponsiveContainer>
+                            <div style={{ height: '300px' }}>
+                                <Doughnut data={ticketChartData} />
+                            </div>
                         ) : (
                             <p className="text-center">Không có dữ liệu vé.</p>
                         )}
@@ -163,36 +205,12 @@ const EventSummary = () => {
                             Doanh thu theo ngày
                         </h3>
                         {revenueByDate.length > 0 ? (
-                            <ResponsiveContainer
-                                width="100%"
-                                height={250}
-                                style={{ padding: '2px' }}
-                            >
-                                <LineChart data={revenueByDate}>
-                                    <XAxis
-                                        dataKey="date"
-                                        tick={{ fill: '#fff' }}
-                                        stroke="#fff"
-                                    />
-                                    <YAxis
-                                        tick={{ fill: '#fff' }}
-                                        stroke="#fff"
-                                    />
-                                    <Tooltip
-                                        contentStyle={{
-                                            backgroundColor: '#222',
-                                            color: '#fff',
-                                        }}
-                                    />
-                                    <Legend wrapperStyle={{ color: '#fff' }} />
-                                    <Line
-                                        type="monotone"
-                                        dataKey="revenue"
-                                        stroke="#fff"
-                                        strokeWidth={2}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
+                            <div style={{ height: '300px' }}>
+                                <Line
+                                    data={revenueChartData}
+                                    options={chartOptions}
+                                />
+                            </div>
                         ) : (
                             <p className="text-center">
                                 Chưa có dữ liệu doanh thu theo ngày.
@@ -203,7 +221,7 @@ const EventSummary = () => {
             </Row>
 
             <Card
-                className="mx-3 p-4 shadow-sm text-white"
+                className="mx-3 mb-4 p-4 shadow-sm text-white"
                 style={{
                     backgroundColor: '#31353e',
                     border: '1px solid #444',

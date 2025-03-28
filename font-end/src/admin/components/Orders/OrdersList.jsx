@@ -8,12 +8,12 @@ import {
     Pagination,
     Modal,
 } from 'react-bootstrap';
-import { FaSearch, FaEye, FaPrint, FaTimes, FaCheck } from 'react-icons/fa';
+import { FaSearch, FaEye, FaTimes, FaCheck } from 'react-icons/fa';
 import styles from './Orders.module.css';
 
 import {
-    formatDate,
     formatCurrency,
+    formatDateTime,
     truncateText,
 } from '../../utils/formatters';
 
@@ -35,7 +35,7 @@ const OrdersList = () => {
     const [showOrderDetails, setShowOrderDetails] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState(null);
 
-    const itemsPerPage = 20;
+    const itemsPerPage = 10;
 
     // Gọi API lấy danh sách orders khi component mount
     useEffect(() => {
@@ -265,7 +265,7 @@ const OrdersList = () => {
                                 </td>
                                 <td>{formatCurrency(order.totalPrice)}</td>
                                 <td>{getStatusBadge(order.status)}</td>
-                                <td>{formatDate(order.createdAt)}</td>
+                                <td>{formatDateTime(order.createdAt)}</td>
                                 <td>
                                     <div className={styles.tableActions}>
                                         {/* Xem chi tiết */}
