@@ -14,6 +14,7 @@ import { formatDate, formatUserRole } from '../../utils/formatters';
 import UserForm from './UserForm';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
+import { BsPersonX } from 'react-icons/bs';
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
@@ -147,96 +148,119 @@ const UsersList = () => {
             </div>
 
             {/* Users Table */}
-            <div className={styles.tableWrapper}>
-                <Table responsive hover className={styles.userTable}>
-                    <thead>
-                        <tr>
-                            <th>STT</th>
-                            <th
-                                onClick={() => handleSortChange('email')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Email{' '}
-                                {sortBy === 'email' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Trạng thái</th>
-                            <th
-                                onClick={() => handleSortChange('createdAt')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Ngày tạo{' '}
-                                {sortBy === 'createdAt' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentUsers.map((user, index) => (
-                            <tr key={user._id}>
-                                <td>{index + 1}</td>
-                                <td>{user.email}</td>
-                                <td>
-                                    {user.status === 'active'
-                                        ? 'Hoạt động'
-                                        : 'Không hoạt động'}
-                                </td>
-                                <td>
-                                    {new Date(
-                                        user.createdAt,
-                                    ).toLocaleDateString()}
-                                </td>
-                                <td>
-                                    <div className={styles.tableActions}>
-                                        <Button
-                                            variant="link"
-                                            className={`${styles.actionButton} ${styles.editButton}`}
-                                            title="Chỉnh sửa"
-                                            onClick={() => handleEditUser(user)}
-                                        >
-                                            <FaEdit />
-                                        </Button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </div>
+            {currentUsers.length > 0 ? (
+                <>
+                    <div className={styles.tableWrapper}>
+                        <Table responsive hover className={styles.userTable}>
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('email')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Email{' '}
+                                        {sortBy === 'email' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Trạng thái</th>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('createdAt')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Ngày tạo{' '}
+                                        {sortBy === 'createdAt' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentUsers.map((user, index) => (
+                                    <tr key={user._id}>
+                                        <td>{index + 1}</td>
+                                        <td>{user.email}</td>
+                                        <td>
+                                            {user.status === 'active'
+                                                ? 'Hoạt động'
+                                                : 'Không hoạt động'}
+                                        </td>
+                                        <td>
+                                            {new Date(
+                                                user.createdAt,
+                                            ).toLocaleDateString()}
+                                        </td>
+                                        <td>
+                                            <div
+                                                className={styles.tableActions}
+                                            >
+                                                <Button
+                                                    variant="link"
+                                                    className={`${styles.actionButton} ${styles.editButton}`}
+                                                    title="Chỉnh sửa"
+                                                    onClick={() =>
+                                                        handleEditUser(user)
+                                                    }
+                                                >
+                                                    <FaEdit />
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className={styles.paginationContainer}>
-                    <Pagination>
-                        <Pagination.First
-                            onClick={() => handlePageChange(1)}
-                            disabled={currentPage === 1}
-                        />
-                        <Pagination.Prev
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        />
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className={styles.paginationContainer}>
+                            <Pagination>
+                                <Pagination.First
+                                    onClick={() => handlePageChange(1)}
+                                    disabled={currentPage === 1}
+                                />
+                                <Pagination.Prev
+                                    onClick={() =>
+                                        handlePageChange(currentPage - 1)
+                                    }
+                                    disabled={currentPage === 1}
+                                />
 
-                        {[...Array(totalPages)].map((_, index) => (
-                            <Pagination.Item
-                                key={index + 1}
-                                active={index + 1 === currentPage}
-                                onClick={() => handlePageChange(index + 1)}
-                            >
-                                {index + 1}
-                            </Pagination.Item>
-                        ))}
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <Pagination.Item
+                                        key={index + 1}
+                                        active={index + 1 === currentPage}
+                                        onClick={() =>
+                                            handlePageChange(index + 1)
+                                        }
+                                    >
+                                        {index + 1}
+                                    </Pagination.Item>
+                                ))}
 
-                        <Pagination.Next
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                        />
-                        <Pagination.Last
-                            onClick={() => handlePageChange(totalPages)}
-                            disabled={currentPage === totalPages}
-                        />
-                    </Pagination>
+                                <Pagination.Next
+                                    onClick={() =>
+                                        handlePageChange(currentPage + 1)
+                                    }
+                                    disabled={currentPage === totalPages}
+                                />
+                                <Pagination.Last
+                                    onClick={() => handlePageChange(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                />
+                            </Pagination>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="d-flex flex-column align-items-center justify-content-center my-5">
+                    <BsPersonX size={60} className="mb-3" />
+                    <p className="fs-5">Không có người dùng</p>
                 </div>
             )}
 

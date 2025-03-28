@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../../util/api';
 import TimeText from '../../components/providers/TimeText';
 import DOMPurify from 'dompurify';
 import TicketModal from '../payment/TicketModal';
+import swalCustomize from '../../../util/swalCustomize';
 
 const EventDetail = () => {
     const { eventId } = useParams();
     const [event, setEvent] = useState(null);
     const [showModal, setShowModal] = useState(false);
-
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchEvent = async () => {
             try {
                 const res = await api.getEventById(eventId);
                 if (res.success) {
                     setEvent(res.event);
+                } else {
+                    navigate('/');
+                    return swalCustomize.Toast.fire({
+                        icon: 'error',
+                        title: res.message,
+                    });
                 }
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu sự kiện:', error);

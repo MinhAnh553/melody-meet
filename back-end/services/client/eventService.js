@@ -55,16 +55,14 @@ const updateStatusEvent = async (eventId, status) => {
     };
 };
 
-const getEvents = async (status, isFinished) => {
+const getEvents = async (status) => {
     if (status === 'all') {
-        const events = await eventModel
-            .find({ isFinished: isFinished })
-            .sort({ createdAt: -1 });
+        const events = await eventModel.find().sort({ createdAt: -1 });
         return events;
     }
 
     const events = await eventModel
-        .find({ status: status, isFinished: isFinished })
+        .find({ status: status })
         .sort({ createdAt: -1 });
     return events;
 };
@@ -77,13 +75,12 @@ const getEventById = async (id) => {
     return event;
 };
 
-const getMyEvents = async (userId, page, limit, status, isFinished) => {
+const getMyEvents = async (userId, page, limit, status) => {
     try {
         const events = await eventModel
             .find({
                 userId: userId,
                 status: status,
-                isFinished: isFinished,
             })
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
@@ -99,7 +96,6 @@ const getMyEvents = async (userId, page, limit, status, isFinished) => {
         const totalEvents = await eventModel.countDocuments({
             userId: userId,
             status: status,
-            isFinished: isFinished,
         });
 
         return {

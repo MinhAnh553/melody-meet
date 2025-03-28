@@ -29,7 +29,7 @@ const EventManagement = () => {
     const [searchKey, setSearchKey] = useState('');
 
     useEffect(() => {
-        fetchEvents('approved', false);
+        fetchEvents('approved');
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [page]);
@@ -43,24 +43,24 @@ const EventManagement = () => {
     const handleUpcoming = () => {
         setActiveTab('upcoming');
         setPage(1);
-        fetchEvents('approved', false);
+        fetchEvents('approved');
     };
 
     const handlePast = () => {
         setActiveTab('past');
         setPage(1);
-        fetchEvents('approved', true);
+        fetchEvents('event_over');
     };
 
     const handlePending = () => {
         setActiveTab('pending');
         setPage(1);
-        fetchEvents('pending', false);
+        fetchEvents('pending');
     };
 
-    const fetchEvents = async (status, isFinished) => {
+    const fetchEvents = async (status) => {
         try {
-            const res = await api.getMyEvents(page, limit, status, isFinished);
+            const res = await api.getMyEvents(page, limit, status);
             if (res.success) {
                 setEvents(res.events);
                 setTotal(res.totalEvents);

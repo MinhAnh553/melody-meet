@@ -8,7 +8,7 @@ import {
     Pagination,
     Modal,
 } from 'react-bootstrap';
-import { FaSearch, FaEye, FaTimes, FaCheck } from 'react-icons/fa';
+import { FaSearch, FaEye } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import api from '../../../util/api';
 import styles from '../../../admin/components/Orders/Orders.module.css';
@@ -18,6 +18,7 @@ import {
     formatDateTime,
 } from '../../../admin/utils/formatters';
 import OrderDetails from '../../../admin/components/Orders/OrderDetails';
+import { BsCartX } from 'react-icons/bs';
 
 const OrderList = () => {
     const { eventId } = useParams();
@@ -153,7 +154,7 @@ const OrderList = () => {
         setShowOrderDetails(true);
     };
 
-    return (
+    return orders.length > 0 ? (
         <div className={styles.ordersContainer}>
             {/* Table Header */}
             <div className={styles.tableHeader}>
@@ -184,105 +185,132 @@ const OrderList = () => {
             </div>
 
             {/* Orders Table */}
-            <div className={styles.tableWrapper}>
-                <Table responsive hover className={styles.orderTable}>
-                    <thead>
-                        <tr>
-                            <th
-                                onClick={() => handleSortChange('orderId')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Mã ĐH{' '}
-                                {sortBy === 'orderId' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Người dùng</th>
-                            <th>Sự kiện</th>
-                            <th
-                                onClick={() => handleSortChange('totalPrice')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Tổng tiền{' '}
-                                {sortBy === 'totalPrice' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Trạng thái</th>
-                            <th
-                                onClick={() => handleSortChange('createdAt')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Ngày đặt{' '}
-                                {sortBy === 'createdAt' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentOrders.map((order) => (
-                            <tr key={order._id}>
-                                <td>{order.orderId}</td>
-                                <td>{order.infoUser.email}</td>
-                                <td>
-                                    {truncateText(order.eventName, 30)}
-                                    {}
-                                </td>
-                                <td>{formatCurrency(order.totalPrice)}</td>
-                                <td>{getStatusBadge(order.status)}</td>
-                                <td>{formatDateTime(order.createdAt)}</td>
-                                <td>
-                                    <div className={styles.tableActions}>
-                                        {/* Xem chi tiết */}
-                                        <Button
-                                            variant="link"
-                                            className={`${styles.actionButton} ${styles.viewButton}`}
-                                            title="Xem chi tiết"
-                                            onClick={() =>
-                                                handleViewOrderDetails(order)
-                                            }
-                                        >
-                                            <FaEye />
-                                        </Button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </div>
+            {currentOrders.length > 0 ? (
+                <>
+                    <div className={styles.tableWrapper}>
+                        <Table responsive hover className={styles.orderTable}>
+                            <thead>
+                                <tr>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('orderId')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Mã ĐH{' '}
+                                        {sortBy === 'orderId' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Người dùng</th>
+                                    <th>Sự kiện</th>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('totalPrice')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Tổng tiền{' '}
+                                        {sortBy === 'totalPrice' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Trạng thái</th>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('createdAt')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Ngày đặt{' '}
+                                        {sortBy === 'createdAt' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentOrders.map((order) => (
+                                    <tr key={order._id}>
+                                        <td>{order.orderId}</td>
+                                        <td>{order.infoUser.email}</td>
+                                        <td>
+                                            {truncateText(order.eventName, 30)}
+                                        </td>
+                                        <td>
+                                            {formatCurrency(order.totalPrice)}
+                                        </td>
+                                        <td>{getStatusBadge(order.status)}</td>
+                                        <td>
+                                            {formatDateTime(order.createdAt)}
+                                        </td>
+                                        <td>
+                                            <div
+                                                className={styles.tableActions}
+                                            >
+                                                <Button
+                                                    variant="link"
+                                                    className={`${styles.actionButton} ${styles.viewButton}`}
+                                                    title="Xem chi tiết"
+                                                    onClick={() =>
+                                                        handleViewOrderDetails(
+                                                            order,
+                                                        )
+                                                    }
+                                                >
+                                                    <FaEye />
+                                                </Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className={styles.paginationContainer}>
-                    <Pagination>
-                        <Pagination.First
-                            onClick={() => handlePageChange(1)}
-                            disabled={currentPage === 1}
-                        />
-                        <Pagination.Prev
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        />
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className={styles.paginationContainer}>
+                            <Pagination>
+                                <Pagination.First
+                                    onClick={() => handlePageChange(1)}
+                                    disabled={currentPage === 1}
+                                />
+                                <Pagination.Prev
+                                    onClick={() =>
+                                        handlePageChange(currentPage - 1)
+                                    }
+                                    disabled={currentPage === 1}
+                                />
 
-                        {[...Array(totalPages)].map((_, index) => (
-                            <Pagination.Item
-                                key={index + 1}
-                                active={index + 1 === currentPage}
-                                onClick={() => handlePageChange(index + 1)}
-                            >
-                                {index + 1}
-                            </Pagination.Item>
-                        ))}
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <Pagination.Item
+                                        key={index + 1}
+                                        active={index + 1 === currentPage}
+                                        onClick={() =>
+                                            handlePageChange(index + 1)
+                                        }
+                                    >
+                                        {index + 1}
+                                    </Pagination.Item>
+                                ))}
 
-                        <Pagination.Next
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                        />
-                        <Pagination.Last
-                            onClick={() => handlePageChange(totalPages)}
-                            disabled={currentPage === totalPages}
-                        />
-                    </Pagination>
+                                <Pagination.Next
+                                    onClick={() =>
+                                        handlePageChange(currentPage + 1)
+                                    }
+                                    disabled={currentPage === totalPages}
+                                />
+                                <Pagination.Last
+                                    onClick={() => handlePageChange(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                />
+                            </Pagination>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="d-flex flex-column align-items-center justify-content-center my-5">
+                    <BsCartX size={60} className="mb-3" />
+                    <p className="fs-5">Không có đơn hàng</p>
                 </div>
             )}
 
@@ -310,6 +338,11 @@ const OrderList = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+        </div>
+    ) : (
+        <div className="text-center my-5">
+            <BsCartX size={50} className="text-white mb-3" />
+            <p className="fs-5 text-white">Không có đơn hàng</p>
         </div>
     );
 };

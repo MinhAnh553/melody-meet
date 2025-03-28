@@ -88,6 +88,11 @@
     color: var(--danger-color);
 }
 
+.statusBadgeCompleted {
+    background-color: rgba(149, 165, 166, 0.2) !important;
+    color: var(--secondary-color);
+}
+
 .eventImage {
     width: 60px;
     height: 60px;

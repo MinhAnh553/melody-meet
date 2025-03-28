@@ -137,8 +137,8 @@ const updateStatusEvent = async (req, res) => {
 
 const getEvents = async (req, res) => {
     try {
-        const { status = 'approved', isFinished = false } = req.query;
-        const events = await eventService.getEvents(status, isFinished);
+        const { status = 'approved' } = req.query;
+        const events = await eventService.getEvents(status);
         res.status(200).json({
             success: true,
             events,
@@ -158,6 +158,12 @@ const getEventById = async (req, res) => {
 
         const event = await eventService.getEventById(id);
         if (event) {
+            if (event.status == 'pending' || event.status == 'rejected') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Không tìm thấy sự kiện!',
+                });
+            }
             return res.status(200).json({
                 success: true,
                 event,
@@ -179,12 +185,7 @@ const getEventById = async (req, res) => {
 const getMyEvents = async (req, res) => {
     try {
         const userId = req.user.id;
-        let {
-            page = 1,
-            limit = 5,
-            status = 'approved',
-            isFinished = false,
-        } = req.query;
+        let { page = 1, limit = 5, status = 'approved' } = req.query;
         page = parseInt(page);
         limit = parseInt(limit);
 
@@ -193,7 +194,6 @@ const getMyEvents = async (req, res) => {
             page,
             limit,
             status,
-            isFinished,
         );
         if (result.success) {
             return res.status(200).json(result);

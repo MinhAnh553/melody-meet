@@ -20,6 +20,7 @@ import {
 import OrderDetails from './OrderDetails';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
+import { BsCartX } from 'react-icons/bs';
 
 const OrdersList = () => {
     const [orders, setOrders] = useState([]);
@@ -220,67 +221,83 @@ const OrdersList = () => {
             </div>
 
             {/* Orders Table */}
-            <div className={styles.tableWrapper}>
-                <Table responsive hover className={styles.orderTable}>
-                    <thead>
-                        <tr>
-                            <th
-                                onClick={() => handleSortChange('orderId')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Mã ĐH{' '}
-                                {sortBy === 'orderId' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Người dùng</th>
-                            <th>Sự kiện</th>
-                            <th
-                                onClick={() => handleSortChange('totalPrice')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Tổng tiền{' '}
-                                {sortBy === 'totalPrice' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Trạng thái</th>
-                            <th
-                                onClick={() => handleSortChange('createdAt')}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                Ngày đặt{' '}
-                                {sortBy === 'createdAt' &&
-                                    (sortOrder === 'asc' ? '↑' : '↓')}
-                            </th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentOrders.map((order) => (
-                            <tr key={order._id}>
-                                <td>{order.orderId}</td>
-                                <td>{order.infoUser.email}</td>
-                                <td>
-                                    {truncateText(order.eventName, 30)}
-                                    {}
-                                </td>
-                                <td>{formatCurrency(order.totalPrice)}</td>
-                                <td>{getStatusBadge(order.status)}</td>
-                                <td>{formatDateTime(order.createdAt)}</td>
-                                <td>
-                                    <div className={styles.tableActions}>
-                                        {/* Xem chi tiết */}
-                                        <Button
-                                            variant="link"
-                                            className={`${styles.actionButton} ${styles.viewButton}`}
-                                            title="Xem chi tiết"
-                                            onClick={() =>
-                                                handleViewOrderDetails(order)
-                                            }
-                                        >
-                                            <FaEye />
-                                        </Button>
-                                        {/* In đơn hàng */}
-                                        {/* <Button
+            {currentOrders.length > 0 ? (
+                <>
+                    <div className={styles.tableWrapper}>
+                        <Table responsive hover className={styles.orderTable}>
+                            <thead>
+                                <tr>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('orderId')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Mã ĐH{' '}
+                                        {sortBy === 'orderId' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Người dùng</th>
+                                    <th>Sự kiện</th>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('totalPrice')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Tổng tiền{' '}
+                                        {sortBy === 'totalPrice' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Trạng thái</th>
+                                    <th
+                                        onClick={() =>
+                                            handleSortChange('createdAt')
+                                        }
+                                        style={{ cursor: 'pointer' }}
+                                    >
+                                        Ngày đặt{' '}
+                                        {sortBy === 'createdAt' &&
+                                            (sortOrder === 'asc' ? '↑' : '↓')}
+                                    </th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentOrders.map((order) => (
+                                    <tr key={order._id}>
+                                        <td>{order.orderId}</td>
+                                        <td>{order.infoUser.email}</td>
+                                        <td>
+                                            {truncateText(order.eventName, 30)}
+                                            {}
+                                        </td>
+                                        <td>
+                                            {formatCurrency(order.totalPrice)}
+                                        </td>
+                                        <td>{getStatusBadge(order.status)}</td>
+                                        <td>
+                                            {formatDateTime(order.createdAt)}
+                                        </td>
+                                        <td>
+                                            <div
+                                                className={styles.tableActions}
+                                            >
+                                                {/* Xem chi tiết */}
+                                                <Button
+                                                    variant="link"
+                                                    className={`${styles.actionButton} ${styles.viewButton}`}
+                                                    title="Xem chi tiết"
+                                                    onClick={() =>
+                                                        handleViewOrderDetails(
+                                                            order,
+                                                        )
+                                                    }
+                                                >
+                                                    <FaEye />
+                                                </Button>
+                                                {/* In đơn hàng */}
+                                                {/* <Button
                                             variant="link"
                                             className={`${styles.actionButton} ${styles.viewButton}`}
                                             title="In đơn hàng"
@@ -293,89 +310,103 @@ const OrdersList = () => {
                                         >
                                             <FaPrint />
                                         </Button> */}
-                                        {/* Nếu status = PENDING thì mới cho hủy */}
-                                        {order.status === 'PENDING' && (
-                                            <>
-                                                <Button
-                                                    variant="link"
-                                                    className={`${styles.actionButton} ${styles.completeButton}`}
-                                                    title="Hoàn thành đơn hàng"
-                                                    onClick={() =>
-                                                        handleCompleteClick(
-                                                            order._id,
-                                                        )
-                                                    }
-                                                >
-                                                    <FaCheck />
-                                                </Button>
-                                                <Button
-                                                    variant="link"
-                                                    className={`${styles.actionButton} ${styles.deleteButton}`}
-                                                    title="Hủy đơn hàng"
-                                                    onClick={() =>
-                                                        handleCancelClick(
-                                                            order._id,
-                                                        )
-                                                    }
-                                                >
-                                                    <FaTimes />
-                                                </Button>
-                                            </>
-                                        )}
-                                        {order.status === 'CANCELED' && (
-                                            <Button
-                                                variant="link"
-                                                className={`${styles.actionButton} ${styles.completeButton}`}
-                                                title="Hoàn thành đơn hàng"
-                                                onClick={() =>
-                                                    handleCompleteClick(
-                                                        order._id,
-                                                    )
-                                                }
-                                            >
-                                                <FaCheck />
-                                            </Button>
-                                        )}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </div>
+                                                {/* Nếu status = PENDING thì mới cho hủy */}
+                                                {order.status === 'PENDING' && (
+                                                    <>
+                                                        <Button
+                                                            variant="link"
+                                                            className={`${styles.actionButton} ${styles.completeButton}`}
+                                                            title="Hoàn thành đơn hàng"
+                                                            onClick={() =>
+                                                                handleCompleteClick(
+                                                                    order._id,
+                                                                )
+                                                            }
+                                                        >
+                                                            <FaCheck />
+                                                        </Button>
+                                                        <Button
+                                                            variant="link"
+                                                            className={`${styles.actionButton} ${styles.deleteButton}`}
+                                                            title="Hủy đơn hàng"
+                                                            onClick={() =>
+                                                                handleCancelClick(
+                                                                    order._id,
+                                                                )
+                                                            }
+                                                        >
+                                                            <FaTimes />
+                                                        </Button>
+                                                    </>
+                                                )}
+                                                {order.status ===
+                                                    'CANCELED' && (
+                                                    <Button
+                                                        variant="link"
+                                                        className={`${styles.actionButton} ${styles.completeButton}`}
+                                                        title="Hoàn thành đơn hàng"
+                                                        onClick={() =>
+                                                            handleCompleteClick(
+                                                                order._id,
+                                                            )
+                                                        }
+                                                    >
+                                                        <FaCheck />
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className={styles.paginationContainer}>
-                    <Pagination>
-                        <Pagination.First
-                            onClick={() => handlePageChange(1)}
-                            disabled={currentPage === 1}
-                        />
-                        <Pagination.Prev
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        />
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className={styles.paginationContainer}>
+                            <Pagination>
+                                <Pagination.First
+                                    onClick={() => handlePageChange(1)}
+                                    disabled={currentPage === 1}
+                                />
+                                <Pagination.Prev
+                                    onClick={() =>
+                                        handlePageChange(currentPage - 1)
+                                    }
+                                    disabled={currentPage === 1}
+                                />
 
-                        {[...Array(totalPages)].map((_, index) => (
-                            <Pagination.Item
-                                key={index + 1}
-                                active={index + 1 === currentPage}
-                                onClick={() => handlePageChange(index + 1)}
-                            >
-                                {index + 1}
-                            </Pagination.Item>
-                        ))}
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <Pagination.Item
+                                        key={index + 1}
+                                        active={index + 1 === currentPage}
+                                        onClick={() =>
+                                            handlePageChange(index + 1)
+                                        }
+                                    >
+                                        {index + 1}
+                                    </Pagination.Item>
+                                ))}
 
-                        <Pagination.Next
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                        />
-                        <Pagination.Last
-                            onClick={() => handlePageChange(totalPages)}
-                            disabled={currentPage === totalPages}
-                        />
-                    </Pagination>
+                                <Pagination.Next
+                                    onClick={() =>
+                                        handlePageChange(currentPage + 1)
+                                    }
+                                    disabled={currentPage === totalPages}
+                                />
+                                <Pagination.Last
+                                    onClick={() => handlePageChange(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                />
+                            </Pagination>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="d-flex flex-column align-items-center justify-content-center my-5">
+                    <BsCartX size={60} className="mb-3" />
+                    <p className="fs-5">Không có đơn hàng</p>
                 </div>
             )}
 

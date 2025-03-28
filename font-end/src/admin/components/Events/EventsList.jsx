@@ -26,6 +26,7 @@ import {
 import EventDetails from './EventDetails';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
+import { BsCalendarX } from 'react-icons/bs';
 
 const EventsList = () => {
     const [events, setEvents] = useState([]);
@@ -48,7 +49,7 @@ const EventsList = () => {
 
     const fetchEvents = async () => {
         try {
-            const res = await api.getEvents('all');
+            const res = await api.getEvents('all', 'all');
             if (res.success) {
                 setEvents(res.events);
             }
@@ -145,6 +146,14 @@ const EventsList = () => {
                         Đã từ chối
                     </Badge>
                 );
+            case 'event_over':
+                return (
+                    <Badge
+                        className={`${styles.statusBadge} ${styles.statusBadgeCompleted}`}
+                    >
+                        Đã diễn ra
+                    </Badge>
+                );
             default:
                 return <Badge className={styles.statusBadge}>{status}</Badge>;
         }
@@ -222,88 +231,107 @@ const EventsList = () => {
                         <option value="approved">Đã duyệt</option>
                         <option value="pending">Đang chờ duyệt</option>
                         <option value="rejected">Đã từ chối</option>
+                        <option value="event_over">Đã diễn ra</option>
                     </Form.Select>
                 </div>
             </div>
 
             {/* Events Table */}
-            <div className={styles.tableWrapper}>
-                <Table responsive hover className={styles.eventTable}>
-                    <thead>
-                        <tr>
-                            <th style={{ whiteSpace: 'nowrap' }}>Ảnh</th>
-                            <th
-                                style={{
-                                    whiteSpace: 'nowrap',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => handleSortChange('name')}
-                            >
-                                Tên sự kiện
-                            </th>
-                            <th
-                                style={{
-                                    whiteSpace: 'nowrap',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => handleSortChange('date')}
-                            >
-                                Ngày tổ chức
-                            </th>
-                            <th style={{ whiteSpace: 'nowrap' }}>Địa điểm</th>
-                            <th style={{ whiteSpace: 'nowrap' }}>
-                                Nhà tổ chức
-                            </th>
-                            <th style={{ whiteSpace: 'nowrap' }}>Trạng thái</th>
-                            <th
-                                style={{
-                                    whiteSpace: 'nowrap',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => handleSortChange('revenue')}
-                            >
-                                Doanh thu
-                            </th>
-                            <th style={{ whiteSpace: 'nowrap' }}>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentEvents.map((event) => (
-                            <tr key={event._id}>
-                                <td>
-                                    <img
-                                        src={event.background}
-                                        alt={event.name}
-                                        className={styles.eventImage}
-                                    />
-                                </td>
-                                <td>{truncateText(event.name, 30)}</td>
-                                <td>{formatDate(event.startTime)}</td>
-                                <td>
-                                    {truncateText(
-                                        event.location?.venueName || '',
-                                        20,
-                                    )}
-                                </td>
-                                <td>{event.organizer?.name}</td>
-                                <td>{getStatusBadge(event.status)}</td>
-                                <td>
-                                    {formatCurrency(event.totalRevenue || 0)}
-                                </td>
-                                <td>
-                                    <div className={styles.tableActions}>
-                                        <Button
-                                            variant="link"
-                                            className={`${styles.actionButton} ${styles.viewButton}`}
-                                            title="Xem chi tiết"
-                                            onClick={() =>
-                                                handleViewEventDetails(event)
-                                            }
-                                        >
-                                            <FaEye />
-                                        </Button>
-                                        {/* Nếu sự kiện đang chờ duyệt (pending), hiển thị nút duyệt/từ chối */}
-                                        {/* {event.status === 'pending' && (
+            {currentEvents.length > 0 ? (
+                <>
+                    <div className={styles.tableWrapper}>
+                        <Table responsive hover className={styles.eventTable}>
+                            <thead>
+                                <tr>
+                                    <th style={{ whiteSpace: 'nowrap' }}>
+                                        Ảnh
+                                    </th>
+                                    <th
+                                        style={{
+                                            whiteSpace: 'nowrap',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => handleSortChange('name')}
+                                    >
+                                        Tên sự kiện
+                                    </th>
+                                    <th
+                                        style={{
+                                            whiteSpace: 'nowrap',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() => handleSortChange('date')}
+                                    >
+                                        Ngày tổ chức
+                                    </th>
+                                    <th style={{ whiteSpace: 'nowrap' }}>
+                                        Địa điểm
+                                    </th>
+                                    <th style={{ whiteSpace: 'nowrap' }}>
+                                        Nhà tổ chức
+                                    </th>
+                                    <th style={{ whiteSpace: 'nowrap' }}>
+                                        Trạng thái
+                                    </th>
+                                    <th
+                                        style={{
+                                            whiteSpace: 'nowrap',
+                                            cursor: 'pointer',
+                                        }}
+                                        onClick={() =>
+                                            handleSortChange('revenue')
+                                        }
+                                    >
+                                        Doanh thu
+                                    </th>
+                                    <th style={{ whiteSpace: 'nowrap' }}>
+                                        Thao tác
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentEvents.map((event) => (
+                                    <tr key={event._id}>
+                                        <td>
+                                            <img
+                                                src={event.background}
+                                                alt={event.name}
+                                                className={styles.eventImage}
+                                            />
+                                        </td>
+                                        <td>{truncateText(event.name, 30)}</td>
+                                        <td>{formatDate(event.startTime)}</td>
+                                        <td>
+                                            {truncateText(
+                                                event.location?.venueName || '',
+                                                20,
+                                            )}
+                                        </td>
+                                        <td>{event.organizer?.name}</td>
+                                        <td>{getStatusBadge(event.status)}</td>
+                                        <td>
+                                            {formatCurrency(
+                                                event.totalRevenue || 0,
+                                            )}
+                                        </td>
+                                        <td>
+                                            <div
+                                                className={styles.tableActions}
+                                            >
+                                                <Button
+                                                    variant="link"
+                                                    className={`${styles.actionButton} ${styles.viewButton}`}
+                                                    title="Xem chi tiết"
+                                                    onClick={() =>
+                                                        handleViewEventDetails(
+                                                            event,
+                                                        )
+                                                    }
+                                                >
+                                                    <FaEye />
+                                                </Button>
+                                                {/* Nếu sự kiện đang chờ duyệt (pending), hiển thị nút duyệt/từ chối */}
+                                                {/* {event.status === 'pending' && (
                                             <>
                                                 <Button
                                                     variant="link"
@@ -329,46 +357,59 @@ const EventsList = () => {
                                                 </Button>
                                             </>
                                         )} */}
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
-            </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className={styles.paginationContainer}>
-                    <Pagination>
-                        <Pagination.First
-                            onClick={() => handlePageChange(1)}
-                            disabled={currentPage === 1}
-                        />
-                        <Pagination.Prev
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        />
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className={styles.paginationContainer}>
+                            <Pagination>
+                                <Pagination.First
+                                    onClick={() => handlePageChange(1)}
+                                    disabled={currentPage === 1}
+                                />
+                                <Pagination.Prev
+                                    onClick={() =>
+                                        handlePageChange(currentPage - 1)
+                                    }
+                                    disabled={currentPage === 1}
+                                />
 
-                        {[...Array(totalPages)].map((_, index) => (
-                            <Pagination.Item
-                                key={index + 1}
-                                active={index + 1 === currentPage}
-                                onClick={() => handlePageChange(index + 1)}
-                            >
-                                {index + 1}
-                            </Pagination.Item>
-                        ))}
+                                {[...Array(totalPages)].map((_, index) => (
+                                    <Pagination.Item
+                                        key={index + 1}
+                                        active={index + 1 === currentPage}
+                                        onClick={() =>
+                                            handlePageChange(index + 1)
+                                        }
+                                    >
+                                        {index + 1}
+                                    </Pagination.Item>
+                                ))}
 
-                        <Pagination.Next
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                        />
-                        <Pagination.Last
-                            onClick={() => handlePageChange(totalPages)}
-                            disabled={currentPage === totalPages}
-                        />
-                    </Pagination>
+                                <Pagination.Next
+                                    onClick={() =>
+                                        handlePageChange(currentPage + 1)
+                                    }
+                                    disabled={currentPage === totalPages}
+                                />
+                                <Pagination.Last
+                                    onClick={() => handlePageChange(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                />
+                            </Pagination>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="d-flex flex-column align-items-center justify-content-center my-5">
+                    <BsCalendarX size={60} className="mb-3" />
+                    <p className="fs-5">Không có sự kiện</p>
                 </div>
             )}
 
@@ -394,18 +435,31 @@ const EventsList = () => {
                     >
                         Đóng
                     </Button>
-                    <Button
-                        variant="success"
-                        onClick={() => handleApproveEvent(selectedEvent._id)}
-                    >
-                        Duyệt
-                    </Button>
-                    <Button
-                        variant="danger"
-                        onClick={() => handleRejectEvent(selectedEvent._id)}
-                    >
-                        Từ chối
-                    </Button>
+                    {selectedEvent?.status !== 'event_over' && (
+                        <>
+                            {selectedEvent?.status !== 'approved' && (
+                                <Button
+                                    variant="success"
+                                    onClick={() =>
+                                        handleApproveEvent(selectedEvent._id)
+                                    }
+                                >
+                                    Duyệt
+                                </Button>
+                            )}
+
+                            {selectedEvent?.status !== 'rejected' && (
+                                <Button
+                                    variant="danger"
+                                    onClick={() =>
+                                        handleRejectEvent(selectedEvent._id)
+                                    }
+                                >
+                                    Từ chối
+                                </Button>
+                            )}
+                        </>
+                    )}
                 </Modal.Footer>
             </Modal>
         </div>

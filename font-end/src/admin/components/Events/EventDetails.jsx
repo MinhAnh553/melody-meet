@@ -50,6 +50,14 @@ const EventDetails = ({ event }) => {
                         Đã từ chối
                     </Badge>
                 );
+            case 'event_over':
+                return (
+                    <Badge
+                        className={`${styles.statusBadge} ${styles.statusBadgeCompleted}`}
+                    >
+                        Đã diễn ra
+                    </Badge>
+                );
             default:
                 return <Badge className={styles.statusBadge}>{status}</Badge>;
         }

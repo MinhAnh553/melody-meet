@@ -55,8 +55,8 @@ const getEventById = (id) => {
     return axios.get(URL_API);
 };
 
-const getEvents = (status = 'approved', isFinished = false) => {
-    const URL_API = `${API_URL}/event?status=${status}&isFinished=${isFinished}`;
+const getEvents = (status = 'approved') => {
+    const URL_API = `${API_URL}/event?status=${status}`;
     return axios.get(URL_API);
 };
 
@@ -120,13 +120,8 @@ const getAllOrders = () => {
     return axios.get(URL_API);
 };
 
-const getMyEvents = (
-    page = 1,
-    limit = 5,
-    status = 'approved',
-    isFinished = false,
-) => {
-    const URL_API = `${API_URL}/event/my?page=${page}&limit=${limit}&status=${status}&isFinished=${isFinished}`;
+const getMyEvents = (page = 1, limit = 5, status = 'approved') => {
+    const URL_API = `${API_URL}/event/my?page=${page}&limit=${limit}&status=${status}`;
     return axios.get(URL_API);
 };
 

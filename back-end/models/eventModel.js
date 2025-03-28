@@ -30,17 +30,13 @@ const eventSchema = new mongoose.Schema(
                 description: { type: String }, // Thông tin vé
             },
         ],
-        // Đã đợi duyệt, được duyệt, từ chối
+        // Đã đợi duyệt, được duyệt, từ chối, đã kết thúc
         status: {
             type: String,
-            enum: ['pending', 'approved', 'rejected'],
+            enum: ['pending', 'approved', 'rejected', 'event_over'],
             default: 'pending',
         },
-        // Trạng thái sự kiện đã diễn ra hay chưa
-        isFinished: {
-            type: Boolean,
-            default: false,
-        },
+
         createdAt: {
             type: Date,
             default: Date.now,
