@@ -240,7 +240,7 @@ function PurchasedTickets() {
             <Row className="pt-4">
                 <Col md={3} className="px-4 border-end">
                     <Nav className="flex-column">
-                        <Nav.Link
+                        {/* <Nav.Link
                             className={`d-flex align-items-center mb-3 p-2 rounded hover-bg ${
                                 activeTab === 'account'
                                     ? 'nav-ticket-active'
@@ -251,7 +251,7 @@ function PurchasedTickets() {
                             }
                         >
                             <BsPerson className="me-2" /> Cài đặt tài khoản
-                        </Nav.Link>
+                        </Nav.Link> */}
                         <Nav.Link
                             className={`d-flex align-items-center mb-3 p-2 rounded hover-bg ${
                                 activeTab === 'tickets'

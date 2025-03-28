@@ -239,7 +239,7 @@ const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
                                         <span>Sự Kiện Của Tôi</span>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <a
                                         className="dropdown-item py-2 d-flex align-items-center"
                                         href="#"
@@ -247,7 +247,7 @@ const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
                                         <i className="bi bi-person me-2 text-warning fs-5" />
                                         <span>Trang Cá Nhân</span>
                                     </a>
-                                </li>
+                                </li> */}
                                 <li>
                                     <hr className="dropdown-divider" />
                                 </li>
