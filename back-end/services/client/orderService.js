@@ -5,7 +5,8 @@ import orderModel from '../../models/orderModel.js';
 import ticketModel from '../../models/ticketModel.js';
 import payosService from './payosService.js';
 import userService from './userService.js';
-import eventService from './eventService.js';
+import mailTemplate from '../../templates/mailTemplate.js';
+import emailProvider from '../../providers/emailProvider.js';
 
 const createOrder = async (userId, eventId, items, totalPrice) => {
     try {
@@ -194,6 +195,10 @@ const orderSuccess = async (orderCode, userId) => {
                 },
             );
 
+            const user = await userService.getUserById(userId);
+
+            const event = await eventModel.findById(order.eventId);
+
             const tickets = await ticketModel.find({
                 orderId: order._id,
             });
@@ -201,19 +206,31 @@ const orderSuccess = async (orderCode, userId) => {
             // Cập nhật số lượng vé còn lại
             await Promise.all(
                 tickets.map(async (ticket) => {
-                    const event = await eventModel.findById(order.eventId);
                     const ticketType = event.ticketTypes.find(
                         (item) => item.name === ticket.name,
                     );
                     ticketType.totalQuantity -= ticket.quantity;
-                    await event.save();
                 }),
+            );
+
+            await event.save();
+
+            // Gửi mail thông tin vé
+            await emailProvider.sendMail(
+                user.address.email,
+                'Melody Meet: Giao Dịch Thành Công',
+                mailTemplate.ticketInfoTemplate(
+                    user.address.name,
+                    event,
+                    order,
+                    tickets,
+                ),
             );
         }
 
         return { success: true, message: 'Cập nhật thành công!' };
     } catch (error) {
-        // console.error('get order error:', error);
+        console.error('get order error:', error);
         return { success: false, message: error.message };
     }
 };

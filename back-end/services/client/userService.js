@@ -6,7 +6,7 @@ dotenv.config();
 import userModel from '../../models/userModel.js';
 import otpModel from '../../models/otpModel.js';
 import emailProvider from '../../providers/emailProvider.js';
-import otpTemplate from '../../templates/otpTemplate.js';
+import mailTemplate from '../../templates/mailTemplate.js';
 
 const generateOTP = () => Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -51,8 +51,8 @@ const sendOTP = async (email) => {
 
         await emailProvider.sendMail(
             email,
-            'Melody Meet - Mã Xác Minh',
-            otpTemplate(otp),
+            'Melody Meet: Mã Xác Minh',
+            mailTemplate.otpTemplate(otp),
         );
 
         return {
