@@ -184,6 +184,21 @@ cron.schedule('*/5 * * * *', () => {
     updateFinishedEvents();
 });
 
+const eventSearch = async (query) => {
+    try {
+        const events = await eventModel
+            .find({
+                name: { $regex: query, $options: 'i' },
+                status: { $nin: ['rejected', 'pending'] },
+            })
+            .select('_id name background');
+
+        return { success: true, events };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+};
+
 export default {
     createEvent,
     updateEvent,
@@ -192,4 +207,5 @@ export default {
     getEventById,
     getMyEvents,
     getOrdersByEventId,
+    eventSearch,
 };

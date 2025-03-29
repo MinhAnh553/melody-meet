@@ -135,6 +135,11 @@ const getEventSummary = (id) => {
     return axios.get(URL_API);
 };
 
+const search = (searchQuery) => {
+    const URL_API = `${API_URL}/event/search?query=${searchQuery}`;
+    return axios.get(URL_API);
+};
+
 const getAllUsers = () => {
     const URL_API = `${API_URL}/user/all-users`;
     return axios.get(URL_API);
@@ -172,4 +177,5 @@ export default {
     getAllOrders,
     getAllUsers,
     getDashboard,
+    search,
 };

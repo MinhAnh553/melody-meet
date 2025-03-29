@@ -315,6 +315,28 @@ const getEventSummary = async (req, res) => {
     }
 };
 
+const eventSearch = async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        if (!query) {
+            return res.status(200).json({ success: true, events: [] });
+        }
+
+        const result = await eventService.eventSearch(query);
+        if (result.success) {
+            return res.status(200).json(result);
+        }
+        return res.status(404).json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 export default {
     createEvent,
     updateEvent,
@@ -324,4 +346,5 @@ export default {
     getMyEvents,
     getOrdersByEventId,
     getEventSummary,
+    eventSearch,
 };

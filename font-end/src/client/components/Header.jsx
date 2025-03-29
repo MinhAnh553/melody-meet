@@ -4,6 +4,7 @@ import logo from '../../assets/images/logo.png';
 import avatar from '../../assets/images/avatar.png';
 import { useAuth } from '../context/AuthContext';
 import swalCustomize from '../../util/swalCustomize';
+import SearchBar from './SearchBar';
 
 const Header = () => {
     const { auth, logout } = useAuth();
@@ -27,7 +28,7 @@ const Header = () => {
                         className="collapse navbar-collapse justify-content-between"
                         id="navbarContent"
                     >
-                        <form className="d-flex search-form">
+                        {/* <form className="d-flex search-form">
                             <div className="input-group">
                                 <span className="input-group-text">
                                     <i className="bi bi-search" />
@@ -39,7 +40,8 @@ const Header = () => {
                                     aria-label="Search"
                                 />
                             </div>
-                        </form>
+                        </form> */}
+                        <SearchBar />
                         <ul className="navbar-nav mb-2 mb-lg-0 gap-2 align-items-center">
                             <li className="nav-item">
                                 <Link
