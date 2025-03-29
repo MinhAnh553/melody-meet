@@ -51,9 +51,9 @@ const SearchBar = () => {
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onFocus={() => setShowResults(true)}
-                        // onBlur={() =>
-                        //     setTimeout(() => setShowResults(false), 200)
-                        // }
+                        onBlur={() =>
+                            setTimeout(() => setShowResults(false), 200)
+                        }
                     />
                 </div>
             </form>
