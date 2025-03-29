@@ -225,7 +225,10 @@ const EventsList = () => {
                     {/* Dropdown lọc trạng thái */}
                     <Form.Select
                         value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
+                        onChange={(e) => {
+                            setStatusFilter(e.target.value);
+                            handlePageChange(1);
+                        }}
                     >
                         <option value="all">Tất cả trạng thái</option>
                         <option value="approved">Đã duyệt</option>
