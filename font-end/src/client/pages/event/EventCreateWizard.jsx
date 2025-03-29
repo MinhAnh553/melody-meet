@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { EventFormProvider } from '../../context/EventFormContext';
 import Step1 from './Step1';
 import Step2 from './Step2';
@@ -11,6 +11,7 @@ import swalCustomize from '../../../util/swalCustomize';
 const EventForm = () => {
     const { eventId } = useParams(); // Lấy eventId từ URL
     const isEditMode = Boolean(eventId); // Kiểm tra xem có đang chỉnh sửa không
+    const navigate = useNavigate();
 
     const [step, setStep] = useState(1);
     const [stepLoading, setStepLoading] = useState(false);
@@ -44,6 +45,10 @@ const EventForm = () => {
             const response = await api.getEventById(eventId); // API lấy dữ liệu sự kiện
             if (response.success) {
                 const eventData = response.event;
+
+                if (eventData.status === 'event_over') {
+                    navigate(`/event`);
+                }
 
                 // Cập nhật dữ liệu vào form
                 setFormData({

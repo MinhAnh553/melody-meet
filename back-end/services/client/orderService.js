@@ -235,55 +235,45 @@ const orderSuccess = async (orderCode, userId) => {
     }
 };
 
-const getMyOrders = async (userId, page, limit) => {
+const getMyOrders = async (userId) => {
     try {
-        const orders = await orderModel
-            .find({
-                userId: userId,
-                status: 'PAID',
-            })
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * limit)
-            .limit(limit);
+        // Lấy danh sách đơn hàng
+        let orders = await orderModel
+            .find({ userId, status: 'PAID' })
+            .sort({ createdAt: -1 });
 
-        if (!orders || orders.length === 0) {
+        // Nếu không có đơn hàng
+        if (!orders.length) {
             return {
                 success: false,
                 message: 'Không có đơn hàng nào!',
             };
         }
 
-        const newOrders = await Promise.all(
-            orders.map(async (order) => {
-                const event = await eventModel.findById(order.eventId);
-                const tickets = await ticketModel.find({
-                    orderId: order._id,
-                });
+        // Lấy chi tiết đơn hàng (kèm event và ticket)
+        let newOrders = [];
+        for (const order of orders) {
+            const event = await eventModel.findById(order.eventId);
+            const tickets = await ticketModel.find({ orderId: order._id });
 
-                return {
-                    ...order.toObject(),
-                    image: event.background,
-                    tickets: tickets,
-                    name: event.name,
-                };
-            }),
-        );
-
-        const totalOrders = await orderModel.countDocuments({
-            userId: userId,
-            status: 'PAID',
-        });
+            newOrders.push({
+                ...order.toObject(),
+                image: event?.background || '',
+                tickets,
+                name: event?.name || 'Sự kiện không tồn tại',
+                eventStatus: event?.status || 'unknown',
+                startTime: event.startTime,
+                endTime: event.endTime,
+            });
+        }
 
         return {
             success: true,
             orders: newOrders,
-            totalTickets: totalOrders,
-            totalPages: Math.ceil(totalOrders / limit),
-            currentPage: page,
         };
     } catch (error) {
-        // console.error('get order error:', error);
-        return { success: false, message: error.message };
+        console.error('Lỗi khi lấy đơn hàng:', error);
+        return { success: false, message: 'Lỗi server' };
     }
 };
 
@@ -354,6 +344,7 @@ const getAllOrders = async () => {
 
                 const event = await eventModel.findById(order.eventId);
                 order.eventName = event.name;
+                order.eventStatus = event.status;
 
                 const tickets = await ticketModel.find({
                     orderId: order._id,

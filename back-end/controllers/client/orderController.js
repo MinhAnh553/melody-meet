@@ -158,11 +158,8 @@ const getOrderSuccess = async (req, res) => {
 const getMyOrders = async (req, res) => {
     try {
         const userId = req.user.id;
-        let { page = 1, limit = 10 } = req.query;
-        page = parseInt(page);
-        limit = parseInt(limit);
 
-        const result = await orderService.getMyOrders(userId, page, limit);
+        const result = await orderService.getMyOrders(userId);
         if (result.success) {
             return res.status(200).json(result);
         }

@@ -296,26 +296,24 @@ const EventManagement = () => {
                                                 <BsBagCheckFill />
                                                 Đơn hàng
                                             </Button>
-                                            <Button
-                                                variant="dark"
-                                                className="d-flex align-items-center gap-2"
-                                                style={{
-                                                    border: '1px solid #555',
-                                                    borderRadius: '8px',
-                                                }}
-                                                onClick={() => {
-                                                    // window.open(
-                                                    //     `/event/${event._id}/edit`,
-                                                    //     '_blank',
-                                                    // );
-                                                    navigate(
-                                                        `/event/${event._id}/edit`,
-                                                    );
-                                                }}
-                                            >
-                                                <BsPencilSquare />
-                                                Chỉnh sửa
-                                            </Button>
+                                            {event.status !== 'event_over' && (
+                                                <Button
+                                                    variant="dark"
+                                                    className="d-flex align-items-center gap-2"
+                                                    style={{
+                                                        border: '1px solid #555',
+                                                        borderRadius: '8px',
+                                                    }}
+                                                    onClick={() => {
+                                                        navigate(
+                                                            `/event/${event._id}/edit`,
+                                                        );
+                                                    }}
+                                                >
+                                                    <BsPencilSquare />
+                                                    Chỉnh sửa
+                                                </Button>
+                                            )}
                                         </div>
                                     </Col>
                                 </Row>

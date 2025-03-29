@@ -1,3 +1,5 @@
+import cron from 'node-cron';
+
 import eventModel from '../../models/eventModel.js';
 import orderModel from '../../models/orderModel.js';
 import userService from './userService.js';
@@ -161,6 +163,26 @@ const getOrdersByEventId = async (eventId, userId) => {
         return { success: false, message: error.message };
     }
 };
+
+const updateFinishedEvents = async () => {
+    try {
+        const currentTime = new Date();
+        await eventModel.updateMany(
+            {
+                endTime: { $lt: currentTime },
+                status: { $ne: 'event_over', $eq: 'approved' },
+            },
+            { $set: { status: 'event_over' } },
+        );
+    } catch (error) {
+        console.error('Lỗi cập nhật sự kiện đã kết thúc:', error);
+    }
+};
+
+cron.schedule('*/5 * * * *', () => {
+    console.log('⏳ Kiểm tra sự kiện hết hạn...');
+    updateFinishedEvents();
+});
 
 export default {
     createEvent,

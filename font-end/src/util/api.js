@@ -105,8 +105,8 @@ const getOrderByOrderId = (orderId) => {
     return axios.get(URL_API);
 };
 
-const getMyOrders = (page = 1, limit = 5) => {
-    const URL_API = `${API_URL}/order/my?page=${page}&limit=${limit}`;
+const getMyOrders = () => {
+    const URL_API = `${API_URL}/order/my`;
     return axios.get(URL_API);
 };
 

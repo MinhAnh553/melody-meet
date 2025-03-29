@@ -117,12 +117,31 @@ const EventDetail = () => {
                                 {lowestPrice}
                             </p>
 
-                            <button
-                                className="btn btn-success btn-lg mt-2"
-                                onClick={handleBuyNow}
+                            <div
+                                style={{
+                                    display: 'inline-block',
+                                    cursor:
+                                        event.status === 'event_over'
+                                            ? 'not-allowed'
+                                            : 'pointer',
+                                }}
                             >
-                                Mua vé ngay
-                            </button>
+                                <button
+                                    className="btn btn-success btn-lg mt-2"
+                                    onClick={handleBuyNow}
+                                    disabled={event.status === 'event_over'}
+                                    style={{
+                                        backgroundColor:
+                                            event.status === 'event_over'
+                                                ? '#ccc'
+                                                : '',
+                                    }}
+                                >
+                                    {event.status === 'event_over'
+                                        ? 'Sự kiện đã kết thúc'
+                                        : 'Mua vé ngay'}
+                                </button>
+                            </div>
                         </div>
 
                         {/* Cột phải */}

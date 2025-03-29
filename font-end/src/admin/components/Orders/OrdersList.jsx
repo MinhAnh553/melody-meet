@@ -311,8 +311,40 @@ const OrdersList = () => {
                                             <FaPrint />
                                         </Button> */}
                                                 {/* Nếu status = PENDING thì mới cho hủy */}
-                                                {order.status === 'PENDING' && (
-                                                    <>
+                                                {order.status === 'PENDING' &&
+                                                    order.eventStatus !==
+                                                        'event_over' && (
+                                                        <>
+                                                            <Button
+                                                                variant="link"
+                                                                className={`${styles.actionButton} ${styles.completeButton}`}
+                                                                title="Hoàn thành đơn hàng"
+                                                                onClick={() =>
+                                                                    handleCompleteClick(
+                                                                        order._id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FaCheck />
+                                                            </Button>
+                                                            <Button
+                                                                variant="link"
+                                                                className={`${styles.actionButton} ${styles.deleteButton}`}
+                                                                title="Hủy đơn hàng"
+                                                                onClick={() =>
+                                                                    handleCancelClick(
+                                                                        order._id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                <FaTimes />
+                                                            </Button>
+                                                        </>
+                                                    )}
+
+                                                {order.status === 'CANCELED' &&
+                                                    order.eventStatus !==
+                                                        'event_over' && (
                                                         <Button
                                                             variant="link"
                                                             className={`${styles.actionButton} ${styles.completeButton}`}
@@ -325,35 +357,7 @@ const OrdersList = () => {
                                                         >
                                                             <FaCheck />
                                                         </Button>
-                                                        <Button
-                                                            variant="link"
-                                                            className={`${styles.actionButton} ${styles.deleteButton}`}
-                                                            title="Hủy đơn hàng"
-                                                            onClick={() =>
-                                                                handleCancelClick(
-                                                                    order._id,
-                                                                )
-                                                            }
-                                                        >
-                                                            <FaTimes />
-                                                        </Button>
-                                                    </>
-                                                )}
-                                                {order.status ===
-                                                    'CANCELED' && (
-                                                    <Button
-                                                        variant="link"
-                                                        className={`${styles.actionButton} ${styles.completeButton}`}
-                                                        title="Hoàn thành đơn hàng"
-                                                        onClick={() =>
-                                                            handleCompleteClick(
-                                                                order._id,
-                                                            )
-                                                        }
-                                                    >
-                                                        <FaCheck />
-                                                    </Button>
-                                                )}
+                                                    )}
                                             </div>
                                         </td>
                                     </tr>

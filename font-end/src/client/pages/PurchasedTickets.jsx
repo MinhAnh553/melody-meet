@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Button, Nav } from 'react-bootstrap';
-import { BsPerson, BsTicket, BsCalendar, BsChevronRight } from 'react-icons/bs';
+import { Container, Row, Col, Button, Nav, Pagination } from 'react-bootstrap';
+import { BsTicket, BsCalendar, BsChevronRight } from 'react-icons/bs';
 import QRCode from 'react-qr-code';
 import { Link, useNavigate } from 'react-router-dom';
 import noTicket from '../../assets/images/no-ticket.png';
 import api from '../../util/api';
+import TimeText from '../components/providers/TimeText';
 
 function PurchasedTickets() {
     const navigate = useNavigate();
 
-    // State cho danh sách đơn hàng
     const [orders, setOrders] = useState([]);
-    // Phân trang
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
-    const [total, setTotal] = useState(0);
-    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
+    // Các state cho tìm kiếm, lọc, sắp xếp, phân trang
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [currentPage, setCurrentPage] = useState(1);
     // Quản lý tab active
     const [activeTab, setActiveTab] = useState('tickets');
     // Quản lý mở/đóng chi tiết cho từng đơn
     const [expandedOrders, setExpandedOrders] = useState({});
+
+    const itemsPerPage = 5;
 
     const handleNavigation = (tab, path) => {
         setActiveTab(tab);
@@ -36,17 +36,16 @@ function PurchasedTickets() {
         }));
     };
 
-    // Gọi API lấy orders
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const res = await api.getMyOrders(page, limit);
+            const res = await api.getMyOrders();
             if (res.success) {
                 setOrders(res.orders);
-                // setPage(res.currentPage);
-                setLimit(res.limit);
-                setTotal(res.totalTickets);
-                setTotalPages(res.totalPages);
             }
         } catch (error) {
             console.error('fetchOrders -> error', error);
@@ -55,18 +54,36 @@ function PurchasedTickets() {
         }
     };
 
-    // Mỗi khi page, limit thay đổi => fetchOrders
-    useEffect(() => {
-        fetchOrders();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [page, limit]);
+    // Lọc theo status
+    const filteredOrders = orders.filter((order) => {
+        if (statusFilter === 'all') return true; // Lấy tất cả đơn hàng
+        if (statusFilter === 'upcoming')
+            return order.eventStatus !== 'event_over';
+        if (statusFilter === 'event_over')
+            return order.eventStatus === 'event_over';
+        return false;
+    });
 
-    // Render danh sách đơn
+    // Phân trang
+    const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+    const indexOfLastOrder = currentPage * itemsPerPage;
+    const indexOfFirstOrder = indexOfLastOrder - itemsPerPage;
+    const currentOrders = filteredOrders.slice(
+        indexOfFirstOrder,
+        indexOfLastOrder,
+    );
+
+    // Chuyển trang
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     const renderOrders = () => {
         if (loading) {
             return <div className="mt-5">Đang tải dữ liệu...</div>;
         }
-        if (orders.length === 0) {
+        if (currentOrders.length === 0) {
             return (
                 <div className="text-center mt-5">
                     <img
@@ -75,14 +92,14 @@ function PurchasedTickets() {
                         className="mb-3 rounded"
                         style={{ width: '200px' }}
                     />
-                    <p className="fs-5">Bạn chưa có đơn hàng nào</p>
+                    <p className="fs-5">Không có vé phù hợp</p>
                 </div>
             );
         }
 
         return (
             <>
-                {orders.map((order) => {
+                {currentOrders.map((order) => {
                     const isExpanded = !!expandedOrders[order._id];
                     return (
                         <div
@@ -155,17 +172,24 @@ function PurchasedTickets() {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <div className="fw-bold">
+                                                    <div className="text-dark fw-bold">
                                                         {ticket.name}
                                                     </div>
-                                                    <div>
+                                                    <div className="text-primary fw-bold">
                                                         Số lượng:{' '}
                                                         {ticket.quantity}
                                                     </div>
                                                     <div className="text-danger fw-bold">
+                                                        Giá:{' '}
                                                         {ticket.price === 0
                                                             ? 'Miễn phí'
                                                             : `${subTotal.toLocaleString()} đ`}
+                                                    </div>
+                                                    <div className="text-success fw-bold">
+                                                        Thời gian diễn ra:{' '}
+                                                        <TimeText
+                                                            event={order}
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="d-flex justify-content-center ms-auto">
@@ -186,29 +210,44 @@ function PurchasedTickets() {
                         </div>
                     );
                 })}
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="d-flex justify-content-center align-items-center">
+                        <Pagination>
+                            <Pagination.First
+                                onClick={() => handlePageChange(1)}
+                                disabled={currentPage === 1}
+                            />
+                            <Pagination.Prev
+                                onClick={() =>
+                                    handlePageChange(currentPage - 1)
+                                }
+                                disabled={currentPage === 1}
+                            />
 
-                {/* Phân trang */}
-                <div className="d-flex justify-content-center align-items-center">
-                    <Button
-                        variant="secondary"
-                        className="me-2"
-                        disabled={page <= 1}
-                        onClick={() => setPage((prev) => prev - 1)}
-                    >
-                        Trang trước
-                    </Button>
-                    <span>
-                        Trang {page} / {totalPages}
-                    </span>
-                    <Button
-                        variant="secondary"
-                        className="ms-2"
-                        disabled={page >= totalPages}
-                        onClick={() => setPage((prev) => prev + 1)}
-                    >
-                        Trang sau
-                    </Button>
-                </div>
+                            {[...Array(totalPages)].map((_, index) => (
+                                <Pagination.Item
+                                    key={index + 1}
+                                    active={index + 1 === currentPage}
+                                    onClick={() => handlePageChange(index + 1)}
+                                >
+                                    {index + 1}
+                                </Pagination.Item>
+                            ))}
+
+                            <Pagination.Next
+                                onClick={() =>
+                                    handlePageChange(currentPage + 1)
+                                }
+                                disabled={currentPage === totalPages}
+                            />
+                            <Pagination.Last
+                                onClick={() => handlePageChange(totalPages)}
+                                disabled={currentPage === totalPages}
+                            />
+                        </Pagination>
+                    </div>
+                )}
             </>
         );
     };
@@ -280,13 +319,44 @@ function PurchasedTickets() {
                 <Col md={9} className="px-4">
                     <h2 className="mb-4 fw-bold">Vé đã mua</h2>
                     <div className="d-flex mb-4">
-                        <Button variant="success" className="me-2 shadow-sm">
+                        <Button
+                            variant={
+                                statusFilter === 'all' ? 'success' : 'secondary'
+                            }
+                            className="me-2 shadow-sm"
+                            onClick={() => {
+                                setStatusFilter('all');
+                                handlePageChange(1);
+                            }}
+                        >
                             Tất cả
                         </Button>
-                        <Button variant="secondary" className="me-2 shadow-sm">
+                        <Button
+                            variant={
+                                statusFilter === 'upcoming'
+                                    ? 'success'
+                                    : 'secondary'
+                            }
+                            className="me-2 shadow-sm"
+                            onClick={() => {
+                                setStatusFilter('upcoming');
+                                handlePageChange(1);
+                            }}
+                        >
                             Chưa diễn ra
                         </Button>
-                        <Button variant="secondary" className="shadow-sm">
+                        <Button
+                            variant={
+                                statusFilter === 'event_over'
+                                    ? 'success'
+                                    : 'secondary'
+                            }
+                            className="shadow-sm"
+                            onClick={() => {
+                                setStatusFilter('event_over');
+                                handlePageChange(1);
+                            }}
+                        >
                             Đã diễn ra
                         </Button>
                     </div>
