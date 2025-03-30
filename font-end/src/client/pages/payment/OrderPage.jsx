@@ -16,37 +16,50 @@ function OrderPage() {
     const [timeLeft, setTimeLeft] = useState(0); // Thời gian còn lại (ms)
 
     // Lấy đơn hàng từ server
+
     useEffect(() => {
-        const fetchOrder = async () => {
-            try {
-                const res = await api.getOrder(orderId);
-                if (res.success) {
-                    setOrder(res.order);
-                    // Tính thời gian còn lại = expiredAt - now
-                    const diff =
-                        new Date(res.order.expiredAt).getTime() - Date.now();
-                    setTimeLeft(diff > 0 ? diff : 0);
-                } else if (res.reason === 'expired') {
-                    swalCustomize.Toast.fire({
-                        icon: 'error',
-                        title: 'Đơn hàng đã hết hạn!',
-                    });
-                    navigate(`/event/${res.eventId || ''}`);
-                } else {
-                    navigate('/');
-                    swalCustomize.Toast.fire({
-                        icon: 'error',
-                        title: 'Không tìm thấy đơn hàng!',
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchOrder();
-    }, [orderId, navigate]);
+        const interval = setInterval(() => {
+            fetchOrder();
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const fetchOrder = async () => {
+        try {
+            const res = await api.getOrder(orderId);
+            if (res.success) {
+                setOrder(res.order);
+                // Tính thời gian còn lại = expiredAt - now
+                const diff =
+                    new Date(res.order.expiredAt).getTime() - Date.now();
+                setTimeLeft(diff > 0 ? diff : 0);
+            } else if (res.reason === 'expired') {
+                swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: 'Đơn hàng đã hết hạn!',
+                });
+                navigate(`/event/${res.eventId || ''}`);
+            } else if (res.payment === true) {
+                swalCustomize.Toast.fire({
+                    icon: 'success',
+                    title: 'Thanh toán thành công!',
+                });
+                navigate(`/my-tickets`);
+            } else {
+                navigate('/');
+                swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: 'Không tìm thấy đơn hàng!',
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     // Lấy danh sách vé từ server
     useEffect(() => {
@@ -198,7 +211,7 @@ function OrderPage() {
         );
     };
 
-    return (
+    return order ? (
         <div
             className="min-vh-100 d-flex flex-column"
             style={{ color: '#fff' }}
@@ -225,7 +238,10 @@ function OrderPage() {
                         </h2>
 
                         <div className="mb-3">
-                            <strong>Trạng thái:</strong> {order.status}
+                            <strong>Trạng thái:</strong>{' '}
+                            {order.status === 'PENDING'
+                                ? 'Chờ thanh toán'
+                                : 'Không xác định'}
                         </div>
                         <div className="mb-3">
                             <strong>Tổng tiền:</strong>{' '}
@@ -244,6 +260,22 @@ function OrderPage() {
                             </span>
                         </div>
 
+                        {/* Thông tin người mua */}
+                        <hr />
+                        <h4 className="mb-3">Thông tin người mua</h4>
+                        <div className="mb-3">
+                            <strong>Họ và tên:</strong>{' '}
+                            {order.buyerInfo?.name || 'Chưa cập nhật'}
+                        </div>
+                        <div className="mb-3">
+                            <strong>Số điện thoại:</strong>{' '}
+                            {order.buyerInfo?.phone || 'Chưa cập nhật'}
+                        </div>
+                        <div className="mb-3">
+                            <strong>Email:</strong>{' '}
+                            {order.buyerInfo?.email || 'Chưa cập nhật'}
+                        </div>
+
                         <hr />
                         <h4 className="mb-3">Danh sách vé</h4>
                         {renderTicketTable()}
@@ -260,7 +292,7 @@ function OrderPage() {
                 </div>
             </div>
         </div>
-    );
+    ) : null;
 }
 
 export default OrderPage;

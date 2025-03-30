@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -30,6 +30,10 @@ const pageVariants = {
 
 const AnimatedRoutes = () => {
     const location = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0); // Cuộn lên đầu trang mỗi khi đổi route
+    }, [location.pathname]);
 
     return (
         <AnimatePresence mode="wait">

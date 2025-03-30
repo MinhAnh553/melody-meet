@@ -3,7 +3,7 @@ import payosService from '../../services/client/payosService.js';
 
 const createOrder = async (req, res) => {
     try {
-        const { eventId, items, totalPrice } = req.body;
+        const { eventId, items, totalPrice, buyerInfo } = req.body;
         const userId = req.user.id;
 
         const result = await orderService.createOrder(
@@ -11,6 +11,7 @@ const createOrder = async (req, res) => {
             eventId,
             items,
             totalPrice,
+            buyerInfo,
         );
 
         if (result.success) {
@@ -36,6 +37,12 @@ const getOrder = async (req, res) => {
         const result = await orderService.getOrderById(orderId);
 
         if (result.success) {
+            if (req.user.id != result.order.userId) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Không đủ quyền hạn!',
+                });
+            }
             return res.status(200).json(result);
         }
 

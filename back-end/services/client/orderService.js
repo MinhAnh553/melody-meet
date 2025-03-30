@@ -8,7 +8,7 @@ import userService from './userService.js';
 import mailTemplate from '../../templates/mailTemplate.js';
 import emailProvider from '../../providers/emailProvider.js';
 
-const createOrder = async (userId, eventId, items, totalPrice) => {
+const createOrder = async (userId, eventId, items, totalPrice, buyerInfo) => {
     try {
         const orderId = `${
             Number(await orderModel.countDocuments()) + 1
@@ -17,6 +17,7 @@ const createOrder = async (userId, eventId, items, totalPrice) => {
 
         const newOrder = new orderModel({
             userId,
+            buyerInfo,
             eventId,
             orderId,
             totalPrice,
@@ -81,7 +82,8 @@ const getOrderById = async (id) => {
         if (order.status !== 'PENDING') {
             return {
                 success: false,
-                message: 'Đơn hàng không ở trạng thái CHỜ XỬ LÝ',
+                payment: true,
+                message: 'Đơn hàng đã được thanh toán!',
             };
         }
 
@@ -195,8 +197,6 @@ const orderSuccess = async (orderCode, userId) => {
                 },
             );
 
-            const user = await userService.getUserById(userId);
-
             const event = await eventModel.findById(order.eventId);
 
             const tickets = await ticketModel.find({
@@ -217,10 +217,10 @@ const orderSuccess = async (orderCode, userId) => {
 
             // Gửi mail thông tin vé
             await emailProvider.sendMail(
-                user.address.email,
+                order.buyerInfo.email,
                 'Melody Meet: Giao Dịch Thành Công',
                 mailTemplate.ticketInfoTemplate(
-                    user.address.name,
+                    order.buyerInfo.name,
                     event,
                     order,
                     tickets,
@@ -368,6 +368,26 @@ const updateStatusOrder = async (orderId, status) => {
         { _id: orderId },
         { status },
         { new: true },
+    );
+
+    const order = await orderModel.findById(orderId);
+
+    const event = await eventModel.findById(order.eventId);
+
+    const tickets = await ticketModel.find({
+        orderId: order._id,
+    });
+
+    // Gửi mail thông tin vé
+    await emailProvider.sendMail(
+        order.buyerInfo.email,
+        'Melody Meet: Giao Dịch Thành Công',
+        mailTemplate.ticketInfoTemplate(
+            order.buyerInfo.name,
+            event,
+            order,
+            tickets,
+        ),
     );
 
     if (!updatedOrder) {

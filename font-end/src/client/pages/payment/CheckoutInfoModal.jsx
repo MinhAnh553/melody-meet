@@ -15,6 +15,8 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
             setName(auth.user.address.name || '');
             setPhone(auth.user.address.phone || '');
             setEmail(auth.user.address.email || '');
+        } else {
+            setEmail(auth.user.email);
         }
     }, [show, auth?.user]);
 
@@ -28,27 +30,24 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
         }
 
         try {
-            // Gọi API update user
-            const res = await api.updateUserInfo({
+            const buyerInfo = {
                 name,
                 phone,
                 email,
-            });
+            };
+            // Gọi API update user
+            const res = await api.updateUserInfo(buyerInfo);
             if (res.success) {
                 // Thành công => gọi onConfirm => tiếp tục PayOS
                 setAuth((prevAuth) => ({
                     ...prevAuth,
                     user: {
                         ...prevAuth?.user,
-                        address: {
-                            name,
-                            phone,
-                            email,
-                        },
+                        address: buyerInfo,
                     },
                 }));
 
-                onConfirm();
+                onConfirm(buyerInfo);
             } else {
                 return swalCustomize.Toast.fire({
                     icon: 'error',

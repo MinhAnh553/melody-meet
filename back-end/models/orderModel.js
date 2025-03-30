@@ -3,6 +3,11 @@ import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema(
     {
         userId: mongoose.Schema.Types.ObjectId,
+        buyerInfo: {
+            name: String,
+            phone: String,
+            email: String,
+        },
         eventId: mongoose.Schema.Types.ObjectId,
         orderId: Number,
         totalPrice: { type: Number },

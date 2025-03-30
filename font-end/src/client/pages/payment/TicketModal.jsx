@@ -61,7 +61,7 @@ const TicketModal = ({ show, onHide, event }) => {
     };
 
     // Khi user xác nhận info => proceed
-    const handleInfoConfirmed = async () => {
+    const handleInfoConfirmed = async (buyerInfo) => {
         try {
             const items = event.ticketTypes
                 .map((ticket, i) => ({
@@ -72,10 +72,12 @@ const TicketModal = ({ show, onHide, event }) => {
                 }))
                 .filter((item) => item.quantity >= 1); // Lọc những ticket có quantity >= 1
 
+            console.log(buyerInfo);
             const res = await api.createOrder({
                 eventId: event._id,
                 items,
                 totalPrice,
+                buyerInfo,
             });
             if (res.success) {
                 window.location.href = `/order/${res.orderId}`;
