@@ -16,7 +16,7 @@ dotenv.config();
 
 // App, port
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 5503;
 
 // Session database
 const MongoDBStoreSession = MongoDBStore(session);
