@@ -1,4 +1,4 @@
-import timeText from '../util/TimeText.js';
+import timeText from '../util/timeText.js';
 
 const otpTemplate = (otp) => `
   <div style="
