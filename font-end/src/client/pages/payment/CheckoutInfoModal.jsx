@@ -16,7 +16,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
             setPhone(auth.user.address.phone || '');
             setEmail(auth.user.address.email || '');
         } else {
-            setEmail(auth.user.email);
+            setEmail(auth?.user?.email);
         }
     }, [show, auth?.user]);
 
