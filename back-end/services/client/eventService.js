@@ -77,13 +77,19 @@ const getEventById = async (id) => {
     return event;
 };
 
-const getMyEvents = async (userId, page, limit, status) => {
+const getMyEvents = async (userId, page, limit, status, query) => {
     try {
+        let find = {
+            userId: userId,
+            status: status,
+        };
+
+        if (query) {
+            find.name = { $regex: query, $options: 'i' };
+        }
+
         const events = await eventModel
-            .find({
-                userId: userId,
-                status: status,
-            })
+            .find(find)
             .sort({ createdAt: -1 })
             .skip((page - 1) * limit)
             .limit(limit);
@@ -95,10 +101,7 @@ const getMyEvents = async (userId, page, limit, status) => {
             };
         }
 
-        const totalEvents = await eventModel.countDocuments({
-            userId: userId,
-            status: status,
-        });
+        const totalEvents = await eventModel.countDocuments(find);
 
         return {
             success: true,

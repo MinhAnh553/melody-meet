@@ -244,7 +244,7 @@ const getEventByIdToEdit = async (req, res) => {
 const getMyEvents = async (req, res) => {
     try {
         const userId = req.user.id;
-        let { page = 1, limit = 5, status = 'approved' } = req.query;
+        let { page = 1, limit = 5, status = 'approved', query } = req.query;
         page = parseInt(page);
         limit = parseInt(limit);
 
@@ -253,6 +253,7 @@ const getMyEvents = async (req, res) => {
             page,
             limit,
             status,
+            query,
         );
         if (result.success) {
             return res.status(200).json(result);

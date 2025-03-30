@@ -62,8 +62,11 @@ const SearchBar = () => {
                 <ul
                     className="list-group position-absolute shadow rounded mt-1"
                     style={{
-                        width: 'calc(100% - 35px)',
+                        width: 'calc(100%)',
                         left: '60px',
+                        maxHeight: '400px', // Giới hạn chiều cao
+                        overflowY: 'auto', // Hiển thị thanh cuộn khi danh sách dài
+                        zIndex: 10, // Đảm bảo danh sách hiển thị trên các phần tử khác
                     }}
                 >
                     {results.map((event) => (
@@ -73,7 +76,7 @@ const SearchBar = () => {
                             style={{
                                 backgroundColor: 'rgba(49, 53, 62, .55)',
                                 color: 'white',
-                                backdropFilter: ' blur(55px)',
+                                backdropFilter: 'blur(55px)',
                                 border: 'none',
                             }}
                         >

@@ -24,7 +24,7 @@ const EventManagement = () => {
     const [totalPages, setTotalPages] = useState(1);
 
     // Quản lý tab active
-    const [activeTab, setActiveTab] = useState('upcoming');
+    const [activeTab, setActiveTab] = useState('approved');
 
     // Tìm kiếm
     const [searchKey, setSearchKey] = useState('');
@@ -35,14 +35,8 @@ const EventManagement = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [page]);
 
-    const handleSearch = () => {
-        console.log('Tìm kiếm:', searchKey);
-        // TODO: logic tìm kiếm sự kiện
-        // fetchEvents('search'); // ví dụ
-    };
-
     const handleUpcoming = () => {
-        setActiveTab('upcoming');
+        setActiveTab('approved');
         setPage(1);
         fetchEvents('approved');
     };
@@ -65,6 +59,14 @@ const EventManagement = () => {
         fetchEvents('rejected');
     };
 
+    const handleSearch = (value) => {
+        setSearchKey(value);
+    };
+
+    useEffect(() => {
+        fetchEvents(activeTab);
+    }, [searchKey]);
+
     useEffect(() => {
         if (location.state?.createSuccess) {
             handlePending();
@@ -73,7 +75,7 @@ const EventManagement = () => {
 
     const fetchEvents = async (status) => {
         try {
-            const res = await api.getMyEvents(page, limit, status);
+            const res = await api.getMyEvents(page, limit, status, searchKey);
             if (res.success) {
                 setEvents(res.events);
                 setTotal(res.totalEvents);
@@ -112,10 +114,14 @@ const EventManagement = () => {
                                 <i className="bi bi-search" />
                             </span>
                             <input
-                                className="form-control"
+                                className="form-control text-dark"
                                 type="search"
                                 placeholder="Tìm kiếm"
                                 aria-label="Search"
+                                value={searchKey}
+                                onChange={(e) => {
+                                    handleSearch(e.target.value);
+                                }}
                             />
                         </div>
                     </form>
@@ -126,7 +132,7 @@ const EventManagement = () => {
                     className="d-flex align-items-center mb-2 mb-md-0"
                 >
                     <Button
-                        variant={activeTab === 'upcoming' ? 'success' : 'dark'}
+                        variant={activeTab === 'approved' ? 'success' : 'dark'}
                         onClick={handleUpcoming}
                         className="me-2"
                         style={{ border: '1px solid #444' }}

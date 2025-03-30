@@ -130,8 +130,8 @@ const getAllOrders = () => {
     return axios.get(URL_API);
 };
 
-const getMyEvents = (page = 1, limit = 5, status = 'approved') => {
-    const URL_API = `${API_URL}/event/my?page=${page}&limit=${limit}&status=${status}`;
+const getMyEvents = (page = 1, limit = 5, status = 'approved', searchKey) => {
+    const URL_API = `${API_URL}/event/my?query=${searchKey}&page=${page}&limit=${limit}&status=${status}`;
     return axios.get(URL_API);
 };
 
