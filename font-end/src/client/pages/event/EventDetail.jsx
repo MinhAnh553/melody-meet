@@ -5,8 +5,10 @@ import TimeText from '../../components/providers/TimeText';
 import DOMPurify from 'dompurify';
 import TicketModal from '../payment/TicketModal';
 import swalCustomize from '../../../util/swalCustomize';
+import { useAuth } from '../../context/AuthContext';
 
 const EventDetail = () => {
+    const { auth } = useAuth();
     const { eventId } = useParams();
     const [event, setEvent] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -121,7 +123,8 @@ const EventDetail = () => {
                                 style={{
                                     display: 'inline-block',
                                     cursor:
-                                        event.status === 'event_over'
+                                        event.status === 'event_over' ||
+                                        !auth?.isAuthenticated
                                             ? 'not-allowed'
                                             : 'pointer',
                                 }}
@@ -129,16 +132,22 @@ const EventDetail = () => {
                                 <button
                                     className="btn btn-success btn-lg mt-2"
                                     onClick={handleBuyNow}
-                                    disabled={event.status === 'event_over'}
+                                    disabled={
+                                        event.status === 'event_over' ||
+                                        !auth?.isAuthenticated
+                                    }
                                     style={{
                                         backgroundColor:
-                                            event.status === 'event_over'
+                                            event.status === 'event_over' ||
+                                            !auth?.isAuthenticated
                                                 ? '#ccc'
                                                 : '',
                                     }}
                                 >
                                     {event.status === 'event_over'
                                         ? 'Sự kiện đã kết thúc'
+                                        : !auth?.isAuthenticated
+                                        ? 'Đăng nhập để mua vé'
                                         : 'Mua vé ngay'}
                                 </button>
                             </div>
