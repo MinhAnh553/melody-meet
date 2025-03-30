@@ -81,11 +81,23 @@ const Header = () => {
                                                 width={36}
                                                 height={36}
                                             />
-                                            <span className="ms-2 fw-semibold">
-                                                Tài khoản
+                                            <span
+                                                className="ms-2 fw-semibold"
+                                                style={{ cursor: 'pointer' }}
+                                                title={auth.user.email} // Hiển thị đầy đủ khi hover
+                                            >
+                                                {auth.user.email.length > 27
+                                                    ? auth.user.email.slice(
+                                                          0,
+                                                          25,
+                                                      ) + '...'
+                                                    : auth.user.email}
                                             </span>
                                         </div>
-                                        <ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1">
+                                        <ul
+                                            className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1"
+                                            style={{ right: 0 }}
+                                        >
                                             {auth.user?.role === 'admin' && (
                                                 <li>
                                                     <Link

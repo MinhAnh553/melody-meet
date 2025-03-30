@@ -34,7 +34,7 @@ const EventsList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortBy, setSortBy] = useState('date'); // 'name', 'date', 'revenue'...
-    const [sortOrder, setSortOrder] = useState('desc');
+    const [sortOrder, setSortOrder] = useState('asc');
     const [currentPage, setCurrentPage] = useState(1);
 
     // Modal
@@ -49,7 +49,7 @@ const EventsList = () => {
 
     const fetchEvents = async () => {
         try {
-            const res = await api.getEvents('all', 'all');
+            const res = await api.getAllEvents();
             if (res.success) {
                 setEvents(res.events);
             }

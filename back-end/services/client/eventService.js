@@ -58,14 +58,14 @@ const updateStatusEvent = async (eventId, status) => {
 };
 
 const getEvents = async (status) => {
-    if (status === 'all') {
-        const events = await eventModel.find().sort({ createdAt: -1 });
-        return events;
-    }
-
     const events = await eventModel
         .find({ status: status })
         .sort({ createdAt: -1 });
+    return events;
+};
+
+const getAllEvents = async () => {
+    const events = await eventModel.find().sort({ createdAt: -1 });
     return events;
 };
 
@@ -204,6 +204,7 @@ export default {
     updateEvent,
     updateStatusEvent,
     getEvents,
+    getAllEvents,
     getEventById,
     getMyEvents,
     getOrdersByEventId,

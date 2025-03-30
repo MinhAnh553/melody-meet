@@ -35,7 +35,7 @@ const SearchBar = () => {
         <div
             className="position-relative"
             style={{
-                width: '50%',
+                width: '40%',
             }}
         >
             <form className="d-flex search-form">

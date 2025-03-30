@@ -55,8 +55,18 @@ const getEventById = (id) => {
     return axios.get(URL_API);
 };
 
+const getEventByIdToEdit = (id) => {
+    const URL_API = `${API_URL}/event/${id}/edit`;
+    return axios.get(URL_API);
+};
+
 const getEvents = (status = 'approved') => {
     const URL_API = `${API_URL}/event?status=${status}`;
+    return axios.get(URL_API);
+};
+
+const getAllEvents = () => {
+    const URL_API = `${API_URL}/event/all-events`;
     return axios.get(URL_API);
 };
 
@@ -159,7 +169,9 @@ export default {
     updateStatusEvent,
     updateEvent,
     getEventById,
+    getEventByIdToEdit,
     getEvents,
+    getAllEvents,
     updateUserInfo,
     updateUser,
     createOrder,

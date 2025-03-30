@@ -31,6 +31,12 @@ Router.route('/update/:id').patch(
 
 Router.route('/').get(eventController.getEvents);
 
+Router.route('/all-events').get(
+    authMiddleware.isAuthorized,
+    authMiddleware.isAdmin,
+    eventController.getAllEvents,
+);
+
 Router.route('/my').get(
     authMiddleware.isAuthorized,
     eventController.getMyEvents,
@@ -49,6 +55,11 @@ Router.route('/:id/orders').get(
 Router.route('/:id/summary').get(
     authMiddleware.isAuthorized,
     eventController.getEventSummary,
+);
+
+Router.route('/:id/edit').get(
+    authMiddleware.isAuthorized,
+    eventController.getEventByIdToEdit,
 );
 
 Router.route('/:id').get(eventController.getEventById);

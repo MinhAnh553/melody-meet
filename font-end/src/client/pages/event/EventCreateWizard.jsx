@@ -42,7 +42,7 @@ const EventForm = () => {
     const fetchEventData = async () => {
         try {
             setStepLoading(true);
-            const response = await api.getEventById(eventId); // API lấy dữ liệu sự kiện
+            const response = await api.getEventByIdToEdit(eventId);
             if (response.success) {
                 const eventData = response.event;
 
@@ -68,10 +68,14 @@ const EventForm = () => {
 
                 setStepLoading(false);
             } else {
-                return swalCustomize.Toast('error', 'Lỗi', response.message);
+                navigate('/event');
+                swalCustomize.Toast.fire({
+                    icon: 'error',
+                    title: 'Không đủ quyền hạn!',
+                });
             }
         } catch (error) {
-            console.error('Lỗi khi tải dữ liệu sự kiện:', error);
+            // console.error('Lỗi khi tải dữ liệu sự kiện:', error);
             setStepLoading(false);
         }
     };

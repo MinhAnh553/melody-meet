@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
     BsSearch,
@@ -13,6 +13,7 @@ import api from '../../../util/api';
 import TimeText from '../../components/providers/TimeText';
 
 const EventManagement = () => {
+    const location = useLocation();
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
 
@@ -57,6 +58,18 @@ const EventManagement = () => {
         setPage(1);
         fetchEvents('pending');
     };
+
+    const handleRejected = () => {
+        setActiveTab('rejected');
+        setPage(1);
+        fetchEvents('rejected');
+    };
+
+    useEffect(() => {
+        if (location.state?.createSuccess) {
+            handlePending();
+        }
+    }, [location.state]);
 
     const fetchEvents = async (status) => {
         try {
@@ -131,9 +144,17 @@ const EventManagement = () => {
                     <Button
                         variant={activeTab === 'pending' ? 'success' : 'dark'}
                         onClick={handlePending}
+                        className="me-2"
                         style={{ border: '1px solid #444' }}
                     >
                         Chờ duyệt
+                    </Button>
+                    <Button
+                        variant={activeTab === 'rejected' ? 'success' : 'dark'}
+                        onClick={handleRejected}
+                        style={{ border: '1px solid #444' }}
+                    >
+                        Bị từ chối
                     </Button>
                 </Col>
             </Row>
@@ -324,27 +345,29 @@ const EventManagement = () => {
             </Row>
 
             {/* Phân trang */}
-            <div className="d-flex justify-content-center align-items-center">
-                <Button
-                    variant="secondary"
-                    className="me-2"
-                    disabled={page <= 1}
-                    onClick={() => setPage((prev) => prev - 1)}
-                >
-                    Trang trước
-                </Button>
-                <span>
-                    Trang {page} / {totalPages}
-                </span>
-                <Button
-                    variant="secondary"
-                    className="ms-2"
-                    disabled={page >= totalPages}
-                    onClick={() => setPage((prev) => prev + 1)}
-                >
-                    Trang sau
-                </Button>
-            </div>
+            {events.length > 0 && (
+                <div className="d-flex justify-content-center align-items-center">
+                    <Button
+                        variant="secondary"
+                        className="me-2"
+                        disabled={page <= 1}
+                        onClick={() => setPage((prev) => prev - 1)}
+                    >
+                        Trang trước
+                    </Button>
+                    <span>
+                        Trang {page} / {totalPages}
+                    </span>
+                    <Button
+                        variant="secondary"
+                        className="ms-2"
+                        disabled={page >= totalPages}
+                        onClick={() => setPage((prev) => prev + 1)}
+                    >
+                        Trang sau
+                    </Button>
+                </div>
+            )}
         </Container>
     );
 };

@@ -21,11 +21,13 @@ Router.route('/ticket/:orderId').get(orderController.getOrderTickets);
 Router.route('/my').get(orderController.getMyOrders);
 
 Router.route('/all-orders').get(
+    authMiddleware.isAuthorized,
     authMiddleware.isAdmin,
     orderController.getAllOrders,
 );
 
 Router.route('/update/:id/status').patch(
+    authMiddleware.isAuthorized,
     authMiddleware.isAdmin,
     orderController.updateStatusOrder,
 );

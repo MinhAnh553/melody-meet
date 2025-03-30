@@ -56,6 +56,19 @@ const updateEvent = async (req, res) => {
         const data = req.body;
         const id = req.params.id;
 
+        const event = await eventService.getEventById(id);
+
+        if (!event) {
+            return res
+                .status(404)
+                .json({ success: false, message: 'Event not found' });
+        }
+
+        // Nếu trạng thái của event là 'rejected', cập nhật thành 'pending'
+        if (event.status === 'rejected') {
+            data.status = 'pending';
+        }
+
         // Parse lại dữ liệu ticketTypes từ chuỗi JSON
         let ticketTypes = JSON.parse(req.body.ticketTypes);
         data.ticketTypes = ticketTypes;
@@ -78,13 +91,13 @@ const updateEvent = async (req, res) => {
             startTime: new Date(data.startTime),
             endTime: new Date(data.endTime),
             ticketTypes: data.ticketTypes,
+            status: data.status,
         };
 
         if (req.files.eventBackground && req.files.eventBackground.length > 0) {
             dataUpdate.background = req.files.eventBackground[0].path;
         }
         if (req.files.organizerLogo && req.files.organizerLogo.length > 0) {
-            console.log('ua');
             dataUpdate.organizer.logo = req.files.organizerLogo[0].path;
         }
 
@@ -99,7 +112,7 @@ const updateEvent = async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         res.status(400).json({
             success: false,
             message: error.message || 'Server Error!',
@@ -152,6 +165,22 @@ const getEvents = async (req, res) => {
     }
 };
 
+const getAllEvents = async (req, res) => {
+    try {
+        const events = await eventService.getAllEvents();
+        res.status(200).json({
+            success: true,
+            events,
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
 const getEventById = async (req, res) => {
     try {
         const id = req.params.id;
@@ -159,6 +188,36 @@ const getEventById = async (req, res) => {
         const event = await eventService.getEventById(id);
         if (event) {
             if (event.status == 'pending' || event.status == 'rejected') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Không tìm thấy sự kiện!',
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                event,
+            });
+        }
+        return res.status(404).json({
+            success: false,
+            message: 'Không tìm thấy sự kiện!',
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({
+            success: false,
+            message: error.message || 'Server Error!',
+        });
+    }
+};
+
+const getEventByIdToEdit = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const event = await eventService.getEventById(id);
+        if (event) {
+            if (req.user.id != event.userId) {
                 return res.status(403).json({
                     success: false,
                     message: 'Không tìm thấy sự kiện!',
@@ -343,8 +402,10 @@ export default {
     updateStatusEvent,
     getEvents,
     getEventById,
+    getEventByIdToEdit,
     getMyEvents,
     getOrdersByEventId,
     getEventSummary,
     eventSearch,
+    getAllEvents,
 };

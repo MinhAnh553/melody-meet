@@ -285,7 +285,7 @@ const Step2 = ({ onLoadingChange, data, updateData, isEditMode }) => {
                     icon: 'success',
                     title: res.message,
                 });
-                navigate('/event');
+                navigate('/event', { state: { createSuccess: true } });
             } else {
                 return swalCustomize.Toast.fire({
                     icon: 'error',

@@ -46,7 +46,15 @@ const EventList = () => {
                         onClick={() => navigate(`/event/${event._id}`)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <img src={event.background} alt={event.name} />
+                        <img
+                            src={event.background}
+                            alt={event.name}
+                            style={{
+                                width: '100%',
+                                height: '50%',
+                                objectFit: 'contain',
+                            }}
+                        />
                         <div className="event-content bg-dark text-white">
                             <h3>{event.name}</h3>
                             <p className="date text-white">
