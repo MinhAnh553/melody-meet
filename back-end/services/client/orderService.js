@@ -378,6 +378,18 @@ const updateStatusOrder = async (orderId, status) => {
         orderId: order._id,
     });
 
+    // Cập nhật số lượng vé còn lại
+    await Promise.all(
+        tickets.map(async (ticket) => {
+            const ticketType = event.ticketTypes.find(
+                (item) => item.name === ticket.name,
+            );
+            ticketType.totalQuantity -= ticket.quantity;
+        }),
+    );
+
+    await event.save();
+
     // Gửi mail thông tin vé
     await emailProvider.sendMail(
         order.buyerInfo.email,
