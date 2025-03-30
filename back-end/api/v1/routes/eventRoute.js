@@ -42,10 +42,7 @@ Router.route('/my').get(
     eventController.getMyEvents,
 );
 
-Router.route('/search').get(
-    authMiddleware.isAuthorized,
-    eventController.eventSearch,
-);
+Router.route('/search').get(eventController.eventSearch);
 
 Router.route('/:id/orders').get(
     authMiddleware.isAuthorized,

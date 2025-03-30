@@ -165,19 +165,6 @@ header .form-control {
     color: black;
 }
 
-@media (max-width: 991.98px) {
-    .search-form {
-        margin: 1rem 0;
-        margin-left: 50px;
-    }
-
-    .auth-buttons {
-        margin-top: 1rem;
-        display: flex;
-        justify-content: center;
-    }
-}
-
 .navbar-toggler {
     border-color: #fff;
     background: #fff;
@@ -197,16 +184,6 @@ header .form-control {
     background: rgba(0, 0, 0, 0.5);
     padding: 2rem;
     border-radius: var(--radius, 0.5rem);
-}
-
-@media (max-width: 768px) {
-    .search-form .form-control {
-        width: 100%;
-    }
-
-    .carousel-item img {
-        height: 400px;
-    }
 }
 
 /*  */
@@ -390,16 +367,6 @@ header .form-control {
 .btn-link:hover {
     color: var(--primary);
     text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-    .search-form .form-control {
-        width: 100%;
-    }
-
-    .carousel-item img {
-        height: 400px;
-    }
 }
 
 #registrationStep,
@@ -626,4 +593,54 @@ header .form-control {
 .nav-link.active {
     background-color: #495057; /* Màu xám đậm */
     border-radius: 4px;
+}
+
+/* Reponsive */
+@media (max-width: 768px) {
+    .search-form .form-control {
+        width: 100%;
+    }
+
+    .carousel-item img {
+        height: 400px;
+    }
+
+    .search-form {
+        margin: 1rem 0;
+    }
+
+    .auth-buttons {
+        margin-top: 1rem;
+    }
+
+    .position-relative {
+        width: 100% !important; /* Chiếm toàn bộ chiều rộng */
+    }
+
+    .search-form .input-group {
+        width: 100%;
+    }
+
+    .navbar-nav .nav-item {
+        margin: 5px 0;
+    }
+
+    .input-group {
+        flex-wrap: nowrap !important;
+        width: 100%;
+    }
+
+    .input-group-text {
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .input-group input {
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .list-group {
+        left: 0 !important;
+    }
 }
