@@ -21,7 +21,7 @@ function PurchasedTickets() {
     // Quản lý mở/đóng chi tiết cho từng đơn
     const [expandedOrders, setExpandedOrders] = useState({});
 
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     const handleNavigation = (tab, path) => {
         setActiveTab(tab);

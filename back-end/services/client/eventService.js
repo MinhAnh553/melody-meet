@@ -141,7 +141,48 @@ const getEvents = async (type, status) => {
 };
 
 const getAllEvents = async () => {
-    const events = await eventModel.find().sort({ createdAt: -1 });
+    const events = await eventModel.aggregate([
+        // 🔎 Join với bảng orders để tính tổng doanh thu (totalRevenue)
+        {
+            $lookup: {
+                from: 'orders', // Bảng chứa đơn hàng
+                localField: '_id',
+                foreignField: 'eventId',
+                as: 'orders',
+            },
+        },
+        {
+            $addFields: {
+                totalRevenue: { $sum: '$orders.totalPrice' }, // Tính tổng totalPrice của các order liên quan
+            },
+        },
+
+        // 🔎 Join với bảng users để lấy email người tạo event
+        {
+            $lookup: {
+                from: 'users', // Bảng users
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'userData',
+            },
+        },
+        {
+            $addFields: {
+                userEmail: { $arrayElemAt: ['$userData.email', 0] }, // Lấy email đầu tiên nếu có
+            },
+        },
+
+        // Ẩn mảng dư thừa sau khi đã lấy xong dữ liệu cần
+        {
+            $project: {
+                orders: 0, // Ẩn danh sách orders
+                userData: 0, // Ẩn userData sau khi lấy email
+            },
+        },
+
+        { $sort: { createdAt: -1 } }, // Sắp xếp theo thời gian tạo
+    ]);
+
     return events;
 };
 
@@ -259,7 +300,7 @@ const updateFinishedEvents = async () => {
 };
 
 cron.schedule('*/5 * * * *', () => {
-    console.log('⏳ Kiểm tra sự kiện hết hạn...');
+    // console.log('⏳ Kiểm tra sự kiện hết hạn...');
     updateFinishedEvents();
 });
 

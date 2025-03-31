@@ -8,14 +8,7 @@ import {
     Pagination,
     Modal,
 } from 'react-bootstrap';
-import {
-    FaSearch,
-    FaEdit,
-    FaTrash,
-    FaEye,
-    FaCheck,
-    FaTimes,
-} from 'react-icons/fa';
+import { FaSearch, FaEye } from 'react-icons/fa';
 import styles from './Events.module.css';
 
 import {
@@ -41,7 +34,7 @@ const EventsList = () => {
     const [showEventDetails, setShowEventDetails] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState(null);
 
-    const itemsPerPage = 5;
+    const itemsPerPage = 10;
 
     useEffect(() => {
         fetchEvents();
@@ -268,11 +261,11 @@ const EventsList = () => {
                                         Ngày tổ chức
                                     </th>
                                     <th style={{ whiteSpace: 'nowrap' }}>
-                                        Địa điểm
+                                        Người đăng
                                     </th>
-                                    <th style={{ whiteSpace: 'nowrap' }}>
+                                    {/* <th style={{ whiteSpace: 'nowrap' }}>
                                         Nhà tổ chức
-                                    </th>
+                                    </th> */}
                                     <th style={{ whiteSpace: 'nowrap' }}>
                                         Trạng thái
                                     </th>
@@ -306,11 +299,11 @@ const EventsList = () => {
                                         <td>{formatDate(event.startTime)}</td>
                                         <td>
                                             {truncateText(
-                                                event.location?.venueName || '',
-                                                20,
+                                                event.userEmail || '',
+                                                30,
                                             )}
                                         </td>
-                                        <td>{event.organizer?.name}</td>
+                                        {/* <td>{event.organizer?.name}</td> */}
                                         <td>{getStatusBadge(event.status)}</td>
                                         <td>
                                             {formatCurrency(

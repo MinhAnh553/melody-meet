@@ -94,10 +94,10 @@
 }
 
 .eventImage {
-    width: 60px;
-    height: 60px;
+    width: 150px;
+    height: auto;
     border-radius: 4px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .eventFormGrid {
