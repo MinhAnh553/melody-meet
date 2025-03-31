@@ -60,8 +60,8 @@ const getEventByIdToEdit = (id) => {
     return axios.get(URL_API);
 };
 
-const getEvents = (status = 'approved') => {
-    const URL_API = `${API_URL}/event?status=${status}`;
+const getEvents = (type, status = 'approved') => {
+    const URL_API = `${API_URL}/event?type=${type}&status=${status}`;
     return axios.get(URL_API);
 };
 

@@ -21,6 +21,7 @@ import OrdersList from '../admin/components/Orders/OrdersList.jsx';
 import TicketsList from '../admin/components/Tickets/TicketsList.jsx';
 import UsersList from '../admin/components/Users/UsersList.jsx';
 import ProtectedAdminRoute from '../admin/components/ProtectedAdminRoute.jsx';
+import AllEvents from '../client/pages/home/AllEvents.jsx';
 
 const pageVariants = {
     initial: { opacity: 0, y: 20 },
@@ -50,6 +51,20 @@ const AnimatedRoutes = () => {
                                 transition={{ duration: 0.5 }}
                             >
                                 <HomePage />
+                            </motion.div>
+                        }
+                    />
+                    <Route
+                        path="all-events"
+                        element={
+                            <motion.div
+                                variants={pageVariants}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.5 }}
+                            >
+                                <AllEvents />
                             </motion.div>
                         }
                     />

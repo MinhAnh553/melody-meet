@@ -150,8 +150,8 @@ const updateStatusEvent = async (req, res) => {
 
 const getEvents = async (req, res) => {
     try {
-        const { status = 'approved' } = req.query;
-        const events = await eventService.getEvents(status);
+        const { type, status = 'approved' } = req.query;
+        const events = await eventService.getEvents(type, status);
         res.status(200).json({
             success: true,
             events,
