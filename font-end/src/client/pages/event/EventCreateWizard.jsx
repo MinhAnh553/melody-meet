@@ -7,8 +7,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import HeaderEvent from '../../components/HeaderEvent';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
+import { useLoading } from '../../context/LoadingContext';
 
 const EventForm = () => {
+    const [loadingLocal, setLoadingLocal] = useState(true);
     const { eventId } = useParams(); // Lấy eventId từ URL
     const isEditMode = Boolean(eventId); // Kiểm tra xem có đang chỉnh sửa không
     const navigate = useNavigate();
@@ -42,6 +44,7 @@ const EventForm = () => {
     const fetchEventData = async () => {
         try {
             setStepLoading(true);
+            setLoadingLocal(true);
             const response = await api.getEventByIdToEdit(eventId);
             if (response.success) {
                 const eventData = response.event;
@@ -77,6 +80,8 @@ const EventForm = () => {
         } catch (error) {
             // console.error('Lỗi khi tải dữ liệu sự kiện:', error);
             setStepLoading(false);
+        } finally {
+            setLoadingLocal(false);
         }
     };
 
@@ -102,46 +107,54 @@ const EventForm = () => {
                 currentStep={step}
                 onStepClick={setStep}
             />
-            <EventFormProvider>
-                <AnimatePresence mode="wait">
-                    {step === 1 && (
-                        <motion.div
-                            key="step1"
-                            variants={variants}
-                            initial="initial"
-                            animate="animate"
-                            exit="exit"
-                            transition={{ duration: 0.5 }}
-                        >
-                            <Step1
-                                onSuccess={handleStep1Success}
-                                onLoadingChange={setStepLoading}
-                                data={formData}
-                                updateData={updateFormData}
-                                isEditMode={isEditMode}
-                            />
-                        </motion.div>
-                    )}
-                    {step === 2 && (
-                        <motion.div
-                            key="step2"
-                            variants={variants}
-                            initial="initial"
-                            animate="animate"
-                            exit="exit"
-                            transition={{ duration: 1 }}
-                        >
-                            <Step2
-                                onLoadingChange={setStepLoading}
-                                data={formData}
-                                updateData={updateFormData}
-                                isEditMode={isEditMode}
-                            />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+            {loadingLocal && isEditMode ? (
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p className="mt-2">Đang tải...</p>
+                </div>
+            ) : (
+                <EventFormProvider>
+                    <AnimatePresence mode="wait">
+                        {step === 1 && (
+                            <motion.div
+                                key="step1"
+                                variants={variants}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.5 }}
+                            >
+                                <Step1
+                                    onSuccess={handleStep1Success}
+                                    onLoadingChange={setStepLoading}
+                                    data={formData}
+                                    updateData={updateFormData}
+                                    isEditMode={isEditMode}
+                                />
+                            </motion.div>
+                        )}
+                        {step === 2 && (
+                            <motion.div
+                                key="step2"
+                                variants={variants}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 1 }}
+                            >
+                                <Step2
+                                    onLoadingChange={setStepLoading}
+                                    data={formData}
+                                    updateData={updateFormData}
+                                    isEditMode={isEditMode}
+                                />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
 
-                {stepLoading && (
+                    {/* {stepLoading && (
                     <div
                         style={{
                             position: 'absolute',
@@ -153,8 +166,9 @@ const EventForm = () => {
                             backgroundColor: 'rgba(255, 255, 255, 0.3)',
                         }}
                     />
-                )}
-            </EventFormProvider>
+                )} */}
+                </EventFormProvider>
+            )}
         </div>
     );
 };

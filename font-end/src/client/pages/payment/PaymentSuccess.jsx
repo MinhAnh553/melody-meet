@@ -3,8 +3,10 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import QRCode from 'react-qr-code';
 import api from '../../../util/api';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useLoading } from '../../context/LoadingContext';
 
 function PaymentSuccess() {
+    const { showLoading, hideLoading } = useLoading();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
@@ -14,6 +16,7 @@ function PaymentSuccess() {
 
     useEffect(() => {
         const fetchOrder = async () => {
+            showLoading();
             try {
                 if (!orderCode) return;
                 // 1. Gọi API checkOrder => xác nhận
@@ -26,6 +29,8 @@ function PaymentSuccess() {
                 }
             } catch (err) {
                 console.error(err);
+            } finally {
+                hideLoading();
             }
         };
         fetchOrder();
@@ -34,6 +39,7 @@ function PaymentSuccess() {
     // Lấy danh sách vé từ server
     useEffect(() => {
         const fetchTickets = async () => {
+            showLoading();
             try {
                 const res = await api.getOrderTickets(order._id);
                 if (res.success) {
@@ -41,6 +47,8 @@ function PaymentSuccess() {
                 }
             } catch (err) {
                 console.error(err);
+            } finally {
+                hideLoading();
             }
         };
 

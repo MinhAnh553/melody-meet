@@ -11,8 +11,7 @@ function PurchasedTickets() {
     const navigate = useNavigate();
 
     const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-
+    const [loadingLocal, setLoadingLocal] = useState(true);
     // Các state cho tìm kiếm, lọc, sắp xếp, phân trang
     const [statusFilter, setStatusFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
@@ -42,7 +41,7 @@ function PurchasedTickets() {
 
     const fetchOrders = async () => {
         try {
-            setLoading(true);
+            setLoadingLocal(true);
             const res = await api.getMyOrders();
             if (res.success) {
                 setOrders(res.orders);
@@ -50,7 +49,7 @@ function PurchasedTickets() {
         } catch (error) {
             console.error('fetchOrders -> error', error);
         } finally {
-            setLoading(false);
+            setLoadingLocal(false);
         }
     };
 
@@ -80,8 +79,20 @@ function PurchasedTickets() {
     };
 
     const renderOrders = () => {
-        if (loading) {
-            return <div className="mt-5">Đang tải dữ liệu...</div>;
+        if (loadingLocal) {
+            return (
+                <div className="mt-5">
+                    <div className="text-center my-5">
+                        <div
+                            className="spinner-border text-primary"
+                            role="status"
+                        >
+                            <span className="visually-hidden">Đang tải...</span>
+                        </div>
+                        <p className="mt-2">Đang tải...</p>
+                    </div>
+                </div>
+            );
         }
         if (currentOrders.length === 0) {
             return (

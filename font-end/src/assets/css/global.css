@@ -24,6 +24,7 @@
 body {
     color: #fff;
     background-color: #27272a;
+    overflow-y: scroll;
 }
 
 main {
@@ -64,8 +65,9 @@ header {
     transition: color 0.3s ease;
 }
 
-.nav-link:hover {
-    color: #fff;
+.nav-link:hover,
+.nav-link.show {
+    color: #fff !important;
 }
 
 .search-form {

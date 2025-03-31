@@ -5,25 +5,34 @@ import sweetalert2 from 'sweetalert2';
 
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
+import { useLoading } from '../../context/LoadingContext';
 
 function OrderPage() {
+    const { showLoading, hideLoading } = useLoading();
     const { orderId } = useParams();
     const navigate = useNavigate();
 
     const [order, setOrder] = useState(null);
     const [tickets, setTickets] = useState([]);
-    const [loading, setLoading] = useState(true);
     const [timeLeft, setTimeLeft] = useState(0); // Thời gian còn lại (ms)
 
     // Lấy đơn hàng từ server
-
     useEffect(() => {
-        fetchOrder();
+        const fetchData = async () => {
+            showLoading();
+            await fetchOrder();
+            hideLoading();
+        };
+
+        fetchData();
+
         const interval = setInterval(() => {
             fetchOrder();
         }, 5000);
 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval); // ✅ Được gọi khi component unmount
+        };
     }, []);
 
     const fetchOrder = async () => {
@@ -56,14 +65,13 @@ function OrderPage() {
             }
         } catch (err) {
             console.error(err);
-        } finally {
-            setLoading(false);
         }
     };
 
     // Lấy danh sách vé từ server
     useEffect(() => {
         const fetchTickets = async () => {
+            showLoading();
             try {
                 const res = await api.getOrderTickets(orderId);
                 if (res.success) {
@@ -71,6 +79,8 @@ function OrderPage() {
                 }
             } catch (err) {
                 console.error(err);
+            } finally {
+                hideLoading();
             }
         };
 
@@ -124,12 +134,11 @@ function OrderPage() {
             })
             .then(async (result) => {
                 if (result.isConfirmed) {
-                    const data = {
-                        status: 'CANCELED',
-                    };
+                    showLoading();
                     await api.cancelOrder({
                         orderId,
                     });
+                    hideLoading();
 
                     navigate(`/event/${order?.eventId || ''}`);
                 }
@@ -137,6 +146,7 @@ function OrderPage() {
     };
 
     const handleChoosePayOS = async () => {
+        showLoading();
         try {
             const res = await api.selectPayment(orderId, 'payos');
             if (res.success) {
@@ -161,12 +171,10 @@ function OrderPage() {
                 icon: 'error',
                 title: err.message || 'Server Error!',
             });
+        } finally {
+            hideLoading();
         }
     };
-
-    if (loading) {
-        return;
-    }
 
     // Tính chi tiết vé
     const renderTicketTable = () => {

@@ -8,12 +8,17 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // JS Bootstrap
 import './assets/css/global.css';
 
 import { AuthProvider } from './client/context/AuthContext.jsx';
+import { LoadingProvider } from './client/context/LoadingContext.jsx';
 import AnimatedRoutes from './router/routes.jsx';
+import LoadingSpinner from './client/components/loading/LoadingSpinner.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <AuthProvider>
-        <Router>
-            <AnimatedRoutes />
-        </Router>
-    </AuthProvider>,
+    <LoadingProvider>
+        <AuthProvider>
+            <Router>
+                <AnimatedRoutes />
+                <LoadingSpinner />
+            </Router>
+        </AuthProvider>
+    </LoadingProvider>,
 );

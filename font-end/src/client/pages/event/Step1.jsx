@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import React from 'react';
 import styles from '../../styles/EventManagement.module.css';
 import DescriptionEditor from '../../components/DescriptionEditor';
 import AddressSelector from '../../components/AddressSelector';
 import UploadImage from '../../components/UploadImage';
 import swalCustomize from '../../../util/swalCustomize';
-import { useParams } from 'react-router-dom';
 
 const Step1 = ({
     onSuccess,

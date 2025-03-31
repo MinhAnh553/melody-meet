@@ -2,14 +2,11 @@ import { useAuth } from '../../client/context/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import swalCustomize from '../../util/swalCustomize';
-import LoadingSpinner from '../../client/components/loading/LoadingSpinner';
 
 const ProtectedAdminRoute = () => {
-    const { loading, auth } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
-    if (loading) return <LoadingSpinner />;
-
-    if (!auth?.isAuthenticated || auth.user.role !== 'admin') {
+    if (!isAuthenticated || user?.role !== 'admin') {
         swalCustomize.Toast.fire({
             icon: 'error',
             title: 'Không đủ quyền hạn!',

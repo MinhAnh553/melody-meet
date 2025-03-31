@@ -30,14 +30,14 @@ ChartJS.register(
 );
 
 const EventSummary = () => {
+    const [loadingLocal, setLoadingLocal] = useState(true);
     const { eventId } = useParams();
     const [eventData, setEventData] = useState(null);
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchEventSummary = async () => {
+            setLoadingLocal(true);
             try {
-                setLoading(true);
                 const res = await api.getEventSummary(eventId);
                 if (res.success) {
                     const sorted = res.revenueByDate.sort(
@@ -52,7 +52,7 @@ const EventSummary = () => {
                 console.error('Lỗi khi lấy dữ liệu doanh thu:', error);
                 swalCustomize.Toast('error', 'Lỗi kết nối máy chủ.');
             } finally {
-                setLoading(false);
+                setLoadingLocal(false);
             }
         };
 
@@ -139,10 +139,16 @@ const EventSummary = () => {
         ],
     };
 
-    if (loading) return <p className="text-center mt-4">Đang tải dữ liệu...</p>;
-    if (!eventData)
+    if (!eventData || loadingLocal)
         return (
-            <p className="text-center text-danger mt-4">Không có dữ liệu.</p>
+            <div className="mt-5">
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p className="mt-2">Đang tải...</p>
+                </div>
+            </div>
         );
 
     return (

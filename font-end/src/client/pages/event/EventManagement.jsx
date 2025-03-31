@@ -13,6 +13,7 @@ import api from '../../../util/api';
 import TimeText from '../../components/providers/TimeText';
 
 const EventManagement = () => {
+    const [loadingLocal, setLoadingLocal] = useState(true);
     const location = useLocation();
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
@@ -74,6 +75,7 @@ const EventManagement = () => {
     }, [location.state]);
 
     const fetchEvents = async (status) => {
+        setLoadingLocal(true);
         try {
             const res = await api.getMyEvents(page, limit, status, searchKey);
             if (res.success) {
@@ -92,6 +94,8 @@ const EventManagement = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (error) {
             console.log('MinhAnh553: fetchEvents -> error', error);
+        } finally {
+            setLoadingLocal(false);
         }
     };
 
@@ -179,200 +183,239 @@ const EventManagement = () => {
                 </Row>
             )} */}
 
-            {/* Danh sách sự kiện */}
-            <Row className="mx-3">
-                {events.length === 0 ? (
-                    <div className="text-center my-5">
-                        <BsCalendarX size={50} className="text-white mb-3" />
-                        <p className="fs-5 text-white">Không có sự kiện</p>
+            {loadingLocal ? (
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
                     </div>
-                ) : (
-                    events.map((event) => (
-                        <Card
-                            key={event._id}
-                            className="mb-3"
-                            style={{
-                                backgroundColor: '#31353e',
-                                border: '1px solid #444',
-                                borderRadius: '20px',
-                            }}
-                        >
-                            <Card.Body className="p-3">
-                                <Row>
-                                    {/* Ảnh sự kiện */}
-                                    <Col
-                                        xs="auto"
-                                        className="d-flex align-items-center"
-                                    >
-                                        <div
-                                            style={{
-                                                maxWidth: '300px',
-                                                maxHeight: '300px',
-                                            }}
-                                        >
-                                            <img
-                                                className="img-fluid rounded shadow"
-                                                src={event.background}
-                                                alt={event.name}
-                                                style={{
-                                                    objectFit: 'cover',
-                                                }}
-                                            />
-                                        </div>
-                                    </Col>
-
-                                    {/* Thông tin sự kiện */}
-                                    <Col>
-                                        <div className="mb-2">
-                                            <h5
-                                                className="fw-bold mb-3"
-                                                style={{
-                                                    color: '#fff',
-                                                    fontSize: '1rem',
-                                                }}
-                                            >
-                                                {event.name}
-                                            </h5>
-                                            <p
-                                                className="mb-2"
-                                                style={{
-                                                    color: '#fff',
-                                                    fontSize: '1rem',
-                                                }}
-                                            >
-                                                <i className="bi bi-clock"></i>
-                                                {'  '}
-                                                <span
-                                                    style={{
-                                                        color: 'rgb(45, 194, 117)',
-                                                    }}
-                                                >
-                                                    <TimeText event={event} />
-                                                </span>
-                                            </p>
-
-                                            <p
-                                                className="mb-5"
-                                                style={{
-                                                    color: '#fff',
-                                                    fontSize: '1rem',
-                                                }}
-                                            >
-                                                <i className="bi bi-geo-alt-fill"></i>
-                                                {'   '}
-                                                <span
-                                                    style={{
-                                                        color: 'rgb(45, 194, 117)',
-                                                    }}
-                                                >
-                                                    {event.location.venueName}
-                                                </span>
-                                                <br />
-                                                <span
-                                                    style={{
-                                                        marginLeft: '22px',
-                                                    }}
-                                                >
-                                                    {event.location.address},{' '}
-                                                    {event.location.ward},{' '}
-                                                    {event.location.district},{' '}
-                                                    {event.location.province}
-                                                </span>
-                                            </p>
-                                        </div>
-                                    </Col>
-                                </Row>
-
-                                <hr className="my-3 border-top border-light" />
-
-                                <Row className="mt-3">
-                                    <Col>
-                                        <div
-                                            className="d-flex align-items-center justify-content-center"
-                                            style={{ gap: '12px' }}
-                                        >
-                                            <Button
-                                                variant="dark"
-                                                className="d-flex align-items-center gap-2"
-                                                style={{
-                                                    border: '1px solid #555',
-                                                    borderRadius: '8px',
-                                                }}
-                                                onClick={() => {
-                                                    navigate(
-                                                        `/event/${event._id}/summary`,
-                                                    );
-                                                }}
-                                            >
-                                                <BsPieChartFill />
-                                                Tổng quan
-                                            </Button>
-                                            <Button
-                                                variant="dark"
-                                                className="d-flex align-items-center gap-2"
-                                                style={{
-                                                    border: '1px solid #555',
-                                                    borderRadius: '8px',
-                                                }}
-                                                onClick={() => {
-                                                    navigate(
-                                                        `/event/${event._id}/orders`,
-                                                    );
-                                                }}
-                                            >
-                                                <BsBagCheckFill />
-                                                Đơn hàng
-                                            </Button>
-                                            {event.status !== 'event_over' && (
-                                                <Button
-                                                    variant="dark"
-                                                    className="d-flex align-items-center gap-2"
-                                                    style={{
-                                                        border: '1px solid #555',
-                                                        borderRadius: '8px',
-                                                    }}
-                                                    onClick={() => {
-                                                        navigate(
-                                                            `/event/${event._id}/edit`,
-                                                        );
-                                                    }}
-                                                >
-                                                    <BsPencilSquare />
-                                                    Chỉnh sửa
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </Card.Body>
-                        </Card>
-                    ))
-                )}
-            </Row>
-
-            {/* Phân trang */}
-            {events.length > 0 && (
-                <div className="d-flex justify-content-center align-items-center">
-                    <Button
-                        variant="secondary"
-                        className="me-2"
-                        disabled={page <= 1}
-                        onClick={() => setPage((prev) => prev - 1)}
-                    >
-                        Trang trước
-                    </Button>
-                    <span>
-                        Trang {page} / {totalPages}
-                    </span>
-                    <Button
-                        variant="secondary"
-                        className="ms-2"
-                        disabled={page >= totalPages}
-                        onClick={() => setPage((prev) => prev + 1)}
-                    >
-                        Trang sau
-                    </Button>
+                    <p className="mt-2">Đang tải...</p>
                 </div>
+            ) : (
+                <>
+                    {/* Danh sách sự kiện */}
+                    <Row className="mx-3">
+                        {events.length === 0 ? (
+                            <div className="text-center my-5">
+                                <BsCalendarX
+                                    size={50}
+                                    className="text-white mb-3"
+                                />
+                                <p className="fs-5 text-white">
+                                    Không có sự kiện
+                                </p>
+                            </div>
+                        ) : (
+                            events.map((event) => (
+                                <Card
+                                    key={event._id}
+                                    className="mb-3"
+                                    style={{
+                                        backgroundColor: '#31353e',
+                                        border: '1px solid #444',
+                                        borderRadius: '20px',
+                                    }}
+                                >
+                                    <Card.Body className="p-3">
+                                        <Row>
+                                            {/* Ảnh sự kiện */}
+                                            <Col
+                                                xs="auto"
+                                                className="d-flex align-items-center"
+                                            >
+                                                <div
+                                                    style={{
+                                                        maxWidth: '300px',
+                                                        maxHeight: '300px',
+                                                    }}
+                                                >
+                                                    <img
+                                                        className="img-fluid rounded shadow"
+                                                        src={event.background}
+                                                        alt={event.name}
+                                                        style={{
+                                                            objectFit: 'cover',
+                                                        }}
+                                                    />
+                                                </div>
+                                            </Col>
+
+                                            {/* Thông tin sự kiện */}
+                                            <Col>
+                                                <div className="mb-2">
+                                                    <h5
+                                                        className="fw-bold mb-3"
+                                                        style={{
+                                                            color: '#fff',
+                                                            fontSize: '1rem',
+                                                        }}
+                                                    >
+                                                        {event.name}
+                                                    </h5>
+                                                    <p
+                                                        className="mb-2"
+                                                        style={{
+                                                            color: '#fff',
+                                                            fontSize: '1rem',
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-clock"></i>
+                                                        {'  '}
+                                                        <span
+                                                            style={{
+                                                                color: 'rgb(45, 194, 117)',
+                                                            }}
+                                                        >
+                                                            <TimeText
+                                                                event={event}
+                                                            />
+                                                        </span>
+                                                    </p>
+
+                                                    <p
+                                                        className="mb-5"
+                                                        style={{
+                                                            color: '#fff',
+                                                            fontSize: '1rem',
+                                                        }}
+                                                    >
+                                                        <i className="bi bi-geo-alt-fill"></i>
+                                                        {'   '}
+                                                        <span
+                                                            style={{
+                                                                color: 'rgb(45, 194, 117)',
+                                                            }}
+                                                        >
+                                                            {
+                                                                event.location
+                                                                    .venueName
+                                                            }
+                                                        </span>
+                                                        <br />
+                                                        <span
+                                                            style={{
+                                                                marginLeft:
+                                                                    '22px',
+                                                            }}
+                                                        >
+                                                            {
+                                                                event.location
+                                                                    .address
+                                                            }
+                                                            ,{' '}
+                                                            {
+                                                                event.location
+                                                                    .ward
+                                                            }
+                                                            ,{' '}
+                                                            {
+                                                                event.location
+                                                                    .district
+                                                            }
+                                                            ,{' '}
+                                                            {
+                                                                event.location
+                                                                    .province
+                                                            }
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </Col>
+                                        </Row>
+
+                                        <hr className="my-3 border-top border-light" />
+
+                                        <Row className="mt-3">
+                                            <Col>
+                                                <div
+                                                    className="d-flex align-items-center justify-content-center"
+                                                    style={{ gap: '12px' }}
+                                                >
+                                                    <Button
+                                                        variant="dark"
+                                                        className="d-flex align-items-center gap-2"
+                                                        style={{
+                                                            border: '1px solid #555',
+                                                            borderRadius: '8px',
+                                                        }}
+                                                        onClick={() => {
+                                                            navigate(
+                                                                `/event/${event._id}/summary`,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <BsPieChartFill />
+                                                        Tổng quan
+                                                    </Button>
+                                                    <Button
+                                                        variant="dark"
+                                                        className="d-flex align-items-center gap-2"
+                                                        style={{
+                                                            border: '1px solid #555',
+                                                            borderRadius: '8px',
+                                                        }}
+                                                        onClick={() => {
+                                                            navigate(
+                                                                `/event/${event._id}/orders`,
+                                                            );
+                                                        }}
+                                                    >
+                                                        <BsBagCheckFill />
+                                                        Đơn hàng
+                                                    </Button>
+                                                    {event.status !==
+                                                        'event_over' && (
+                                                        <Button
+                                                            variant="dark"
+                                                            className="d-flex align-items-center gap-2"
+                                                            style={{
+                                                                border: '1px solid #555',
+                                                                borderRadius:
+                                                                    '8px',
+                                                            }}
+                                                            onClick={() => {
+                                                                navigate(
+                                                                    `/event/${event._id}/edit`,
+                                                                );
+                                                            }}
+                                                        >
+                                                            <BsPencilSquare />
+                                                            Chỉnh sửa
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                    </Card.Body>
+                                </Card>
+                            ))
+                        )}
+                    </Row>
+
+                    {/* Phân trang */}
+                    {events.length > 0 && (
+                        <div className="d-flex justify-content-center align-items-center">
+                            <Button
+                                variant="secondary"
+                                className="me-2"
+                                disabled={page <= 1}
+                                onClick={() => setPage((prev) => prev - 1)}
+                            >
+                                Trang trước
+                            </Button>
+                            <span>
+                                Trang {page} / {totalPages}
+                            </span>
+                            <Button
+                                variant="secondary"
+                                className="ms-2"
+                                disabled={page >= totalPages}
+                                onClick={() => setPage((prev) => prev + 1)}
+                            >
+                                Trang sau
+                            </Button>
+                        </div>
+                    )}
+                </>
             )}
         </Container>
     );

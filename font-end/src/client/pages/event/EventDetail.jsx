@@ -6,9 +6,12 @@ import DOMPurify from 'dompurify';
 import TicketModal from '../payment/TicketModal';
 import swalCustomize from '../../../util/swalCustomize';
 import { useAuth } from '../../context/AuthContext';
+import { useLoading } from '../../context/LoadingContext';
 
 const EventDetail = () => {
-    const { auth } = useAuth();
+    const { isAuthenticated } = useAuth();
+    const [loadingLocal, setLoadingLocal] = useState(true);
+
     const { eventId } = useParams();
     const [event, setEvent] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -16,6 +19,7 @@ const EventDetail = () => {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
+                setLoadingLocal(true);
                 const res = await api.getEventById(eventId);
                 if (res.success) {
                     setEvent(res.event);
@@ -28,12 +32,31 @@ const EventDetail = () => {
                 }
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu sự kiện:', error);
+            } finally {
+                setLoadingLocal(false);
             }
         };
         fetchEvent();
     }, [eventId]);
 
-    if (!event) return;
+    if (!event)
+        return (
+            <div
+                className="container-fluid py-4"
+                style={{
+                    // backgroundColor: '#121212',
+                    margin: '80px 0 0',
+                    borderRadius: '20px',
+                }}
+            >
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p className="mt-2">Đang tải...</p>
+                </div>
+            </div>
+        );
 
     // Sắp xếp vé từ thấp đến cao
     const sortedTickets = [...event.ticketTypes].sort(
@@ -124,7 +147,7 @@ const EventDetail = () => {
                                     display: 'inline-block',
                                     cursor:
                                         event.status === 'event_over' ||
-                                        !auth?.isAuthenticated
+                                        !isAuthenticated
                                             ? 'not-allowed'
                                             : 'pointer',
                                 }}
@@ -134,19 +157,19 @@ const EventDetail = () => {
                                     onClick={handleBuyNow}
                                     disabled={
                                         event.status === 'event_over' ||
-                                        !auth?.isAuthenticated
+                                        !isAuthenticated
                                     }
                                     style={{
                                         backgroundColor:
                                             event.status === 'event_over' ||
-                                            !auth?.isAuthenticated
+                                            !isAuthenticated
                                                 ? '#ccc'
                                                 : '',
                                     }}
                                 >
                                     {event.status === 'event_over'
                                         ? 'Sự kiện đã kết thúc'
-                                        : !auth?.isAuthenticated
+                                        : !isAuthenticated
                                         ? 'Đăng nhập để mua vé'
                                         : 'Mua vé ngay'}
                                 </button>

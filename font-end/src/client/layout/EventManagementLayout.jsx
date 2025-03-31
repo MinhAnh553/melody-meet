@@ -4,6 +4,7 @@ import { Outlet, useLocation, useParams } from 'react-router-dom';
 import SidebarEvent from '../components/SidebarEvent';
 import HeaderEvent from '../components/HeaderEvent';
 import api from '../../util/api';
+import { useLoading } from '../context/LoadingContext';
 
 const EventManagement = () => {
     const { eventId } = useParams();

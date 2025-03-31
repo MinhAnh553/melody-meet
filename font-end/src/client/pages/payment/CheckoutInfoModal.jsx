@@ -3,22 +3,24 @@ import { Modal } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import swalCustomize from '../../../util/swalCustomize';
 import api from '../../../util/api';
+import { useLoading } from '../../context/LoadingContext';
 
 const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
-    const { auth, setAuth } = useAuth();
+    // const { showLoading, hideLoading } = useLoading();
+    const { user, updateUser } = useAuth();
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
 
     useEffect(() => {
-        if (show && auth?.user?.address) {
-            setName(auth.user.address.name || '');
-            setPhone(auth.user.address.phone || '');
-            setEmail(auth.user.address.email || '');
+        if (show && user?.address) {
+            setName(user.address.name || '');
+            setPhone(user.address.phone || '');
+            setEmail(user.address.email || '');
         } else {
-            setEmail(auth?.user?.email);
+            setEmail(user?.email);
         }
-    }, [show, auth?.user]);
+    }, [show, user]);
 
     const handleSubmit = async () => {
         // Kiểm tra bắt buộc 3 trường
@@ -30,6 +32,7 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
         }
 
         try {
+            // showLoading();
             const buyerInfo = {
                 name,
                 phone,
@@ -39,13 +42,12 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
             const res = await api.updateUserInfo(buyerInfo);
             if (res.success) {
                 // Thành công => gọi onConfirm => tiếp tục PayOS
-                setAuth((prevAuth) => ({
-                    ...prevAuth,
+                updateUser({
                     user: {
-                        ...prevAuth?.user,
+                        ...user,
                         address: buyerInfo,
                     },
-                }));
+                });
 
                 onConfirm(buyerInfo);
             } else {
@@ -59,6 +61,8 @@ const CheckoutInfoModal = ({ show, onHide, onConfirm }) => {
                 icon: 'error',
                 title: 'Lỗi khi cập nhật thông tin: ' + error.message,
             });
+        } finally {
+            // hideLoading();
         }
     };
 

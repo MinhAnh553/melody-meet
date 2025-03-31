@@ -40,6 +40,7 @@ import { formatCurrency, formatDate } from '../../utils/formatters';
 import api from '../../../util/api';
 
 const Dashboard = () => {
+    const [loadingLocal, setLoadingLocal] = useState(true);
     // ✅ State để lưu dữ liệu từ API
     const [dashboardData, setDashboardData] = useState(null);
 
@@ -49,6 +50,7 @@ const Dashboard = () => {
     }, []);
 
     const fetchData = async () => {
+        setLoadingLocal(true);
         try {
             const res = await api.getDashboard();
             if (res.success) {
@@ -56,11 +58,20 @@ const Dashboard = () => {
             }
         } catch (err) {
             console.log(err.message);
+        } finally {
+            setLoadingLocal(false);
         }
     };
 
     if (!dashboardData) {
-        return <p>Đang tải dữ liệu...</p>;
+        return (
+            <div className="text-center my-5">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Đang tải...</span>
+                </div>
+                <p className="mt-2">Đang tải...</p>
+            </div>
+        );
     }
 
     // ✅ Trích xuất dữ liệu từ API
@@ -195,6 +206,7 @@ const Dashboard = () => {
     return (
         <div className={styles.dashboardContainer}>
             {/* Cards thống kê */}
+
             <div className={styles.statsGrid}>
                 <Card className={styles.statCard}>
                     <FaMoneyBillWave
@@ -243,13 +255,12 @@ const Dashboard = () => {
                 </div>
 
                 {/* <div className={styles.chartCard}>
-                    <h3 className={styles.chartTitle}>Vé bán theo thể loại</h3>
-                    <div style={{ height: '300px' }}>
-                        <Doughnut data={ticketChartData} />
-                    </div>
-                </div> */}
+                        <h3 className={styles.chartTitle}>Vé bán theo thể loại</h3>
+                        <div style={{ height: '300px' }}>
+                            <Doughnut data={ticketChartData} />
+                        </div>
+                    </div> */}
             </div>
-
             {/* Hoạt động gần đây */}
             {/* <Row>
                 <Col md={6}>

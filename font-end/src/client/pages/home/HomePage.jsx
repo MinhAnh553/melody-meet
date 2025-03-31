@@ -5,15 +5,23 @@ import { Link } from 'react-router-dom';
 import api from '../../../util/api';
 
 const HomePage = () => {
+    const [loadingLocal, setLoadingLocal] = useState(true);
     const [trendingEvent, setTrendingEvent] = useState([]);
     const [specialEvents, setSpecialEvents] = useState([]);
 
     useEffect(() => {
         const fetchData = async () => {
-            const trending = await fetchEvents('trending');
-            const special = await fetchEvents('special');
-            setTrendingEvent(trending || []);
-            setSpecialEvents(special || []);
+            setLoadingLocal(true);
+            try {
+                const trending = await fetchEvents('trending');
+                const special = await fetchEvents('special');
+                setTrendingEvent(trending || []);
+                setSpecialEvents(special || []);
+            } catch (error) {
+                console.error('Lỗi khi lấy dữ liệu sự kiện:', error);
+            } finally {
+                setLoadingLocal(false);
+            }
         };
         fetchData();
     }, []);
@@ -55,34 +63,48 @@ const HomePage = () => {
                     </div>
                 </div>
             </div>
-            <section className="events py-4" id="trendingEvents">
-                <div className="container">
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h2 className="section-title text-white">
-                            🔥Sự kiện xu hướng
-                        </h2>
+            {loadingLocal ? (
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
                     </div>
-                    <EventList events={trendingEvent} type={'trending'} />
+                    <p className="mt-2">Đang tải...</p>
                 </div>
-            </section>
+            ) : (
+                <>
+                    <section className="events py-4" id="trendingEvents">
+                        <div className="container">
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h2 className="section-title text-white">
+                                    🔥Sự kiện xu hướng
+                                </h2>
+                            </div>
+                            <EventList
+                                events={trendingEvent}
+                                type={'trending'}
+                            />
+                        </div>
+                    </section>
 
-            <section className="events pb-5" id="specialEvents">
-                <div className="container">
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h2 className="section-title text-white">
-                            Sự kiện đặc sắc
-                        </h2>
-                        <Link
-                            to={'/all-events'}
-                            className="text-gray-400 hover:text-white transition-colors duration-300 flex items-center"
-                        >
-                            Xem thêm{' '}
-                            <i className="bi bi-chevron-right ml-1"></i>
-                        </Link>
-                    </div>
-                    <EventList events={specialEvents} />
-                </div>
-            </section>
+                    <section className="events pb-5" id="specialEvents">
+                        <div className="container">
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <h2 className="section-title text-white">
+                                    Sự kiện đặc sắc
+                                </h2>
+                                <Link
+                                    to={'/all-events'}
+                                    className="text-gray-400 hover:text-white transition-colors duration-300 flex items-center"
+                                >
+                                    Xem thêm{' '}
+                                    <i className="bi bi-chevron-right ml-1"></i>
+                                </Link>
+                            </div>
+                            <EventList events={specialEvents} />
+                        </div>
+                    </section>
+                </>
+            )}
         </>
     );
 };

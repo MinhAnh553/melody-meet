@@ -1,7 +1,11 @@
 import React from 'react';
 import { Oval } from 'react-loader-spinner';
+import { useLoading } from '../../context/LoadingContext'; // Sử dụng LoadingContext
 
 const LoadingSpinner = () => {
+    const { loading } = useLoading();
+    if (!loading) return null;
+
     return (
         <div
             style={{
@@ -13,20 +17,16 @@ const LoadingSpinner = () => {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                // backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: background mờ
+                backgroundColor: 'rgba(0, 0, 0, 1)', // Background mờ
                 zIndex: 9999,
             }}
         >
-            <Oval
-                height={80}
-                width={80}
-                color="#2c44a7"
-                secondaryColor="#4fa94d"
-                strokeWidth={2}
-                strokeWidthSecondary={2}
-                visible={true}
-                ariaLabel="oval-loading"
-            />
+            <div className="text-center my-5">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Đang tải...</span>
+                </div>
+                <p className="mt-2">Đang tải...</p>
+            </div>
         </div>
     );
 };

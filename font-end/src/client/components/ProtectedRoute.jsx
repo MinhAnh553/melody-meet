@@ -3,14 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
 
 import swalCustomize from '../../util/swalCustomize';
-import LoadingSpinner from './loading/LoadingSpinner';
 
 const ProtectedRoute = () => {
-    const { loading, auth } = useAuth();
+    const { isAuthenticated } = useAuth();
 
-    if (loading) return <LoadingSpinner />;
-
-    if (!auth?.isAuthenticated) {
+    if (!isAuthenticated) {
         swalCustomize.Toast.fire({
             icon: 'error',
             title: 'Vui lòng đăng nhập!',

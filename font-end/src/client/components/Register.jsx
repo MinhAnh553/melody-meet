@@ -6,8 +6,10 @@ import swalCustomize from '../../util/swalCustomize';
 import OTPInput from './OTPInput';
 import { useEffect } from 'react';
 import LoadingButton from './loading/LoadingButton';
+import { useLoading } from '../context/LoadingContext';
 
 const Register = () => {
+    const { showLoading, hideLoading } = useLoading();
     const [currentStep, setCurrentStep] = useState('registration');
 
     useEffect(() => {
@@ -30,6 +32,7 @@ const Register = () => {
 
     const [otp, setOtp] = useState(Array(4).fill(''));
 
+    // Loading button
     const [loading, setLoading] = useState(false);
 
     // Hàm xử lý khi thay đổi input của form đăng ký
@@ -99,6 +102,7 @@ const Register = () => {
             });
         }
 
+        showLoading();
         try {
             const res = await api.verifyOTPAndRegister(
                 formData.email,
@@ -124,6 +128,8 @@ const Register = () => {
                 icon: 'error',
                 title: 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
             });
+        } finally {
+            hideLoading();
         }
     };
 

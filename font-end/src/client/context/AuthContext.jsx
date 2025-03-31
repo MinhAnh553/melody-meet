@@ -1,22 +1,66 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-
+import React, {
+    createContext,
+    useReducer,
+    useEffect,
+    useContext,
+    useCallback,
+    useState,
+} from 'react';
 import swalCustomize from '../../util/swalCustomize';
 import api from '../../util/api';
+import { useLoading } from './LoadingContext'; // Import LoadingContext
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-    const [auth, setAuth] = useState(null);
-    const [loading, setLoading] = useState(true);
+// Action types
+const LOGIN = 'LOGIN';
+const LOGOUT = 'LOGOUT';
+const UPDATE_USER = 'UPDATE_USER';
 
+// Reducer để quản lý trạng thái auth
+const authReducer = (state, action) => {
+    switch (action.type) {
+        case LOGIN:
+            return {
+                ...state,
+                isAuthenticated: true,
+                user: action.payload,
+            };
+        case LOGOUT:
+            return {
+                ...state,
+                isAuthenticated: false,
+                user: null,
+            };
+        case UPDATE_USER: // Thêm case này
+            return {
+                ...state,
+                user: { ...state.user, ...action.payload }, // Cập nhật thông tin user
+            };
+        default:
+            return state;
+    }
+};
+
+// Trạng thái mặc định
+const initialState = {
+    isAuthenticated: false,
+    user: null,
+};
+
+export const AuthProvider = ({ children }) => {
+    const [state, dispatch] = useReducer(authReducer, initialState);
+    const { showLoading, hideLoading } = useLoading(); // Sử dụng loading context
+    // Fetch user khi tải lại trang
     useEffect(() => {
         const fetchUser = async () => {
+            // showLoading(); // Bật loading
             try {
                 const res = await api.getAccount();
                 if (res.success) {
-                    setAuth({
-                        isAuthenticated: true,
-                        user: {
+                    dispatch({
+                        type: LOGIN,
+                        payload: {
                             id: res.user._id,
                             name: res.user.name,
                             phone: res.user.phone,
@@ -25,38 +69,32 @@ export const AuthProvider = ({ children }) => {
                             address: res.user.address,
                         },
                     });
-                } else {
-                    setAuth({
-                        isAuthenticated: false,
-                        user: null,
-                    });
                 }
             } catch (error) {
                 console.error(error);
-                setAuth({
-                    isAuthenticated: false,
-                    user: null,
-                });
+                dispatch({ type: LOGOUT });
             } finally {
-                setTimeout(() => {
-                    setLoading(false);
-                }, 300);
+                // setTimeout(() => {
+                //     hideLoading();
+                // }, 500);
             }
         };
 
-        fetchUser();
+        if (localStorage.getItem('access_token')) {
+            fetchUser();
+        }
     }, []);
 
-    const login = async (email, password) => {
+    // Hàm login tối ưu với useCallback
+    const login = useCallback(async (email, password) => {
+        showLoading(); // Bật loading
         try {
-            setLoading(true);
             const res = await api.login(email, password);
             if (res.success) {
                 localStorage.setItem('access_token', res.access_token);
-
-                setAuth({
-                    isAuthenticated: true,
-                    user: {
+                dispatch({
+                    type: LOGIN,
+                    payload: {
                         id: res.user.id,
                         name: res.user.name,
                         phone: res.user.phone,
@@ -66,52 +104,44 @@ export const AuthProvider = ({ children }) => {
                     },
                 });
 
-                const closeBtn = document.querySelector(
-                    '.btn-close.form-login[data-bs-dismiss="modal"]',
-                );
-                if (closeBtn) {
-                    closeBtn.click();
-                }
+                // Đóng modal đăng nhập nếu có
+                document
+                    .querySelector(
+                        '.btn-close.form-login[data-bs-dismiss="modal"]',
+                    )
+                    ?.click();
             } else {
-                return swalCustomize.Toast.fire({
-                    icon: 'error',
-                    title: res.message,
-                });
+                swalCustomize.Toast.fire({ icon: 'error', title: res.message });
             }
         } catch (error) {
-            return swalCustomize.Toast.fire({
+            swalCustomize.Toast.fire({
                 icon: 'error',
                 title: 'Đã xảy ra lỗi. Vui lòng thử lại sau.',
             });
         } finally {
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-                backdrop.parentNode.removeChild(backdrop);
-            }
+            document.querySelector('.modal-backdrop')?.remove();
             document.body.classList.remove('modal-open');
             document.body.style = '';
 
-            setLoading(false);
+            hideLoading(); // Tắt loading
         }
-    };
+    }, []);
 
-    const logout = () => {
-        setLoading(true);
+    // Hàm logout tối ưu với useCallback
+    const logout = useCallback(() => {
         localStorage.removeItem('access_token');
-        setAuth({
-            isAuthenticated: false,
-            user: null,
-        });
+        dispatch({ type: LOGOUT });
+    }, []);
 
-        setTimeout(() => {
-            setLoading(false);
-        }, 500);
+    const updateUser = (updatedUserData) => {
+        dispatch({
+            type: UPDATE_USER,
+            payload: updatedUserData,
+        });
     };
 
     return (
-        <AuthContext.Provider
-            value={{ auth, setAuth, loading, setLoading, login, logout }}
-        >
+        <AuthContext.Provider value={{ ...state, login, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

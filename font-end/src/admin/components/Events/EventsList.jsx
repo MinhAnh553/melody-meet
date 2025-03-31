@@ -20,8 +20,12 @@ import EventDetails from './EventDetails';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
 import { BsCalendarX } from 'react-icons/bs';
+import { useLoading } from '../../../client/context/LoadingContext';
 
 const EventsList = () => {
+    const { showLoading, hideLoading } = useLoading();
+    const [loadingLocal, setLoadingLocal] = useState(true);
+
     const [events, setEvents] = useState([]);
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -41,6 +45,7 @@ const EventsList = () => {
     }, []);
 
     const fetchEvents = async () => {
+        setLoadingLocal(true);
         try {
             const res = await api.getAllEvents();
             if (res.success) {
@@ -48,6 +53,8 @@ const EventsList = () => {
             }
         } catch (error) {
             console.log('Lỗi khi gọi API getAllEvents:', error);
+        } finally {
+            setLoadingLocal(false);
         }
     };
 
@@ -158,6 +165,7 @@ const EventsList = () => {
     };
 
     const handleApproveEvent = async (eventId) => {
+        showLoading();
         try {
             const res = await api.updateStatusEvent(eventId, 'approved');
             if (res.success) {
@@ -172,10 +180,13 @@ const EventsList = () => {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            hideLoading();
         }
     };
 
     const handleRejectEvent = async (eventId) => {
+        showLoading();
         try {
             const res = await api.updateStatusEvent(eventId, 'rejected');
             if (res.success) {
@@ -190,6 +201,8 @@ const EventsList = () => {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            hideLoading();
         }
     };
 
@@ -233,175 +246,74 @@ const EventsList = () => {
             </div>
 
             {/* Events Table */}
-            {currentEvents.length > 0 ? (
-                <>
-                    <div className={styles.tableWrapper}>
-                        <Table responsive hover className={styles.eventTable}>
-                            <thead>
-                                <tr>
-                                    <th style={{ whiteSpace: 'nowrap' }}>
-                                        Ảnh
-                                    </th>
-                                    <th
-                                        style={{
-                                            whiteSpace: 'nowrap',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => handleSortChange('name')}
-                                    >
-                                        Tên sự kiện
-                                    </th>
-                                    <th
-                                        style={{
-                                            whiteSpace: 'nowrap',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() => handleSortChange('date')}
-                                    >
-                                        Ngày tổ chức
-                                    </th>
-                                    <th style={{ whiteSpace: 'nowrap' }}>
-                                        Người đăng
-                                    </th>
-                                    {/* <th style={{ whiteSpace: 'nowrap' }}>
-                                        Nhà tổ chức
-                                    </th> */}
-                                    <th style={{ whiteSpace: 'nowrap' }}>
-                                        Trạng thái
-                                    </th>
-                                    <th
-                                        style={{
-                                            whiteSpace: 'nowrap',
-                                            cursor: 'pointer',
-                                        }}
-                                        onClick={() =>
-                                            handleSortChange('revenue')
-                                        }
-                                    >
-                                        Doanh thu
-                                    </th>
-                                    <th style={{ whiteSpace: 'nowrap' }}>
-                                        Thao tác
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {currentEvents.map((event) => (
-                                    <tr key={event._id}>
-                                        <td>
-                                            <img
-                                                src={event.background}
-                                                alt={event.name}
-                                                className={styles.eventImage}
-                                            />
-                                        </td>
-                                        <td>{truncateText(event.name, 30)}</td>
-                                        <td>{formatDate(event.startTime)}</td>
-                                        <td>
-                                            {truncateText(
-                                                event.userEmail || '',
-                                                30,
-                                            )}
-                                        </td>
-                                        {/* <td>{event.organizer?.name}</td> */}
-                                        <td>{getStatusBadge(event.status)}</td>
-                                        <td>
-                                            {formatCurrency(
-                                                event.totalRevenue || 0,
-                                            )}
-                                        </td>
-                                        <td>
-                                            <div
-                                                className={styles.tableActions}
-                                            >
-                                                <Button
-                                                    variant="link"
-                                                    className={`${styles.actionButton} ${styles.viewButton}`}
-                                                    title="Xem chi tiết"
-                                                    onClick={() =>
-                                                        handleViewEventDetails(
-                                                            event,
-                                                        )
-                                                    }
-                                                >
-                                                    <FaEye />
-                                                </Button>
-                                                {/* Nếu sự kiện đang chờ duyệt (pending), hiển thị nút duyệt/từ chối */}
-                                                {/* {event.status === 'pending' && (
-                                            <>
-                                                <Button
-                                                    variant="link"
-                                                    className={`${styles.actionButton} ${styles.approveButton}`}
-                                                    title="Duyệt"
-                                                    onClick={() =>
-                                                        handleApproveEvent(
-                                                            event,
-                                                        )
-                                                    }
-                                                >
-                                                    <FaCheck />
-                                                </Button>
-                                                <Button
-                                                    variant="link"
-                                                    className={`${styles.actionButton} ${styles.deleteButton}`}
-                                                    title="Từ chối"
-                                                    onClick={() =>
-                                                        handleRejectEvent(event)
-                                                    }
-                                                >
-                                                    <FaTimes />
-                                                </Button>
-                                            </>
-                                        )} */}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
+            {loadingLocal ? (
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
                     </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div className={styles.paginationContainer}>
-                            <Pagination>
-                                <Pagination.First
-                                    onClick={() => handlePageChange(1)}
-                                    disabled={currentPage === 1}
-                                />
-                                <Pagination.Prev
-                                    onClick={() =>
-                                        handlePageChange(currentPage - 1)
-                                    }
-                                    disabled={currentPage === 1}
-                                />
-
-                                {[...Array(totalPages)].map((_, index) => (
-                                    <Pagination.Item
-                                        key={index + 1}
-                                        active={index + 1 === currentPage}
-                                        onClick={() =>
-                                            handlePageChange(index + 1)
-                                        }
-                                    >
-                                        {index + 1}
-                                    </Pagination.Item>
-                                ))}
-
-                                <Pagination.Next
-                                    onClick={() =>
-                                        handlePageChange(currentPage + 1)
-                                    }
-                                    disabled={currentPage === totalPages}
-                                />
-                                <Pagination.Last
-                                    onClick={() => handlePageChange(totalPages)}
-                                    disabled={currentPage === totalPages}
-                                />
-                            </Pagination>
-                        </div>
-                    )}
-                </>
+                    <p className="mt-2">Đang tải...</p>
+                </div>
+            ) : currentEvents.length > 0 ? (
+                <div className={styles.tableWrapper}>
+                    <Table responsive hover className={styles.eventTable}>
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th onClick={() => handleSortChange('name')}>
+                                    Tên sự kiện
+                                </th>
+                                <th onClick={() => handleSortChange('date')}>
+                                    Ngày tổ chức
+                                </th>
+                                <th>Người đăng</th>
+                                <th>Trạng thái</th>
+                                <th onClick={() => handleSortChange('revenue')}>
+                                    Doanh thu
+                                </th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentEvents.map((event) => (
+                                <tr key={event._id}>
+                                    <td>
+                                        <img
+                                            src={event.background}
+                                            alt={event.name}
+                                            className={styles.eventImage}
+                                        />
+                                    </td>
+                                    <td>{truncateText(event.name, 30)}</td>
+                                    <td>{formatDate(event.startTime)}</td>
+                                    <td>
+                                        {truncateText(
+                                            event.userEmail || '',
+                                            30,
+                                        )}
+                                    </td>
+                                    <td>{getStatusBadge(event.status)}</td>
+                                    <td>
+                                        {formatCurrency(
+                                            event.totalRevenue || 0,
+                                        )}
+                                    </td>
+                                    <td>
+                                        <Button
+                                            variant="link"
+                                            className={`${styles.actionButton} ${styles.viewButton}`}
+                                            title="Xem chi tiết"
+                                            onClick={() =>
+                                                handleViewEventDetails(event)
+                                            }
+                                        >
+                                            <FaEye />
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </div>
             ) : (
                 <div className="d-flex flex-column align-items-center justify-content-center my-5">
                     <BsCalendarX size={60} className="mb-3" />

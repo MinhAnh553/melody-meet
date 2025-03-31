@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/logo.png';
 import avatar from '../../assets/images/avatar.png';
 import { useAuth } from '../context/AuthContext';
@@ -7,7 +7,8 @@ import swalCustomize from '../../util/swalCustomize';
 import SearchBar from './SearchBar';
 
 const Header = () => {
-    const { auth, logout } = useAuth();
+    const { isAuthenticated, user, logout } = useAuth();
+    const navigate = useNavigate();
     return (
         <header className="fixed-top">
             <nav className="navbar navbar-expand-lg">
@@ -28,19 +29,6 @@ const Header = () => {
                         className="collapse navbar-collapse justify-content-between"
                         id="navbarContent"
                     >
-                        {/* <form className="d-flex search-form">
-                            <div className="input-group">
-                                <span className="input-group-text">
-                                    <i className="bi bi-search" />
-                                </span>
-                                <input
-                                    className="form-control"
-                                    type="search"
-                                    placeholder="Tìm kiếm"
-                                    aria-label="Search"
-                                />
-                            </div>
-                        </form> */}
                         <SearchBar />
                         <ul className="navbar-nav mb-2 mb-lg-0 gap-2 align-items-center">
                             <li className="nav-item">
@@ -61,7 +49,8 @@ const Header = () => {
                                 </Link>
                             </li>
                             <li>
-                                {auth?.isAuthenticated ? (
+                                {isAuthenticated ? (
+                                    // Hiển thị avatar khi đã xác thực
                                     <div className="nav-item dropdown position-relative">
                                         <div
                                             className="nav-link dropdown-toggle d-flex align-items-center rounded"
@@ -84,21 +73,19 @@ const Header = () => {
                                             <span
                                                 className="ms-2 fw-semibold"
                                                 style={{ cursor: 'pointer' }}
-                                                title={auth.user.email} // Hiển thị đầy đủ khi hover
+                                                title={user.email}
                                             >
-                                                {auth.user.email.length > 27
-                                                    ? auth.user.email.slice(
-                                                          0,
-                                                          25,
-                                                      ) + '...'
-                                                    : auth.user.email}
+                                                {user.email.length > 27
+                                                    ? user.email.slice(0, 25) +
+                                                      '...'
+                                                    : user.email}
                                             </span>
                                         </div>
                                         <ul
                                             className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1"
                                             style={{ right: 0 }}
                                         >
-                                            {auth.user?.role === 'admin' && (
+                                            {user?.role === 'admin' && (
                                                 <li>
                                                     <Link
                                                         className="dropdown-item py-2 d-flex align-items-center"
@@ -129,24 +116,15 @@ const Header = () => {
                                                     <span>Sự Kiện Của Tôi</span>
                                                 </Link>
                                             </li>
-                                            {/* <li>
-                                                <a
-                                                    className="dropdown-item py-2 d-flex align-items-center"
-                                                    href="#"
-                                                >
-                                                    <i className="bi bi-person me-2 text-warning fs-5" />
-                                                    <span>Trang Cá Nhân</span>
-                                                </a>
-                                            </li> */}
                                             <li>
                                                 <hr className="dropdown-divider" />
                                             </li>
                                             <li>
-                                                <a
+                                                <button
                                                     className="dropdown-item py-2 d-flex align-items-center text-danger action-logout"
-                                                    href="#"
                                                     onClick={() => {
                                                         logout();
+                                                        navigate('/');
                                                         swalCustomize.Toast.fire(
                                                             {
                                                                 icon: 'success',
@@ -157,11 +135,12 @@ const Header = () => {
                                                 >
                                                     <i className="bi bi-box-arrow-right me-2 fs-5" />
                                                     <span>Đăng xuất</span>
-                                                </a>
+                                                </button>
                                             </li>
                                         </ul>
                                     </div>
                                 ) : (
+                                    // Nếu chưa đăng nhập, hiển thị nút đăng nhập/đăng ký
                                     <div className="auth-buttons d-flex">
                                         <button
                                             className="btn btn-outline-primary me-2"

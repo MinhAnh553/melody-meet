@@ -33,27 +33,18 @@ const AnimatedRoutes = () => {
     const location = useLocation();
 
     useEffect(() => {
-        window.scrollTo(0, 0); // Cuộn lên đầu trang mỗi khi đổi route
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant',
+        });
     }, [location.pathname]);
 
     return (
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
                 <Route path="/" element={<ClientLayout />}>
-                    <Route
-                        index
-                        element={
-                            <motion.div
-                                variants={pageVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                transition={{ duration: 0.5 }}
-                            >
-                                <HomePage />
-                            </motion.div>
-                        }
-                    />
+                    <Route index element={<HomePage />} />
                     <Route
                         path="all-events"
                         element={
@@ -68,20 +59,22 @@ const AnimatedRoutes = () => {
                             </motion.div>
                         }
                     />
-                    <Route
-                        path="my-tickets"
-                        element={
-                            <motion.div
-                                variants={pageVariants}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                transition={{ duration: 0.5 }}
-                            >
-                                <PurchasedTickets />
-                            </motion.div>
-                        }
-                    />
+                    <Route element={<ProtectedRoute />}>
+                        <Route
+                            path="my-tickets"
+                            element={
+                                <motion.div
+                                    variants={pageVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    transition={{ duration: 0.5 }}
+                                >
+                                    <PurchasedTickets />
+                                </motion.div>
+                            }
+                        />
+                    </Route>
                 </Route>
                 <Route path="event" element={<ProtectedRoute />}>
                     <Route element={<EventManagementLayout />}>

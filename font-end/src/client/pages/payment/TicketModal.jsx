@@ -4,8 +4,10 @@ import { Modal } from 'react-bootstrap';
 import CheckoutInfoModal from './CheckoutInfoModal';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
+import { useLoading } from '../../context/LoadingContext';
 
 const TicketModal = ({ show, onHide, event }) => {
+    const { showLoading, hideLoading } = useLoading();
     const [quantities, setQuantities] = useState(() => {
         if (!event?.ticketTypes) return [];
         return event.ticketTypes.map(() => 0);
@@ -62,6 +64,7 @@ const TicketModal = ({ show, onHide, event }) => {
 
     // Khi user xác nhận info => proceed
     const handleInfoConfirmed = async (buyerInfo) => {
+        showLoading();
         try {
             const items = event.ticketTypes
                 .map((ticket, i) => ({
@@ -72,7 +75,6 @@ const TicketModal = ({ show, onHide, event }) => {
                 }))
                 .filter((item) => item.quantity >= 1); // Lọc những ticket có quantity >= 1
 
-            console.log(buyerInfo);
             const res = await api.createOrder({
                 eventId: event._id,
                 items,
@@ -93,6 +95,8 @@ const TicketModal = ({ show, onHide, event }) => {
                 icon: 'error',
                 title: 'Server Error!',
             });
+        } finally {
+            hideLoading();
         }
     };
 

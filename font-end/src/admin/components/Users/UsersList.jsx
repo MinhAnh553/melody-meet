@@ -4,19 +4,21 @@ import {
     Button,
     Form,
     InputGroup,
-    Badge,
     Pagination,
     Modal,
 } from 'react-bootstrap';
-import { FaSearch, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
+import { FaSearch, FaEdit } from 'react-icons/fa';
 import styles from './Users.module.css';
-import { formatDate, formatUserRole } from '../../utils/formatters';
 import UserForm from './UserForm';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
 import { BsPersonX } from 'react-icons/bs';
+import { useLoading } from '../../../client/context/LoadingContext';
 
 const UsersList = () => {
+    const { showLoading, hideLoading } = useLoading();
+    const [loadingLocal, setLoadingLocal] = useState(true);
+
     const [users, setUsers] = useState([]);
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -33,6 +35,7 @@ const UsersList = () => {
     }, []);
 
     const fetchUsers = async () => {
+        setLoadingLocal(true);
         try {
             const res = await api.getAllUsers();
             if (res.success) {
@@ -40,6 +43,8 @@ const UsersList = () => {
             }
         } catch (error) {
             console.log('Lỗi khi gọi API getAllUsers:', error);
+        } finally {
+            setLoadingLocal(false);
         }
     };
 
@@ -94,6 +99,7 @@ const UsersList = () => {
     };
 
     const handleFormSubmit = async (userId, userData) => {
+        showLoading();
         try {
             const res = await api.updateUser(userId, userData);
             if (res.success) {
@@ -111,6 +117,8 @@ const UsersList = () => {
             }
         } catch (error) {
             console.log('Lỗi khi gọi API:', error);
+        } finally {
+            hideLoading();
         }
     };
 
@@ -148,7 +156,14 @@ const UsersList = () => {
             </div>
 
             {/* Users Table */}
-            {currentUsers.length > 0 ? (
+            {loadingLocal ? (
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p className="mt-2">Đang tải...</p>
+                </div>
+            ) : currentUsers.length > 0 ? (
                 <>
                     <div className={styles.tableWrapper}>
                         <Table responsive hover className={styles.userTable}>

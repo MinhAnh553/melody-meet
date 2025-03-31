@@ -21,8 +21,11 @@ import OrderDetails from './OrderDetails';
 import api from '../../../util/api';
 import swalCustomize from '../../../util/swalCustomize';
 import { BsCartX } from 'react-icons/bs';
+import { useLoading } from '../../../client/context/LoadingContext';
 
 const OrdersList = () => {
+    const { showLoading, hideLoading } = useLoading();
+    const [loadingLocal, setLoadingLocal] = useState(true);
     const [orders, setOrders] = useState([]);
 
     // Các state cho tìm kiếm, lọc, sắp xếp, phân trang
@@ -44,6 +47,7 @@ const OrdersList = () => {
     }, []);
 
     const fetchOrders = async () => {
+        setLoadingLocal(true);
         try {
             const res = await api.getAllOrders();
             if (res.success) {
@@ -51,6 +55,8 @@ const OrdersList = () => {
             }
         } catch (error) {
             console.log('Lỗi khi gọi API getAllOrders:', error);
+        } finally {
+            setLoadingLocal(false);
         }
     };
 
@@ -157,6 +163,7 @@ const OrdersList = () => {
     };
 
     const handleCancelClick = async (orderId) => {
+        showLoading();
         try {
             const res = await api.updateStatusOrder(orderId, 'CANCELED');
             if (res.success) {
@@ -170,10 +177,13 @@ const OrdersList = () => {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            hideLoading();
         }
     };
 
     const handleCompleteClick = async (orderId) => {
+        showLoading();
         try {
             const res = await api.updateStatusOrder(orderId, 'PAID');
             if (res.success) {
@@ -187,6 +197,8 @@ const OrdersList = () => {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            hideLoading();
         }
     };
 
@@ -224,7 +236,14 @@ const OrdersList = () => {
             </div>
 
             {/* Orders Table */}
-            {currentOrders.length > 0 ? (
+            {loadingLocal ? (
+                <div className="text-center my-5">
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p className="mt-2">Đang tải...</p>
+                </div>
+            ) : currentOrders.length > 0 ? (
                 <>
                     <div className={styles.tableWrapper}>
                         <Table responsive hover className={styles.orderTable}>
