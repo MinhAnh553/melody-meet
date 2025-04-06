@@ -31,6 +31,12 @@ const EventManagement = () => {
     const [searchKey, setSearchKey] = useState('');
 
     useEffect(() => {
+        if (location.state?.createSuccess) {
+            handlePending();
+        }
+    }, [location.state]);
+
+    useEffect(() => {
         fetchEvents('approved');
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -67,12 +73,6 @@ const EventManagement = () => {
     useEffect(() => {
         fetchEvents(activeTab);
     }, [searchKey]);
-
-    useEffect(() => {
-        if (location.state?.createSuccess) {
-            handlePending();
-        }
-    }, [location.state]);
 
     const fetchEvents = async (status) => {
         setLoadingLocal(true);

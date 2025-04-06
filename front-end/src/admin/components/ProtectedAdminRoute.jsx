@@ -4,7 +4,9 @@ import { Navigate, Outlet } from 'react-router-dom';
 import swalCustomize from '../../util/swalCustomize';
 
 const ProtectedAdminRoute = () => {
-    const { isAuthenticated, user } = useAuth();
+    const { isAuthenticated, user, loading } = useAuth();
+
+    if (loading) return;
 
     if (!isAuthenticated || user?.role !== 'admin') {
         swalCustomize.Toast.fire({

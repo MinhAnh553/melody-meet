@@ -127,7 +127,9 @@ const Step1 = ({
                     Thông tin sự kiện
                 </label>
                 <DescriptionEditor
-                    initialValue={data.description}
+                    initialValue={
+                        data.description || 'Nhập các thông tin cần thiết'
+                    }
                     onEditorChange={(newContent) =>
                         updateData({ description: newContent })
                     }

@@ -126,6 +126,8 @@ const AddressSelector = ({ onAddressChange, initialAddress }) => {
             const province = provinces.find(
                 (p) => p.code === selectedProvinceCode,
             );
+            if (province === undefined) return;
+
             const district = province
                 ? province.districts.find(
                       (d) => d.code === selectedDistrictCode,
@@ -134,16 +136,13 @@ const AddressSelector = ({ onAddressChange, initialAddress }) => {
             const ward = district
                 ? district.wards.find((w) => w.code === selectedWardCode)
                 : null;
+
             onAddressChange({
                 venueName: venueName || '',
-                province: province ? province.name : '',
-                district: district ? district.name : '',
-                ward: ward ? ward.name : '',
+                province: province ? province.name : selectedWardCode,
+                district: district ? district.name : selectedDistrictCode,
+                ward: ward ? ward.name : selectedWardCode,
                 address: address || '',
-                // Ngoài ra, có thể truyền mã nếu cần:
-                selectedProvinceCode,
-                selectedDistrictCode,
-                selectedWardCode,
             });
         }
     }, [

@@ -51,6 +51,7 @@ const initialState = {
 export const AuthProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
     const { showLoading, hideLoading } = useLoading(); // Sử dụng loading context
+    const [loading, setLoading] = useState(true);
     // Fetch user khi tải lại trang
     useEffect(() => {
         const fetchUser = async () => {
@@ -74,9 +75,9 @@ export const AuthProvider = ({ children }) => {
                 console.error(error);
                 dispatch({ type: LOGOUT });
             } finally {
-                // setTimeout(() => {
-                //     hideLoading();
-                // }, 500);
+                setTimeout(() => {
+                    setLoading(false);
+                }, 300);
             }
         };
 
@@ -141,7 +142,9 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ ...state, login, logout, updateUser }}>
+        <AuthContext.Provider
+            value={{ ...state, login, logout, updateUser, loading }}
+        >
             {children}
         </AuthContext.Provider>
     );

@@ -21,7 +21,7 @@ const createPayOSOrder = async (userInfo, order, tickets) => {
         description: 'Melody Meet',
         expiredAt: Math.floor(new Date(order.expiredAt).getTime() / 1000),
         returnUrl: `${YOUR_DOMAIN}/order/payment-success`,
-        cancelUrl: `${YOUR_DOMAIN}/event/${order.eventId}`,
+        cancelUrl: `${YOUR_DOMAIN}`,
     };
 
     try {

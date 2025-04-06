@@ -5,8 +5,9 @@ import { Navigate, Outlet } from 'react-router-dom';
 import swalCustomize from '../../util/swalCustomize';
 
 const ProtectedRoute = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, loading } = useAuth();
 
+    if (loading) return;
     if (!isAuthenticated) {
         swalCustomize.Toast.fire({
             icon: 'error',

@@ -56,7 +56,7 @@ function PaymentSuccess() {
     }, [order]);
 
     if (!order) {
-        return;
+        return showLoading();
     }
 
     // Tính tổng hiển thị
