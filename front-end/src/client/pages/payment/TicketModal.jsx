@@ -115,95 +115,187 @@ const TicketModal = ({ show, onHide, event }) => {
                     <Modal.Title>Chọn vé cho: {event.name}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="bg-dark text-white">
-                    <table className="table table-dark ticket-table align-middle">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '40%' }}>Loại vé</th>
-                                <th style={{ width: '20%' }}>Giá</th>
-                                <th
-                                    style={{ width: '40%' }}
-                                    className="text-center"
-                                >
-                                    Số lượng
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {event.ticketTypes.map((ticket, index) => {
-                                const { _id, name, price, maxPerUser } = ticket;
-                                const quantity = quantities[index];
-
-                                return (
-                                    <tr key={_id || index}>
-                                        <td>
-                                            <strong>{name}</strong>
-                                            <div
-                                                className="text-muted"
-                                                style={{ fontSize: '0.9rem' }}
-                                            >
-                                                (Tối đa {maxPerUser} vé)
-                                            </div>
+                    {/* Desktop/tablet view: hiển thị table */}
+                    <div className="d-none d-sm-block">
+                        <div className="table-responsive">
+                            <table className="table table-dark ticket-table align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style={{ width: '40%' }}>
+                                            Loại vé
+                                        </th>
+                                        <th style={{ width: '20%' }}>Giá</th>
+                                        <th
+                                            style={{ width: '40%' }}
+                                            className="text-center"
+                                        >
+                                            Số lượng
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {event.ticketTypes.map((ticket, index) => {
+                                        const quantity = quantities[index];
+                                        return (
+                                            <tr key={ticket._id || index}>
+                                                <td>
+                                                    <strong>
+                                                        {ticket.name}
+                                                    </strong>
+                                                    <div
+                                                        className="text-muted"
+                                                        style={{
+                                                            fontSize: '0.9rem',
+                                                        }}
+                                                    >
+                                                        (Tối đa{' '}
+                                                        {ticket.maxPerUser} vé)
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {ticket.price === 0
+                                                        ? 'Miễn phí'
+                                                        : ticket.price.toLocaleString(
+                                                              'vi-VN',
+                                                          ) + 'đ'}
+                                                </td>
+                                                <td>
+                                                    <div className="quantity-group d-flex justify-content-center align-items-center">
+                                                        <button
+                                                            className="btn btn-outline-light btn-sm rounded-circle me-2"
+                                                            onClick={() =>
+                                                                handleDecrement(
+                                                                    index,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                quantity <= 0
+                                                            }
+                                                        >
+                                                            <i className="bi bi-dash"></i>
+                                                        </button>
+                                                        <input
+                                                            type="number"
+                                                            min={0}
+                                                            max={
+                                                                ticket.maxPerUser
+                                                            }
+                                                            value={quantity}
+                                                            onChange={(e) =>
+                                                                handleQuantityChange(
+                                                                    index,
+                                                                    +e.target
+                                                                        .value,
+                                                                )
+                                                            }
+                                                            className="quantity-input"
+                                                        />
+                                                        <button
+                                                            className="btn btn-outline-light btn-sm rounded-circle ms-2"
+                                                            onClick={() =>
+                                                                handleIncrement(
+                                                                    index,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                quantity >=
+                                                                ticket.maxPerUser
+                                                            }
+                                                        >
+                                                            <i className="bi bi-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colSpan={2}>
+                                            <strong>Tổng tiền:</strong>
                                         </td>
-                                        <td>
-                                            {price === 0
-                                                ? 'Miễn phí'
-                                                : price.toLocaleString(
-                                                      'vi-VN',
-                                                  ) + 'đ'}
-                                        </td>
-                                        <td>
-                                            <div className="quantity-group d-flex justify-content-center align-items-center">
-                                                <button
-                                                    className="btn btn-outline-light btn-sm rounded-circle me-2"
-                                                    onClick={() =>
-                                                        handleDecrement(index)
-                                                    }
-                                                    disabled={quantity <= 0}
-                                                >
-                                                    <i className="bi bi-dash"></i>
-                                                </button>
-                                                <input
-                                                    type="number"
-                                                    min={0}
-                                                    max={maxPerUser}
-                                                    value={quantity}
-                                                    onChange={(e) =>
-                                                        handleQuantityChange(
-                                                            index,
-                                                            +e.target.value,
-                                                        )
-                                                    }
-                                                    className="quantity-input"
-                                                />
-                                                <button
-                                                    className="btn btn-outline-light btn-sm rounded-circle ms-2"
-                                                    onClick={() =>
-                                                        handleIncrement(index)
-                                                    }
-                                                    disabled={
-                                                        quantity >= maxPerUser
-                                                    }
-                                                >
-                                                    <i className="bi bi-plus"></i>
-                                                </button>
-                                            </div>
+                                        <td className="text-end text-danger fw-bold">
+                                            {displayPrice}
                                         </td>
                                     </tr>
-                                );
-                            })}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colSpan={2}>
-                                    <strong>Tổng tiền:</strong>
-                                </td>
-                                <td className="text-end text-danger fw-bold">
-                                    {displayPrice}
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Mobile view: card layout */}
+                    <div className="d-block d-sm-none">
+                        {event.ticketTypes.map((ticket, index) => {
+                            const quantity = quantities[index];
+                            return (
+                                <div
+                                    key={ticket._id || index}
+                                    className="border p-3 mb-3 rounded text-white"
+                                    style={{ background: '#31353e' }}
+                                >
+                                    <div className="d-flex justify-content-between mb-2">
+                                        <strong>{ticket.name}</strong>
+                                        <span>
+                                            {ticket.price === 0
+                                                ? 'Miễn phí'
+                                                : ticket.price.toLocaleString(
+                                                      'vi-VN',
+                                                  ) + 'đ'}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className="text-white mb-2"
+                                        style={{ fontSize: '0.9rem' }}
+                                    >
+                                        (Tối đa {ticket.maxPerUser} vé)
+                                    </div>
+                                    <div className="quantity-group d-flex justify-content-center align-items-center">
+                                        <button
+                                            className="btn btn-outline-light btn-sm rounded-circle me-2"
+                                            onClick={() =>
+                                                handleDecrement(index)
+                                            }
+                                            disabled={quantity <= 0}
+                                        >
+                                            <i className="bi bi-dash"></i>
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min={0}
+                                            max={ticket.maxPerUser}
+                                            value={quantity}
+                                            onChange={(e) =>
+                                                handleQuantityChange(
+                                                    index,
+                                                    +e.target.value,
+                                                )
+                                            }
+                                            className="quantity-input"
+                                        />
+                                        <button
+                                            className="btn btn-outline-light btn-sm rounded-circle ms-2"
+                                            onClick={() =>
+                                                handleIncrement(index)
+                                            }
+                                            disabled={
+                                                quantity >= ticket.maxPerUser
+                                            }
+                                        >
+                                            <i className="bi bi-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Tổng tiền trên mobile */}
+                        <div className="text-end text-danger fw-bold">
+                            Tổng tiền: {displayPrice}
+                        </div>
+                    </div>
                 </Modal.Body>
+
                 <Modal.Footer className="bg-dark">
                     <button className="btn btn-secondary" onClick={onHide}>
                         Đóng

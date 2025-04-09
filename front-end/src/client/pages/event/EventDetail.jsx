@@ -250,6 +250,35 @@ const EventDetail = () => {
                 onHide={() => setShowModal(false)}
                 event={event}
             />
+            <div className="fixed-ticket-bar d-block d-md-none">
+                <div className="container d-flex justify-content-between align-items-center h-100">
+                    <span className="text-white fw-bold">
+                        <span style={{ fontWeight: 'bold' }}>
+                            {lowestPrice}
+                        </span>
+                    </span>
+                    <button
+                        className="btn btn-success fw-bold"
+                        onClick={handleBuyNow}
+                        disabled={
+                            event.status === 'event_over' || !isAuthenticated
+                        }
+                        style={{
+                            backgroundColor:
+                                event.status === 'event_over' ||
+                                !isAuthenticated
+                                    ? '#ccc'
+                                    : '',
+                        }}
+                    >
+                        {event.status === 'event_over'
+                            ? 'Sự kiện đã kết thúc'
+                            : !isAuthenticated
+                            ? 'Đăng nhập để mua vé'
+                            : 'Mua vé ngay'}
+                    </button>
+                </div>
+            </div>
         </>
     );
 };

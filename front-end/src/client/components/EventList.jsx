@@ -27,7 +27,7 @@ const EventList = ({ events, type = 'special' }) => {
 
                     return (
                         <div
-                            className="event-card col-md-6 col-lg-3"
+                            className="event-card col-6 col-md-4 col-lg-3"
                             key={event._id}
                             onClick={() => navigate(`/event/${event._id}`)}
                             style={{ cursor: 'pointer' }}

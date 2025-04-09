@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
     BsSearch,
@@ -14,7 +14,6 @@ import TimeText from '../../components/providers/TimeText';
 
 const EventManagement = () => {
     const [loadingLocal, setLoadingLocal] = useState(true);
-    const location = useLocation();
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
 
@@ -29,12 +28,6 @@ const EventManagement = () => {
 
     // Tìm kiếm
     const [searchKey, setSearchKey] = useState('');
-
-    useEffect(() => {
-        if (location.state?.createSuccess) {
-            handlePending();
-        }
-    }, [location.state]);
 
     useEffect(() => {
         fetchEvents('approved');

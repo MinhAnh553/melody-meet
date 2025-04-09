@@ -30,7 +30,10 @@ const AllEvents = () => {
             </div>
         </section>
     ) : (
-        <section className="events py-4" style={{ marginTop: '80px' }}>
+        <section
+            className="events py-4 container"
+            style={{ marginTop: '80px' }}
+        >
             <EventList events={events} />
         </section>
     );

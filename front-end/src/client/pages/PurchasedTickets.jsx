@@ -128,8 +128,9 @@ function PurchasedTickets() {
                                     className="text-truncate"
                                     style={{ maxWidth: '95%' }}
                                 >
+                                    {/* Hiển thị trên máy tính: Đơn hàng #123 | Tên sự kiện */}
                                     <h5
-                                        className="fw-bold mb-1 text-truncate"
+                                        className="fw-bold mb-1 text-truncate d-none d-md-block"
                                         style={{
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
@@ -137,6 +138,11 @@ function PurchasedTickets() {
                                         }}
                                     >
                                         Đơn hàng #{order.orderId} | {order.name}
+                                    </h5>
+
+                                    {/* Hiển thị trên mobile/tablet: Đơn hàng #123: */}
+                                    <h5 className="fw-bold mb-1 d-block d-md-none">
+                                        Đơn hàng #{order.orderId}
                                     </h5>
                                 </div>
                                 <i
@@ -163,28 +169,33 @@ function PurchasedTickets() {
                                         ticket.price * ticket.quantity;
                                     return (
                                         <React.Fragment key={ticket._id || idx}>
-                                            <div className="d-flex align-items-center mb-2 p-2 rounded bg-white text-dark">
-                                                <div
-                                                    className="d-flex align-items-center justify-content-center text-white"
-                                                    style={{
-                                                        padding: '10px',
-                                                    }}
-                                                >
+                                            <div className="row align-items-center bg-white text-dark rounded p-3 mb-3">
+                                                {/* Hình ảnh */}
+                                                <div className="col-12 col-md-3 mb-3 mb-md-0 text-center">
                                                     <img
                                                         src={order.image}
                                                         alt={ticket.name}
-                                                        className="rounded"
+                                                        className="img-fluid rounded"
                                                         style={{
-                                                            width: '200px',
-                                                            height: '120px',
+                                                            maxHeight: '120px',
                                                             objectFit:
                                                                 'contain',
                                                         }}
                                                     />
                                                 </div>
-                                                <div>
-                                                    <div className="text-dark fw-bold">
-                                                        {ticket.name}
+
+                                                {/* Thông tin vé */}
+                                                <div className="col-12 col-md-6">
+                                                    <div className="col-12 d-md-none">
+                                                        <div className="fw-bold">
+                                                            Sự kiện:{' '}
+                                                            <span className="text-primary">
+                                                                "{order.name}"
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="fw-bold">
+                                                        Vé: {ticket.name}
                                                     </div>
                                                     <div className="text-primary fw-bold">
                                                         Số lượng:{' '}
@@ -203,7 +214,9 @@ function PurchasedTickets() {
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="d-flex justify-content-center ms-auto">
+
+                                                {/* QR Code */}
+                                                <div className="col-12 col-md-3 text-center mt-3 mt-md-0">
                                                     <QRCode
                                                         value={`${ticket.ticketId}`}
                                                         size={100}
@@ -213,7 +226,6 @@ function PurchasedTickets() {
                                                     />
                                                 </div>
                                             </div>
-                                            <hr></hr>
                                         </React.Fragment>
                                     );
                                 })}
@@ -335,6 +347,7 @@ function PurchasedTickets() {
                                 statusFilter === 'all' ? 'success' : 'secondary'
                             }
                             className="me-2 shadow-sm"
+                            style={{ padding: '5px' }}
                             onClick={() => {
                                 setStatusFilter('all');
                                 handlePageChange(1);
@@ -348,6 +361,7 @@ function PurchasedTickets() {
                                     ? 'success'
                                     : 'secondary'
                             }
+                            style={{ padding: '5px' }}
                             className="me-2 shadow-sm"
                             onClick={() => {
                                 setStatusFilter('upcoming');
@@ -362,6 +376,7 @@ function PurchasedTickets() {
                                     ? 'success'
                                     : 'secondary'
                             }
+                            style={{ padding: '5px' }}
                             className="shadow-sm"
                             onClick={() => {
                                 setStatusFilter('event_over');

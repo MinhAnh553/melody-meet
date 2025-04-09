@@ -597,6 +597,17 @@ header .form-control {
     border-radius: 4px;
 }
 
+.fixed-ticket-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #1e1e1e; /* nền đen như ảnh */
+    height: 60px;
+    z-index: 999;
+    padding: 0 15px;
+}
+
 /* Reponsive */
 @media (max-width: 768px) {
     .search-form .form-control {
