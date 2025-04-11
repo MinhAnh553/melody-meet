@@ -26,21 +26,25 @@ const EventManagement = () => {
     }, [eventId]);
 
     return (
-        <>
-            <div className="d-flex">
+        <div className="d-flex flex-column flex-md-row min-vh-100">
+            <div
+                className="flex-shrink-0 bg-dark text-white d-none d-md-block"
+                style={{ width: '250px' }}
+            >
                 <SidebarEvent />
-                <div className="content w-100">
-                    <main style={{ maxWidth: '100%' }}>
-                        {location.pathname !== '/event/create' &&
-                            location.pathname !== `/event/${eventId}/edit` && (
-                                <HeaderEvent name={nameEvent} />
-                            )}
-
-                        <Outlet />
-                    </main>
-                </div>
             </div>
-        </>
+
+            <div className="flex-grow-1">
+                <main style={{ maxWidth: '100%' }}>
+                    {/* HeaderEvent hiển thị nếu không phải trang tạo/sửa */}
+                    {location.pathname !== '/event/create' &&
+                        location.pathname !== `/event/${eventId}/edit` && (
+                            <HeaderEvent name={nameEvent} />
+                        )}
+                    <Outlet />
+                </main>
+            </div>
+        </div>
     );
 };
 

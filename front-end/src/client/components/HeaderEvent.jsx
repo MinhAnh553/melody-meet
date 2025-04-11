@@ -16,7 +16,7 @@ const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
 
     return (
         <div className="header">
-            <div className="w-100 step-container gap-2">
+            <div className="w-100 step-container gap-2 flex-wrap">
                 {(location.pathname === '/event/create' ||
                     location.pathname === `/event/${eventId}/edit`) && (
                     <>
@@ -112,7 +112,7 @@ const HeaderEvent = ({ loading, currentStep, onStepClick, name }) => {
                     </div>
                 )}
 
-                <ul className="navbar-nav mb-2 mb-lg-0 ms-auto gap-2 flex-row align-items-center justify-content-end">
+                <ul className="navbar-nav mb-md-2 mb-lg-0 ms-md-auto gap-2 flex-row align-items-center justify-content-end">
                     {location.pathname !== '/event/create' && (
                         <li className="nav-item">
                             <Link
